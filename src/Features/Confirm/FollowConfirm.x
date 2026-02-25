@@ -5,7 +5,7 @@
 
 #define CONFIRMFOLLOW(orig)                            \
     if ([SCIUtils getBoolPref:@"follow_confirm"]) {             \
-        NSLog(@"[SCInsta] Confirm follow triggered");  \
+        NSLog(@"[PekiWare] Confirm follow triggered");  \
                                                        \
         [SCIUtils showConfirmation:^(void) { orig; }]; \
     }                                                  \

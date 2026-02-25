@@ -28,7 +28,7 @@ static void initDownloaders () {
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    NSLog(@"[SCInsta] Adding feed photo download long press gesture recognizer");
+    NSLog(@"[PekiWare] Adding feed photo download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
@@ -81,7 +81,7 @@ static void initDownloaders () {
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    NSLog(@"[SCInsta] Adding feed video download long press gesture recognizer");
+    NSLog(@"[PekiWare] Adding feed video download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
@@ -122,7 +122,7 @@ static void initDownloaders () {
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    NSLog(@"[SCInsta] Adding reels photo download long press gesture recognizer");
+    NSLog(@"[PekiWare] Adding reels photo download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
@@ -162,7 +162,7 @@ static void initDownloaders () {
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    NSLog(@"[SCInsta] Adding reels video download long press gesture recognizer");
+    NSLog(@"[PekiWare] Adding reels video download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
@@ -203,7 +203,7 @@ static void initDownloaders () {
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    NSLog(@"[SCInsta] Adding story photo download long press gesture recognizer");
+    NSLog(@"[PekiWare] Adding story photo download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
@@ -241,7 +241,7 @@ static void initDownloaders () {
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    //NSLog(@"[SCInsta] Adding story video download long press gesture recognizer");
+    //NSLog(@"[PekiWare] Adding story video download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
@@ -280,7 +280,7 @@ static void initDownloaders () {
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    //NSLog(@"[SCInsta] Adding story video download long press gesture recognizer");
+    //NSLog(@"[PekiWare] Adding story video download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
@@ -342,7 +342,7 @@ static void initDownloaders () {
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    NSLog(@"[SCInsta] Adding profile picture long press gesture recognizer");
+    NSLog(@"[PekiWare] Adding profile picture long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     [self addGestureRecognizer:longPress];

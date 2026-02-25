@@ -58,15 +58,15 @@
     NSString *cacheDirectoryPath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
     NSURL *newPath = [[NSURL fileURLWithPath:cacheDirectoryPath] URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", NSUUID.UUID.UUIDString, self.fileExtension]];
     
-    NSLog(@"[SCInsta] Download Handler: Moving file from: %@ to: %@", oldPath.absoluteString, newPath.absoluteString);
+    NSLog(@"[PekiWare] Download Handler: Moving file from: %@ to: %@", oldPath.absoluteString, newPath.absoluteString);
 
     // Move file to cache directory
     NSError *fileMoveError;
     [fileManager moveItemAtURL:oldPath toURL:newPath error:&fileMoveError];
 
     if (fileMoveError) {
-        NSLog(@"[SCInsta] Download Handler: Error while moving file: %@", oldPath.absoluteString);
-        NSLog(@"[SCInsta] Download Handler: %@", fileMoveError);
+        NSLog(@"[PekiWare] Download Handler: Error while moving file: %@", oldPath.absoluteString);
+        NSLog(@"[PekiWare] Download Handler: %@", fileMoveError);
     }
 
     return newPath;

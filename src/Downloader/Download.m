@@ -39,7 +39,7 @@
 
     [self.hud showInView:topMostController().view];
 
-    NSLog(@"[SCInsta] Download: Will start download for url \"%@\" with file extension: \".%@\"", url, fileExtension);
+    NSLog(@"[PekiWare] Download: Will start download for url \"%@\" with file extension: \".%@\"", url, fileExtension);
 
     // Start download using manager
     [self.downloadManager downloadFileWithURL:url fileExtension:fileExtension];
@@ -47,17 +47,17 @@
 
 // Delegate methods
 - (void)downloadDidStart {
-    NSLog(@"[SCInsta] Download: Download started");
+    NSLog(@"[PekiWare] Download: Download started");
 }
 - (void)downloadDidCancel {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.hud dismiss];
     });
 
-    NSLog(@"[SCInsta] Download: Download cancelled");
+    NSLog(@"[PekiWare] Download: Download cancelled");
 }
 - (void)downloadDidProgress:(float)progress {
-    NSLog(@"[SCInsta] Download: Download progress: %f", progress);
+    NSLog(@"[PekiWare] Download: Download progress: %f", progress);
     
     if (self.showProgress) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -70,7 +70,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         // Check if it actually errored (not cancelled)
         if (error && error.code != NSURLErrorCancelled) {
-            NSLog(@"[SCInsta] Download: Download failed with error: \"%@\"", error);
+            NSLog(@"[PekiWare] Download: Download failed with error: \"%@\"", error);
             [SCIUtils showErrorHUDWithDescription:@"Error, try again later"];
         }
     });
@@ -79,8 +79,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.hud dismiss];
 
-        NSLog(@"[SCInsta] Download: Download finished with url: \"%@\"", [fileURL absoluteString]);
-        NSLog(@"[SCInsta] Download: Completed with action %d", (int)self.action);
+        NSLog(@"[PekiWare] Download: Download finished with url: \"%@\"", [fileURL absoluteString]);
+        NSLog(@"[PekiWare] Download: Completed with action %d", (int)self.action);
 
         switch (self.action) {
             case share:

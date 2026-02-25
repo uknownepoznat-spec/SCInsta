@@ -64,8 +64,8 @@ static char rowStaticRef[] = "row";
     [super viewWillDisappear:animated];
     
     if (![[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"]) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"SCInsta Settings Info"
-                                                                       message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open SCInsta settings."
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"PekiWare Settings Info"
+                                                                       message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open PekiWare settings."
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         
         [alert addAction:[UIAlertAction actionWithTitle:@"I understand!"

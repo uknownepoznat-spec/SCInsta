@@ -51,7 +51,7 @@
     if (deletionErrors.count > 1) {
 
         for (NSError *error in deletionErrors) {
-            NSLog(@"[SCInsta] File Deletion Error: %@", error);
+            NSLog(@"[PekiWare] File Deletion Error: %@", error);
         }
 
     }

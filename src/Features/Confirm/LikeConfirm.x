@@ -6,7 +6,7 @@
 
 #define CONFIRMPOSTLIKE(orig)                             \
     if ([SCIUtils getBoolPref:@"like_confirm"]) {           \
-        NSLog(@"[SCInsta] Confirm post like triggered");  \
+        NSLog(@"[PekiWare] Confirm post like triggered");  \
                                                           \
         [SCIUtils showConfirmation:^(void) { orig; }];    \
     }                                                     \
@@ -16,7 +16,7 @@
 
 #define CONFIRMREELSLIKE(orig)                            \
     if ([SCIUtils getBoolPref:@"like_confirm_reels"]) {     \
-        NSLog(@"[SCInsta] Confirm reels like triggered"); \
+        NSLog(@"[PekiWare] Confirm reels like triggered"); \
                                                           \
         [SCIUtils showConfirmation:^(void) { orig; }];    \
     }                                                     \

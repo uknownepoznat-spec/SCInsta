@@ -18,12 +18,6 @@
         @{
             @"header": @"",
             @"rows": @[
-                [SCISetting linkCellWithTitle:@"Donate" subtitle:@"Consider donating to support this tweak's development!" icon:[SCISymbol symbolWithName:@"heart.circle.fill" color:[UIColor systemPinkColor] size:20.0] url:@"https://ko-fi.com/SoCuul"]
-            ]
-        },
-        @{
-            @"header": @"",
-            @"rows": @[
                 [SCISetting navigationCellWithTitle:@"General"
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"gear"]
@@ -204,9 +198,9 @@
                                             ]
                                         },
                                         @{
-                                            @"header": @"SCInsta",
+                                            @"header": @"PekiWare",
                                             @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the SCInsta settings when the app launches" defaultsKey:@"tweak_settings_app_launch"],
+                                                [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the PekiWare settings when the app launches" defaultsKey:@"tweak_settings_app_launch"],
                                                 [SCISetting buttonCellWithTitle:@"Reset onboarding completion state"
                                                                            subtitle:@""
                                                                                icon:nil
@@ -250,14 +244,6 @@
                 ]
             ]
         },
-        @{
-            @"header": @"Credits",
-            @"rows": @[
-                [SCISetting linkCellWithTitle:@"Developer" subtitle:@"SoCuul" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://socuul.dev"],
-                [SCISetting linkCellWithTitle:@"View Repo" subtitle:@"View the tweak's source code on GitHub" imageUrl:@"https://i.imgur.com/BBUNzeP.png" url:@"https://github.com/SoCuul/SCInsta"]
-            ],
-            @"footer": [NSString stringWithFormat:@"SCInsta %@\n\nInstagram v%@", SCIVersionString, [SCIUtils IGVersionString]]
-        }
     ];
 }
 
@@ -269,7 +255,7 @@
 ///
 
 + (NSString *)title {
-    return @"SCInsta Settings";
+    return @"PekiWare Settings";
 }
 
 

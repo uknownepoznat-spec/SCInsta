@@ -3,7 +3,7 @@
 %hook IGDirectThreadViewController
 - (void)swipeableScrollManagerDidEndDraggingAboveSwipeThreshold:(id)arg1 {
     if ([SCIUtils getBoolPref:@"shh_mode_confirm"]) {
-        NSLog(@"[SCInsta] Confirm shh mode triggered");
+        NSLog(@"[PekiWare] Confirm shh mode triggered");
 
         [SCIUtils showConfirmation:^(void) { %orig; }];
     } else {
@@ -13,7 +13,7 @@
 
 - (void)shhModeTransitionButtonDidTap:(id)arg1 {
     if ([SCIUtils getBoolPref:@"shh_mode_confirm"]) {
-        NSLog(@"[SCInsta] Confirm shh mode triggered");
+        NSLog(@"[PekiWare] Confirm shh mode triggered");
 
         [SCIUtils showConfirmation:^(void) { %orig; }];
     } else {
@@ -23,7 +23,7 @@
 
 - (void)messageListViewControllerDidToggleShhMode:(id)arg1 {
     if ([SCIUtils getBoolPref:@"shh_mode_confirm"]) {
-        NSLog(@"[SCInsta] Confirm shh mode triggered");
+        NSLog(@"[PekiWare] Confirm shh mode triggered");
 
         [SCIUtils showConfirmation:^(void) { %orig; }];
     } else {
