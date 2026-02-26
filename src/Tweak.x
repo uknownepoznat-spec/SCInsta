@@ -81,9 +81,6 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     NSLog(@"[PekiWare] Cleaning cache...");
     [SCIUtils cleanCache];
 
-    // Show animated branding banner on launch
-    [SCIUtils showPekiWareLaunchHUD];
-
     if ([SCIUtils getBoolPref:@"flex_app_launch"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
@@ -93,6 +90,12 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 
 - (void)applicationDidBecomeActive:(id)arg1 {
     %orig;
+    
+    // Show PekiWare branding banner once when app becomes active
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [SCIUtils showPekiWareLaunchHUD];
+    });
     
     if ([SCIUtils getBoolPref:@"flex_app_start"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
