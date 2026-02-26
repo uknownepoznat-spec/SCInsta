@@ -169,10 +169,6 @@
                 @{
                     @"header": @"",
                     @"rows": @[
-                        [SCISetting buttonCellWithTitle:@"Developer Peki Scripter"
-                                               subtitle:@"PekiWare On Top"
-                                                   icon:[SCISymbol symbolWithName:@"person.fill"]
-                                                 action:^(void) { [SCIUtils showPekiWareLaunchHUD]; }],
                         [SCISetting linkCellWithTitle:@"Developer Peki Scripter"
                                              subtitle:@"Tap to view the developer info"
                                                  icon:[SCISymbol symbolWithName:@"person.fill" color:[UIColor systemBlueColor] size:20.0]

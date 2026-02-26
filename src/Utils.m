@@ -260,87 +260,8 @@
 
 + (void)showPekiWareLaunchHUD {
     dispatch_async(dispatch_get_main_queue(), ^{
-        @try {
-            UIWindow *window = [UIApplication sharedApplication].keyWindow;
-            if (!window) {
-                for (UIWindow *w in [UIApplication sharedApplication].windows) {
-                    if (w.isKeyWindow) {
-                        window = w;
-                        break;
-                    }
-                }
-            }
-            if (!window || window.bounds.size.width <= 0.0 || window.bounds.size.height <= 0.0) {
-                return;
-            }
-
-            CGFloat topInset = window.safeAreaInsets.top;
-            CGFloat bannerHeight = 72.0;
-            CGRect startFrame = CGRectMake(16.0,
-                                           topInset > 0 ? topInset + 8.0 : 32.0,
-                                           window.bounds.size.width - 32.0,
-                                           bannerHeight);
-
-            UIView *banner = [[UIView alloc] initWithFrame:startFrame];
-            banner.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.75];
-            banner.layer.cornerRadius = 18.0;
-            banner.layer.masksToBounds = YES;
-
-            UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterialDark]];
-            blurView.frame = banner.bounds;
-            blurView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-            [banner addSubview:blurView];
-
-            UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-            titleLabel.text = @"PekiWare On Top";
-            titleLabel.textColor = [UIColor whiteColor];
-            titleLabel.font = [UIFont systemFontOfSize:18.0 weight:UIFontWeightSemibold];
-
-            UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-            subtitleLabel.text = @"Developer · Peki Scripter";
-            subtitleLabel.textColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-            subtitleLabel.font = [UIFont systemFontOfSize:13.0 weight:UIFontWeightRegular];
-
-            CGFloat padding = 16.0;
-            CGFloat availableWidth = startFrame.size.width - 2 * padding;
-
-            CGSize titleSize = [titleLabel sizeThatFits:CGSizeMake(availableWidth, CGFLOAT_MAX)];
-            CGSize subtitleSize = [subtitleLabel sizeThatFits:CGSizeMake(availableWidth, CGFLOAT_MAX)];
-
-            CGFloat y = (bannerHeight - titleSize.height - subtitleSize.height - 4.0) / 2.0;
-            titleLabel.frame = CGRectMake(padding, y, availableWidth, titleSize.height);
-            subtitleLabel.frame = CGRectMake(padding, CGRectGetMaxY(titleLabel.frame) + 4.0, availableWidth, subtitleSize.height);
-
-            [banner addSubview:titleLabel];
-            [banner addSubview:subtitleLabel];
-
-            banner.alpha = 0.0;
-            banner.transform = CGAffineTransformMakeTranslation(0.0, -20.0);
-
-            [window addSubview:banner];
-
-            [UIView animateWithDuration:0.35
-                                  delay:0.2
-                 usingSpringWithDamping:0.9
-                  initialSpringVelocity:0.8
-                                options:UIViewAnimationOptionCurveEaseOut
-                             animations:^{
-                                 banner.alpha = 1.0;
-                                 banner.transform = CGAffineTransformIdentity;
-                             } completion:^(BOOL finished) {
-                                 [UIView animateWithDuration:0.3
-                                                       delay:2.0
-                                                     options:UIViewAnimationOptionCurveEaseIn
-                                                  animations:^{
-                                                      banner.alpha = 0.0;
-                                                      banner.transform = CGAffineTransformMakeTranslation(0.0, -16.0);
-                                                  } completion:^(BOOL finishedInner) {
-                                                      [banner removeFromSuperview];
-                                                  }];
-                             }];
-        } @catch (NSException *exception) {
-            NSLog(@"[PekiWare] Failed to show launch banner: %@", exception);
-        }
+        // Temporarily disabled to guarantee stability; safe no-op.
+        NSLog(@"[PekiWare] showPekiWareLaunchHUD called (no-op)");
     });
 }
 

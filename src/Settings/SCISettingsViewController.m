@@ -73,7 +73,11 @@ static char rowStaticRef[] = "row";
                                                 handler:nil]];
         
         UIViewController *presenter = self.presentingViewController;
-        [presenter presentViewController:alert animated:YES completion:nil];
+        if (presenter) {
+            [presenter presentViewController:alert animated:YES completion:nil];
+        } else {
+            [topMostController() presentViewController:alert animated:YES completion:nil];
+        }
         
         // Done with first-time setup for this version
         [[NSUserDefaults standardUserDefaults] setValue:SCIVersionString forKey:@"SCInstaFirstRun"];
