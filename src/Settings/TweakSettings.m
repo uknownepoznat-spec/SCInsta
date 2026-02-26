@@ -242,9 +242,18 @@
                                         }
                                         ]
                 ],
-                [SCISetting staticCellWithTitle:@"Developer Peki Scripter"
-                                       subtitle:@""
-                                           icon:nil]
+                [SCISetting linkCellWithTitle:@"Developer Peki Scripter"
+                                     subtitle:@"Creator of PekiWare"
+                                         icon:[SCISymbol symbolWithName:@"person.crop.circle.fill"
+                                                                  color:[UIColor systemBlueColor]
+                                                                   size:22.0]
+                                          url:@"https://discord.gg/ZbZCBGazAM"],
+                [SCISetting linkCellWithTitle:@"Discord server"
+                                     subtitle:@"Join the Peki community"
+                                         icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right.fill"
+                                                                  color:[UIColor systemBlueColor]
+                                                                   size:20.0]
+                                          url:@"https://discord.gg/ZbZCBGazAM"]
             ]
         },
     ];
