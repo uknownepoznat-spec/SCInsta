@@ -61,36 +61,20 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     // Open settings for first-time users
     double openDelay = [SCIUtils getBoolPref:@"tweak_settings_app_launch"] ? 0.0 : 5.0;
 
-    __weak typeof(self) weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(openDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
+        if (
+            ![[[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] isEqualToString:SCIVersionString]
+            || [SCIUtils getBoolPref:@"tweak_settings_app_launch"]
+        ) {
+            NSLog(@"[PekiWare] First run, initializing");
 
-        BOOL shouldShowOnboarding = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] isEqualToString:SCIVersionString]
-            || [SCIUtils getBoolPref:@"tweak_settings_app_launch"];
-        if (!shouldShowOnboarding) {
-            return;
-        }
+            // Display settings modal on screen
+            NSLog(@"[PekiWare] Displaying PekiWare first-time settings modal");
+            UIViewController *rootController = [[self window] rootViewController];
+            SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
 
-        UIWindow *window = [strongSelf window];
-        UIViewController *rootController = window.rootViewController;
-        if (!window || !rootController || rootController.presentedViewController) {
-            // Ako još nema UI‑a ili već nešto prikazuje, preskoči umjesto da crashne.
-            return;
-        }
-
-        NSLog(@"[PekiWare] First run, initializing");
-        NSLog(@"[PekiWare] Displaying PekiWare first-time settings modal");
-
-        SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
-
-        @try {
             [rootController presentViewController:navigationController animated:YES completion:nil];
-        } @catch (NSException *exception) {
-            NSLog(@"[PekiWare] Failed to present settings VC: %@", exception);
         }
     });
 
@@ -106,7 +90,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 
 - (void)applicationDidBecomeActive:(id)arg1 {
     %orig;
-
+    
     if ([SCIUtils getBoolPref:@"flex_app_start"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }

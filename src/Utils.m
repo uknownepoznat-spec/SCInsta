@@ -258,11 +258,4 @@
     }
 }
 
-+ (void)showPekiWareLaunchHUD {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Temporarily disabled to guarantee stability; safe no-op.
-        NSLog(@"[PekiWare] showPekiWareLaunchHUD called (no-op)");
-    });
-}
-
 @end

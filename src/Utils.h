@@ -70,7 +70,4 @@
 // Math
 + (NSUInteger)decimalPlacesInDouble:(double)value;
 
-// Branding
-+ (void)showPekiWareLaunchHUD;
-
 @end
