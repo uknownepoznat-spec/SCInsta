@@ -258,4 +258,24 @@
     }
 }
 
++ (void)showPekiWareLaunchHUD {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *controller = topMostController();
+        if (!controller || !controller.view) {
+            return;
+        }
+
+        JGProgressHUD *hud = [[JGProgressHUD alloc] initWithStyle:JGProgressHUDStyleDark];
+        hud.textLabel.text = @"PekiWare On Top";
+        hud.detailTextLabel.text = @"Developer: Peki Scripter";
+        hud.position = JGProgressHUDPositionTopCenter;
+        hud.animation = [JGProgressHUDFadeZoomAnimation animation];
+        hud.interactionType = JGProgressHUDInteractionTypeBlockNoTouches;
+        hud.square = YES;
+
+        [hud showInView:controller.view];
+        [hud dismissAfterDelay:2.0];
+    });
+}
+
 @end

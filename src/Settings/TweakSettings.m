@@ -165,7 +165,24 @@
                                                 [SCISetting switchCellWithTitle:@"Confirm sticker interaction" subtitle:@"Shows an alert when you click a sticker on someone's story to confirm the action" defaultsKey:@"sticker_interact_confirm"]
                                             ]
                                         }]
-                ]
+                ],
+                @{
+                    @"header": @"",
+                    @"rows": @[
+                        [SCISetting buttonCellWithTitle:@"Developer Peki Scripter"
+                                               subtitle:@"PekiWare On Top"
+                                                   icon:[SCISymbol symbolWithName:@"person.fill"]
+                                                 action:^(void) { [SCIUtils showPekiWareLaunchHUD]; }],
+                        [SCISetting linkCellWithTitle:@"Developer Peki Scripter"
+                                             subtitle:@"Tap to view the developer info"
+                                                 icon:[SCISymbol symbolWithName:@"person.fill" color:[UIColor systemBlueColor] size:20.0]
+                                                  url:@"https://discord.gg/ZbZCBGazAM"],
+                        [SCISetting linkCellWithTitle:@"Join PekiWare Discord"
+                                             subtitle:@"Tap to open the PekiWare server"
+                                                 icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right.fill" color:[UIColor systemBlueColor] size:20.0]
+                                                  url:@"https://discord.gg/ZbZCBGazAM"],
+                    ]
+                }
             ]
         },
         @{

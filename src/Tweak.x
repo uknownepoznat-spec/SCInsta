@@ -81,6 +81,9 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     NSLog(@"[PekiWare] Cleaning cache...");
     [SCIUtils cleanCache];
 
+    // Show animated branding banner on launch
+    [SCIUtils showPekiWareLaunchHUD];
+
     if ([SCIUtils getBoolPref:@"flex_app_launch"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
