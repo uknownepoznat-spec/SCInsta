@@ -1,8 +1,16 @@
 #import <substrate.h>
+#import <objc/message.h>
 #import "InstagramHeaders.h"
 #import "Tweak.h"
 #import "Utils.h"
 #import "Settings/SCISettingsViewController.h"
+
+// Ensure compiler knows IGProfileViewController is a UIViewController
+@interface IGProfileViewController : UIViewController
+- (void)sci_addPekiLocalVerificationBadgeIfNeeded;
+- (BOOL)sci_isViewingOwnProfile;
+- (void)sci_updateCustomFollowerCountIfNeeded;
+@end
 
 ///////////////////////////////////////////////////////////
 
@@ -41,7 +49,10 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"nav_icon_ordering": @"default",
         @"swipe_nav_tabs": @"default",
         @"enable_notes_customization": @(YES),
-        @"custom_note_themes": @(YES)
+        @"custom_note_themes": @(YES),
+        @"peki_local_verification": @(NO),
+        @"peki_custom_follower_count": @(0),
+        @"peki_enable_custom_followers": @(NO)
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
     
@@ -676,4 +687,183 @@ static BOOL showingVerticalUFIConfirm = NO;
 
     return %orig;
 }
+%end
+
+/////////////////////////////////////////////////////////////////////////////
+
+// Local-only blue verification badge on own profile
+%hook IGProfileViewController
+
+- (void)viewDidAppear:(BOOL)animated {
+    %orig;
+
+    [self sci_addPekiLocalVerificationBadgeIfNeeded];
+    [self sci_updateCustomFollowerCountIfNeeded];
+}
+
+%new - (BOOL)sci_isViewingOwnProfile {
+    id user = nil;
+
+    @try {
+        if ([self respondsToSelector:@selector(user)]) {
+            user = [self performSelector:@selector(user)];
+        } else {
+            user = [self valueForKey:@"user"];
+        }
+    } @catch (NSException *exception) {
+        user = nil;
+    }
+
+    if (!user) return NO;
+
+    BOOL isSelf = NO;
+
+    if ([user respondsToSelector:@selector(isCurrentUser)]) {
+        BOOL (*func)(id, SEL) = (BOOL (*)(id, SEL))objc_msgSend;
+        isSelf = func(user, @selector(isCurrentUser));
+    } else if ([user respondsToSelector:@selector(isLoggedInUser)]) {
+        BOOL (*func)(id, SEL) = (BOOL (*)(id, SEL))objc_msgSend;
+        isSelf = func(user, @selector(isLoggedInUser));
+    } else if ([user respondsToSelector:@selector(isSelf)]) {
+        BOOL (*func)(id, SEL) = (BOOL (*)(id, SEL))objc_msgSend;
+        isSelf = func(user, @selector(isSelf));
+    }
+
+    return isSelf;
+}
+
+%new - (void)sci_addPekiLocalVerificationBadgeIfNeeded {
+    if (![self sci_isViewingOwnProfile]) {
+        return;
+    }
+
+    // Feature toggle
+    if (![SCIUtils getBoolPref:@"peki_local_verification"]) {
+        return;
+    }
+
+    // Avoid recreating if already set
+    if ([self.navigationItem.titleView isKindOfClass:[UIView class]] &&
+        [self.navigationItem.titleView viewWithTag:987321] != nil) {
+        return;
+    }
+
+    // Prefer actual username from IGUser, fall back to controller title
+    NSString *titleText = nil;
+    @try {
+        id user = nil;
+        if ([self respondsToSelector:@selector(user)]) {
+            user = [self performSelector:@selector(user)];
+        } else {
+            user = [self valueForKey:@"user"];
+        }
+
+        if (user && [user respondsToSelector:@selector(username)]) {
+            titleText = [user valueForKey:@"username"];
+        }
+    } @catch (NSException *exception) {
+        // Ignore and fall back to self.title
+    }
+
+    if (titleText.length == 0) {
+        titleText = self.title ?: @"";
+    }
+
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = titleText;
+    titleLabel.textColor = [UIColor labelColor];
+    titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
+    [titleLabel sizeToFit];
+
+    UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:14.0
+                                                                                          weight:UIImageSymbolWeightSemibold];
+    UIImage *badgeImage = [UIImage systemImageNamed:@"checkmark.seal.fill" withConfiguration:config];
+
+    UIImageView *badgeView = [[UIImageView alloc] initWithImage:badgeImage];
+    badgeView.tintColor = [UIColor systemBlueColor];
+    badgeView.tag = 987321;
+    [badgeView sizeToFit];
+
+    CGFloat spacing = 4.0;
+    CGFloat width = titleLabel.bounds.size.width + spacing + badgeView.bounds.size.width;
+    CGFloat height = MAX(titleLabel.bounds.size.height, badgeView.bounds.size.height);
+
+    UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
+
+    CGRect titleFrame = titleLabel.frame;
+    titleFrame.origin.x = 0.0;
+    titleFrame.origin.y = (height - titleFrame.size.height) / 2.0;
+    titleLabel.frame = titleFrame;
+
+    CGRect badgeFrame = badgeView.frame;
+    badgeFrame.origin.x = CGRectGetMaxX(titleFrame) + spacing;
+    badgeFrame.origin.y = (height - badgeFrame.size.height) / 2.0;
+    badgeView.frame = badgeFrame;
+
+    [container addSubview:titleLabel];
+    [container addSubview:badgeView];
+
+    self.navigationItem.titleView = container;
+}
+
+%new - (void)sci_updateCustomFollowerCountIfNeeded {
+    if (![self sci_isViewingOwnProfile]) {
+        return;
+    }
+
+    // Feature toggle
+    if (![SCIUtils getBoolPref:@"peki_enable_custom_followers"]) {
+        return;
+    }
+
+    NSInteger customCount = [SCIUtils getIntegerPref:@"peki_custom_follower_count"];
+    if (customCount <= 0) {
+        return;
+    }
+
+    // Find follower count labels by traversing the view hierarchy
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self findAndUpdateFollowerLabels:customCount];
+    });
+}
+
+%new - (void)findAndUpdateFollowerLabels:(NSInteger)count {
+    // Try to find follower count labels in the profile view
+    UIView *profileView = self.view;
+    
+    // Look for common label patterns that might contain follower count
+    for (UIView *subview in profileView.subviews) {
+        [self searchAndUpdateLabelsInView:subview targetCount:count];
+    }
+}
+
+%new - (void)searchAndUpdateLabelsInView:(UIView *)view targetCount:(NSInteger)count {
+    // Recursively search for UILabels that might contain follower counts
+    if ([view isKindOfClass:[UILabel class]]) {
+        UILabel *label = (UILabel *)view;
+        NSString *text = label.text;
+        
+        // Look for patterns like "123 followers", "123K followers", etc.
+        if ([text containsString:@"followers"] || [text containsString:@"follower"]) {
+            NSString *formattedCount = [self formatFollowerCount:count];
+            label.text = [NSString stringWithFormat:@"%@ followers", formattedCount];
+        }
+    }
+    
+    // Search subviews recursively
+    for (UIView *subview in view.subviews) {
+        [self searchAndUpdateLabelsInView:subview targetCount:count];
+    }
+}
+
+%new - (NSString *)formatFollowerCount:(NSInteger)count {
+    if (count >= 1000000) {
+        return [NSString stringWithFormat:@"%.1fM", count / 1000000.0];
+    } else if (count >= 1000) {
+        return [NSString stringWithFormat:@"%.1fK", count / 1000.0];
+    } else {
+        return [NSString stringWithFormat:@"%ld", (long)count];
+    }
+}
+
 %end

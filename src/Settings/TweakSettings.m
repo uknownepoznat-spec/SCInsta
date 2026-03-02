@@ -201,6 +201,9 @@
                                             @"header": @"PekiWare",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the PekiWare settings when the app launches" defaultsKey:@"tweak_settings_app_launch"],
+                                                [SCISetting switchCellWithTitle:@"Local blue verification" subtitle:@"Shows a blue verification badge next to your username (only visible to you)" defaultsKey:@"peki_local_verification"],
+                                                [SCISetting stepperCellWithTitle:@"Custom follower count" subtitle:@"Set your visible follower count to %@" defaultsKey:@"peki_custom_follower_count" min:0 max:999999999 step:1 label:@"followers" singularLabel:@"follower"],
+                                                [SCISetting switchCellWithTitle:@"Enable custom follower count" subtitle:@"Show custom follower count on your profile (only visible to you)" defaultsKey:@"peki_enable_custom_followers"],
                                                 [SCISetting buttonCellWithTitle:@"Reset onboarding completion state"
                                                                            subtitle:@""
                                                                                icon:nil

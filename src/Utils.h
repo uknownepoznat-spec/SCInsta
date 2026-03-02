@@ -25,6 +25,7 @@
 
 + (BOOL)getBoolPref:(NSString *)key;
 + (double)getDoublePref:(NSString *)key;
++ (NSInteger)getIntegerPref:(NSString *)key;
 + (NSString *)getStringPref:(NSString *)key;
 
 + (void)cleanCache;

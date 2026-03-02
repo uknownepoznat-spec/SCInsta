@@ -12,6 +12,11 @@
 
     return [[NSUserDefaults standardUserDefaults] doubleForKey:key];
 }
++ (NSInteger)getIntegerPref:(NSString *)key {
+    if (![key length] || [[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) return 0;
+
+    return [[NSUserDefaults standardUserDefaults] integerForKey:key];
+}
 + (NSString *)getStringPref:(NSString *)key {
     if (![key length] || [[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) return @"";
 
