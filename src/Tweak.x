@@ -15,13 +15,6 @@
 - (NSString *)formatFollowerCount:(NSInteger)count;
 @end
 
-// Interface for profile header view hook
-@interface IGProfileHeaderViewController : UIViewController
-- (void)updateFollowerCountInSubviews:(NSInteger)count;
-- (void)findAndUpdateFollowerLabels:(UIView *)view targetCount:(NSInteger)count;
-- (NSString *)formatFollowerCount:(NSInteger)count;
-@end
-
 ///////////////////////////////////////////////////////////
 
 // Screenshot handlers
@@ -704,6 +697,12 @@ static BOOL showingVerticalUFIConfirm = NO;
 // Local-only blue verification badge on own profile
 %hook IGProfileViewController
 
+- (void)viewDidLoad {
+    %orig;
+    
+    NSLog(@"[PekiWare] IGProfileViewController viewDidLoad called");
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     %orig;
 
@@ -753,14 +752,20 @@ static BOOL showingVerticalUFIConfirm = NO;
 }
 
 %new - (void)sci_addPekiLocalVerificationBadgeIfNeeded {
+    NSLog(@"[PekiWare] sci_addPekiLocalVerificationBadgeIfNeeded called");
+    
     if (![self sci_isViewingOwnProfile]) {
+        NSLog(@"[PekiWare] Not viewing own profile, skipping verification badge");
         return;
     }
 
     // Feature toggle
     if (![SCIUtils getBoolPref:@"peki_local_verification"]) {
+        NSLog(@"[PekiWare] Local verification disabled, skipping badge");
         return;
     }
+
+    NSLog(@"[PekiWare] Adding verification badge...");
 
     // Avoid recreating if already set
     if ([self.navigationItem.titleView isKindOfClass:[UIView class]] &&
@@ -827,22 +832,30 @@ static BOOL showingVerticalUFIConfirm = NO;
 }
 
 %new - (void)sci_updateCustomFollowerCountIfNeeded {
+    NSLog(@"[PekiWare] sci_updateCustomFollowerCountIfNeeded called");
+    
     if (![self sci_isViewingOwnProfile]) {
+        NSLog(@"[PekiWare] Not viewing own profile, skipping follower count");
         return;
     }
 
     // Feature toggle
     if (![SCIUtils getBoolPref:@"peki_enable_custom_followers"]) {
+        NSLog(@"[PekiWare] Custom follower count disabled");
         return;
     }
 
     NSInteger customCount = [SCIUtils getIntegerPref:@"peki_custom_follower_count"];
+    NSLog(@"[PekiWare] Custom follower count: %ld", (long)customCount);
+    
     if (customCount <= 0) {
+        NSLog(@"[PekiWare] Custom follower count is 0 or less, skipping");
         return;
     }
 
     // Find follower count labels by traversing the view hierarchy
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"[PekiWare] Searching for follower labels...");
         [self findAndUpdateFollowerLabels:customCount];
     });
 }
@@ -873,61 +886,6 @@ static BOOL showingVerticalUFIConfirm = NO;
     // Search subviews recursively
     for (UIView *subview in view.subviews) {
         [self searchAndUpdateLabelsInView:subview targetCount:count];
-    }
-}
-
-%new - (NSString *)formatFollowerCount:(NSInteger)count {
-    if (count >= 1000000) {
-        return [NSString stringWithFormat:@"%.1fM", count / 1000000.0];
-    } else if (count >= 1000) {
-        return [NSString stringWithFormat:@"%.1fK", count / 1000.0];
-    } else {
-        return [NSString stringWithFormat:@"%ld", (long)count];
-    }
-}
-
-%end
-
-// Hook for profile header view to better access follower count
-%hook IGProfileHeaderViewController
-- (void)viewDidAppear:(BOOL)animated {
-    %orig;
-    
-    // Apply custom follower count if enabled
-    if ([SCIUtils getBoolPref:@"peki_enable_custom_followers"]) {
-        NSInteger customCount = [SCIUtils getIntegerPref:@"peki_custom_follower_count"];
-        if (customCount > 0) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self updateFollowerCountInSubviews:customCount];
-            });
-        }
-    }
-}
-
-%new - (void)updateFollowerCountInSubviews:(NSInteger)count {
-    UIView *mainView = self.view;
-    if (!mainView) return;
-    
-    [self findAndUpdateFollowerLabels:mainView targetCount:count];
-}
-
-%new - (void)findAndUpdateFollowerLabels:(UIView *)view targetCount:(NSInteger)count {
-    // Look for UILabels that might contain follower count
-    if ([view isKindOfClass:[UILabel class]]) {
-        UILabel *label = (UILabel *)view;
-        NSString *text = label.text;
-        
-        // Look for follower count patterns
-        if ([text containsString:@"followers"] || [text containsString:@"follower"] || 
-            [text containsString:@"pratioca"] || [text containsString:@"pratioca"]) {
-            NSString *formattedCount = [self formatFollowerCount:count];
-            label.text = [NSString stringWithFormat:@"%@ followers", formattedCount];
-        }
-    }
-    
-    // Search subviews recursively
-    for (UIView *subview in view.subviews) {
-        [self findAndUpdateFollowerLabels:subview targetCount:count];
     }
 }
 
