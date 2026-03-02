@@ -10,6 +10,9 @@
 - (void)sci_addPekiLocalVerificationBadgeIfNeeded;
 - (BOOL)sci_isViewingOwnProfile;
 - (void)sci_updateCustomFollowerCountIfNeeded;
+- (void)findAndUpdateFollowerLabels:(NSInteger)count;
+- (void)searchAndUpdateLabelsInView:(UIView *)view targetCount:(NSInteger)count;
+- (NSString *)formatFollowerCount:(NSInteger)count;
 @end
 
 ///////////////////////////////////////////////////////////
