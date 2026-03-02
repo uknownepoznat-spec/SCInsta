@@ -178,6 +178,26 @@ static char rowStaticRef[] = "row";
             break;
         }
             
+        case SCITableCellTextField: {
+            UITextField *textField = [UITextField new];
+            textField.placeholder = row.placeholder;
+            textField.text = [[NSUserDefaults standardUserDefaults] stringForKey:row.defaultsKey] ?: @"";
+            textField.borderStyle = UITextBorderStyleRoundedRect;
+            textField.textAlignment = NSTextAlignmentRight;
+            textField.keyboardType = UIKeyboardTypeNumberPad;
+            
+            // Store row reference for the text field
+            objc_setAssociatedObject(textField, rowStaticRef, row, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            
+            [textField addTarget:self action:@selector(textFieldChanged:) forControlEvents:UIControlEventEditingChanged];
+            textField.tag = indexPath.row;
+            
+            cell.accessoryView = textField;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            break;
+        }
+            
         case SCITableCellButton: {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
@@ -271,9 +291,22 @@ static char rowStaticRef[] = "row";
     SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
     [[NSUserDefaults standardUserDefaults] setDouble:sender.value forKey:row.defaultsKey];
     
-    NSLog(@"Stepper changed: %f", sender.value);
+    // Update cell to reflect new value
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:sender.tag inSection:0]];
+    if (cell && cell.contentView.subviews.count > 0) {
+        UIListContentConfiguration *config = (UIListContentConfiguration *)cell.contentConfiguration;
+        if (row.subtitle.length) {
+            config.secondaryText = [self formatString:row.subtitle withValue:sender.value label:row.label singularLabel:row.singularLabel];
+        }
+    }
+}
+
+- (void)textFieldChanged:(UITextField *)sender {
+    SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
     
-    [self reloadCellForView:sender];
+    if (row) {
+        [[NSUserDefaults standardUserDefaults] setObject:sender.text forKey:row.defaultsKey];
+    }
 }
 
 - (void)menuChanged:(UICommand *)command {

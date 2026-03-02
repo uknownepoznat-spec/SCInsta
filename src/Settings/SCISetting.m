@@ -130,6 +130,23 @@
     return setting;
 }
 
+#pragma mark + textFieldCellWithTitle
+
++ (instancetype)textFieldCellWithTitle:(NSString *)title
+                           subtitle:(NSString *)subtitle
+                        defaultsKey:(NSString *)defaultsKey
+                        placeholder:(NSString *)placeholder
+{
+    SCISetting *setting = [[self alloc] initWithType:SCITableCellTextField];
+    
+    setting.title = title;
+    setting.subtitle = subtitle;
+    setting.defaultsKey = defaultsKey;
+    setting.placeholder = placeholder;
+    
+    return setting;
+}
+
 #pragma mark + buttonCellWithTitle
 
 + (instancetype)buttonCellWithTitle:(NSString *)title
