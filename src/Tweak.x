@@ -754,13 +754,18 @@ static BOOL showingVerticalUFIConfirm = NO;
 %new - (void)sci_addPekiLocalVerificationBadgeIfNeeded {
     NSLog(@"[PekiWare] sci_addPekiLocalVerificationBadgeIfNeeded called");
     
-    if (![self sci_isViewingOwnProfile]) {
+    BOOL isOwnProfile = [self sci_isViewingOwnProfile];
+    NSLog(@"[PekiWare] Is viewing own profile: %@", isOwnProfile ? @"YES" : @"NO");
+    
+    if (!isOwnProfile) {
         NSLog(@"[PekiWare] Not viewing own profile, skipping verification badge");
         return;
     }
 
-    // Feature toggle
-    if (![SCIUtils getBoolPref:@"peki_local_verification"]) {
+    BOOL verificationEnabled = [SCIUtils getBoolPref:@"peki_local_verification"];
+    NSLog(@"[PekiWare] Local verification enabled: %@", verificationEnabled ? @"YES" : @"NO");
+    
+    if (!verificationEnabled) {
         NSLog(@"[PekiWare] Local verification disabled, skipping badge");
         return;
     }
@@ -834,13 +839,18 @@ static BOOL showingVerticalUFIConfirm = NO;
 %new - (void)sci_updateCustomFollowerCountIfNeeded {
     NSLog(@"[PekiWare] sci_updateCustomFollowerCountIfNeeded called");
     
-    if (![self sci_isViewingOwnProfile]) {
+    BOOL isOwnProfile = [self sci_isViewingOwnProfile];
+    NSLog(@"[PekiWare] Is viewing own profile: %@", isOwnProfile ? @"YES" : @"NO");
+    
+    if (!isOwnProfile) {
         NSLog(@"[PekiWare] Not viewing own profile, skipping follower count");
         return;
     }
 
-    // Feature toggle
-    if (![SCIUtils getBoolPref:@"peki_enable_custom_followers"]) {
+    BOOL followersEnabled = [SCIUtils getBoolPref:@"peki_enable_custom_followers"];
+    NSLog(@"[PekiWare] Custom follower count enabled: %@", followersEnabled ? @"YES" : @"NO");
+    
+    if (!followersEnabled) {
         NSLog(@"[PekiWare] Custom follower count disabled");
         return;
     }
