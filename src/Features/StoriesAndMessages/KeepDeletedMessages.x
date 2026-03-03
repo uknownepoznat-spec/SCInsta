@@ -224,51 +224,51 @@ static void initDeletedMessagesStorage() {
 
 %end
 
-// Hook for any message removal operations
-%hook IGDirectMessage
-- (void)markAsDeleted {
-    if ([SCIUtils getBoolPref:@"keep_deleted_message"]) {
-        NSLog(@"[PekiWare] Preventing message mark as deleted");
-        
-        // Save message before marking as deleted
-        @try {
-            if (![_deletedMessageIds containsObject:[self valueForKey:@"messageId"]]) {
-                [_deletedMessages addObject:self];
-                [_deletedMessageIds addObject:[self valueForKey:@"messageId"]];
-                NSLog(@"[PekiWare] Saved message from markAsDeleted: %@", [self valueForKey:@"text"] ?: @"[Media/Other]");
-            }
-        } @catch (NSException *exception) {
-            NSLog(@"[PekiWare] Error saving message from markAsDeleted: %@", exception.reason);
-        }
-        
-        // Don't call %orig - prevent marking as deleted
-        return;
-    }
-    %orig;
-}
+// Hook for any message removal operations - REMOVED due to forward declaration issue
+// %hook IGDirectMessage
+// - (void)markAsDeleted {
+//     if ([SCIUtils getBoolPref:@"keep_deleted_message"]) {
+//         NSLog(@"[PekiWare] Preventing message mark as deleted");
+//         
+//         // Save message before marking as deleted
+//         @try {
+//             if (![_deletedMessageIds containsObject:[self valueForKey:@"messageId"]]) {
+//                 [_deletedMessages addObject:self];
+//                 [_deletedMessageIds addObject:[self valueForKey:@"messageId"]];
+//                 NSLog(@"[PekiWare] Saved message from markAsDeleted: %@", [self valueForKey:@"text"] ?: @"[Media/Other]");
+//             }
+//         } @catch (NSException *exception) {
+//             NSLog(@"[PekiWare] Error saving message from markAsDeleted: %@", exception.reason);
+//         }
+//         
+//         // Don't call %orig - prevent marking as deleted
+//         return;
+//     }
+//     %orig;
+// }
 
-- (void)setIsDeleted:(BOOL)deleted {
-    if ([SCIUtils getBoolPref:@"keep_deleted_message"] && deleted) {
-        NSLog(@"[PekiWare] Preventing message set as deleted");
-        
-        // Save message before setting as deleted
-        @try {
-            if (![_deletedMessageIds containsObject:[self valueForKey:@"messageId"]]) {
-                [_deletedMessages addObject:self];
-                [_deletedMessageIds addObject:[self valueForKey:@"messageId"]];
-                NSLog(@"[PekiWare] Saved message from setIsDeleted: %@", [self valueForKey:@"text"] ?: @"[Media/Other]");
-            }
-        } @catch (NSException *exception) {
-            NSLog(@"[PekiWare] Error saving message from setIsDeleted: %@", exception.reason);
-        }
-        
-        // Don't call %orig - prevent setting as deleted
-        return;
-    }
-    %orig;
-}
+// - (void)setIsDeleted:(BOOL)deleted {
+//     if ([SCIUtils getBoolPref:@"keep_deleted_message"] && deleted) {
+//         NSLog(@"[PekiWare] Preventing message set as deleted");
+//         
+//         // Save message before setting as deleted
+//         @try {
+//             if (![_deletedMessageIds containsObject:[self valueForKey:@"messageId"]]) {
+//                 [_deletedMessages addObject:self];
+//                 [_deletedMessageIds addObject:[self valueForKey:@"messageId"]];
+//                 NSLog(@"[PekiWare] Saved message from setIsDeleted: %@", [self valueForKey:@"text"] ?: @"[Media/Other]");
+//             }
+//         } @catch (NSException *exception) {
+//             NSLog(@"[PekiWare] Error saving message from setIsDeleted: %@", exception.reason);
+//         }
+//         
+//         // Don't call %orig - prevent setting as deleted
+//         return;
+//     }
+//     %orig;
+// }
 
-%end
+// %end
 
 // Legacy hooks for older Instagram versions
 %hook IGDirectRealtimeIrisThreadDelta
