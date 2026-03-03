@@ -10,6 +10,14 @@ __attribute__((constructor))
 static void initDeletedMessagesStorage() {
     _deletedMessages = [[NSMutableArray alloc] init];
     _deletedMessageIds = [[NSMutableArray alloc] init];
+    NSLog(@"[PekiWare] KeepDeletedMessages initialized - storage ready");
+}
+
+// Test log on app launch
+__attribute__((constructor))
+static void testKeepDeletedMessages() {
+    BOOL isEnabled = [SCIUtils getBoolPref:@"keep_deleted_message"];
+    NSLog(@"[PekiWare] KeepDeletedMessages setting: %@", isEnabled ? @"ENABLED" : @"DISABLED");
 }
 
 // Hook for Direct Message deletion - iOS 26 compatible
