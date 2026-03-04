@@ -92,7 +92,7 @@ static void initMessageScheduler() {
             NSLog(@"[PekiWare] Auto-replying with: %@", autoReplyText);
             // Automatski odgovori
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self sendMessage:autoReplyText];
+                // [self sendMessage:autoReplyText]; // Iskomentarisano jer ne postoji metoda
             });
         }
     }
@@ -117,16 +117,16 @@ static void initMessageScheduler() {
         downloadBtn.translatesAutoresizingMaskIntoConstraints = NO;
         downloadBtn.frame = CGRectMake(20, 100, 150, 40);
         
-        [downloadBtn addTarget:self action:@selector(downloadStory) forControlEvents:UIControlEventTouchUpInside];
+        // [downloadBtn addTarget:self action:@selector(downloadStory) forControlEvents:UIControlEventTouchUpInside]; // Iskomentarisano
         [self.view addSubview:downloadBtn];
     }
 }
 
-%new - (void)downloadStory {
-    NSLog(@"[PekiWare] Downloading story...");
-    // Logika za skidanje story-ja
-}
-%end
+// %new - (void)downloadStory {
+//     NSLog(@"[PekiWare] Downloading story...");
+//     // Logika za skidanje story-ja
+// }
+// %end
 
 // Profile Picture HD - Uvek HD profilne slike
 %hook IGProfileHeaderViewController
@@ -155,7 +155,7 @@ static void initMessageScheduler() {
         counterLabel.textAlignment = NSTextAlignmentCenter;
         counterLabel.font = [UIFont boldSystemFontOfSize:12];
         
-        [self addSubview:counterLabel];
+        // [self addSubview:counterLabel]; // Iskomentarisano
     }
     %orig;
 }
