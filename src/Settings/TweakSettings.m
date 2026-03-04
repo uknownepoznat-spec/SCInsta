@@ -267,7 +267,6 @@
             ]
         }
     ];
-}
 
 #pragma mark - Title
 
