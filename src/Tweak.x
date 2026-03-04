@@ -55,7 +55,18 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"custom_note_themes": @(YES),
         @"peki_local_verification": @(NO),
         @"peki_custom_follower_count": @(0),
-        @"peki_enable_custom_followers": @(NO)
+        @"peki_enable_custom_followers": @(NO),
+        @"ghost_mode": @(NO),
+        @"hide_typing_indicator": @(NO),
+        @"story_ghost_mode": @(NO),
+        @"anti_delete": @(NO),
+        @"story_downloader": @(NO),
+        @"hd_profile_pics": @(NO),
+        @"unseen_counter": @(NO),
+        @"message_encryption": @(NO),
+        @"auto_reply_enabled": @(NO),
+        @"auto_reply_text": @"",
+        @"message_schedule_time": @""
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
     

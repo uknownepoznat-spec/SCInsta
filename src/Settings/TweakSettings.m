@@ -212,6 +212,22 @@
                                             ]
                                         },
                                         @{
+                                            @"header": @"Advanced",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Ghost Mode" subtitle:@"Appear offline and inactive to everyone" defaultsKey:@"ghost_mode"],
+                                                [SCISetting switchCellWithTitle:@"Hide typing indicator" subtitle:@"Others won't see when you're typing" defaultsKey:@"hide_typing_indicator"],
+                                                [SCISetting switchCellWithTitle:@"Story Ghost Mode" subtitle:@"View stories without being seen" defaultsKey:@"story_ghost_mode"],
+                                                [SCISetting switchCellWithTitle:@"Anti-Delete" subtitle:@"Protect your messages from being deleted by others" defaultsKey:@"anti_delete"],
+                                                [SCISetting switchCellWithTitle:@"Story Downloader" subtitle:@"Download any story with one tap" defaultsKey:@"story_downloader"],
+                                                [SCISetting switchCellWithTitle:@"HD Profile Pictures" subtitle:@"Always load profile pictures in HD quality" defaultsKey:@"hd_profile_pics"],
+                                                [SCISetting switchCellWithTitle:@"Unseen Stories Counter" subtitle:@"Show count of unseen stories" defaultsKey:@"unseen_counter"],
+                                                [SCISetting switchCellWithTitle:@"Message Encryption" subtitle:@"Add encryption tag to messages" defaultsKey:@"message_encryption"],
+                                                [SCISetting textFieldCellWithTitle:@"Auto Reply Text" subtitle:@"Text for automatic replies" defaultsKey:@"auto_reply_text" placeholder:@"Enter auto reply..."],
+                                                [SCISetting switchCellWithTitle:@"Enable Auto Reply" subtitle:@"Automatically reply to messages" defaultsKey:@"auto_reply_enabled"],
+                                                [SCISetting textFieldCellWithTitle:@"Message Schedule" subtitle:@"Schedule messages (HH:MM format)" defaultsKey:@"message_schedule_time" placeholder:@"14:30"]
+                                            ]
+                                        },
+                                        @{
                                             @"header": @"Instagram",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
