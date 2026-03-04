@@ -70,11 +70,11 @@ static void initMessageScheduler() {
 }
 
 %hook IGDirectComposer
-- (void)sendMessage:(id)message {
+- (void)sendMessageWithText:(id)text {
     NSString *scheduleTime = [SCIUtils getStringPref:@"message_schedule_time"];
     if (scheduleTime && ![scheduleTime isEqualToString:@""]) {
         NSLog(@"[PekiWare] Scheduling message for: %@", scheduleTime);
-        [_scheduledMessages setObject:message forKey:scheduleTime];
+        [_scheduledMessages setObject:text forKey:scheduleTime];
         return;
     }
     %orig;
