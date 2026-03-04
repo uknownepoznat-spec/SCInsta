@@ -121,12 +121,7 @@ static void initMessageScheduler() {
         [self.view addSubview:downloadBtn];
     }
 }
-
-// %new - (void)downloadStory {
-//     NSLog(@"[PekiWare] Downloading story...");
-//     // Logika za skidanje story-ja
-// }
-// %end
+%end
 
 // Profile Picture HD - Uvek HD profilne slike
 %hook IGProfileHeaderViewController
