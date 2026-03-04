@@ -4,19 +4,35 @@
 // Ghost Mode - Postoji ali nevidljiv
 %hook IGUser
 - (BOOL)isActive {
-    if ([SCIUtils getBoolPref:@"ghost_mode"]) {
+    BOOL ghostMode = [SCIUtils getBoolPref:@"ghost_mode"];
+    BOOL original = %orig;
+    NSLog(@"[PekiWare] Ghost Mode: %@, Original isActive: %@", ghostMode ? @"ON" : @"OFF", original ? @"YES" : @"NO");
+    
+    if (ghostMode) {
         NSLog(@"[PekiWare] Ghost Mode - User appears inactive");
         return NO;
     }
-    return %orig;
+    return original;
 }
 
 - (BOOL)isOnline {
-    if ([SCIUtils getBoolPref:@"ghost_mode"]) {
+    BOOL ghostMode = [SCIUtils getBoolPref:@"ghost_mode"];
+    BOOL original = %orig;
+    NSLog(@"[PekiWare] Ghost Mode: %@, Original isOnline: %@", ghostMode ? @"ON" : @"OFF", original ? @"YES" : @"NO");
+    
+    if (ghostMode) {
         NSLog(@"[PekiWare] Ghost Mode - User appears offline");
         return NO;
     }
-    return %orig;
+    return original;
+}
+
+// Force refresh activity status when Ghost Mode changes
+%new - (void)refreshActivityStatus {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        // Force Instagram to refresh user status
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"IGUserActivityStatusChanged" object:self];
+    });
 }
 %end
 

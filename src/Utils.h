@@ -51,6 +51,11 @@
 + (NSURL *)getVideoUrl:(IGVideo *)video;
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media;
 
+// Download
++ (void)downloadMediaFromURL:(id)url withFilename:(NSString *)filename;
++ (void)showSuccessHUD:(NSString *)message;
++ (void)showErrorHUD:(NSString *)message;
+
 // View Controllers
 + (UIViewController *)viewControllerForView:(UIView *)view;
 + (UIViewController *)viewControllerForAncestralView:(UIView *)view;

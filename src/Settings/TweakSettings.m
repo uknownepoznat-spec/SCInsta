@@ -211,6 +211,22 @@
                                                 ],
                                             ]
                                         },
+                                        [SCISetting navigationCellWithTitle:@"Extra Settings"
+                                           subtitle:@"PekiWare custom features"
+                                               icon:[SCISymbol symbolWithName:@"star.circle"]
+                                        navSections:@[@{
+                                            @"header": @"PekiWare Custom",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Local blue verification" subtitle:@"Show blue verification badge on your profile" defaultsKey:@"peki_local_verification"],
+                                                [SCISetting textFieldCellWithTitle:@"Custom follower count" subtitle:@"Enter custom follower count" defaultsKey:@"peki_custom_follower_count" placeholder:@"Enter number..."],
+                                                [SCISetting switchCellWithTitle:@"Enable custom follower count" subtitle:@"Show custom follower count on your profile (only visible to you)" defaultsKey:@"peki_enable_custom_followers"],
+                                                [SCISetting buttonCellWithTitle:@"Reset onboarding completion state"
+                                                                           subtitle:@""
+                                                                               icon:nil
+                                                                             action:^(void) { [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SCInstaFirstRun"]; [SCIUtils showRestartConfirmation];}
+                                                ],
+                                            ]
+                                        },
                                         @{
                                             @"header": @"Advanced",
                                             @"rows": @[
