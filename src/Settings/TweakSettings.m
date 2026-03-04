@@ -247,36 +247,10 @@
                                             @"header": @"Instagram",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
-                                            ]
-                                        },
-                                        @{
-                                            @"header": @"_ Example",
-                                            @"rows": @[
-                                                [SCISetting staticCellWithTitle:@"Static Cell" subtitle:@"" icon:[SCISymbol symbolWithName:@"tablecells"]],
-                                                [SCISetting switchCellWithTitle:@"Switch Cell" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell"],
-                                                [SCISetting switchCellWithTitle:@"Switch Cell (Restart)" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell_restart" requiresRestart:YES],
-                                                [SCISetting stepperCellWithTitle:@"Stepper cell" subtitle:@"I have %@%@" defaultsKey:@"test_stepper_cell" min:-10 max:1000 step:5.5 label:@"$" singularLabel:@"$"],
-                                                [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using icon" icon:[SCISymbol symbolWithName:@"link" color:[UIColor systemTealColor] size:20.0] url:@"https://google.com"],
-                                                [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using image" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://google.com"],
-                                                [SCISetting buttonCellWithTitle:@"Button Cell"
-                                                                           subtitle:@""
-                                                                               icon:[SCISymbol symbolWithName:@"oval.inset.filled"]
-                                                                             action:^(void) { [SCIUtils showConfirmation:^(void){}]; }
-                                                ],
-                                                [SCISetting menuCellWithTitle:@"Menu Cell" subtitle:@"Change the value on the right" menu:[self menus][@"test"]],
-                                                [SCISetting navigationCellWithTitle:@"Navigation Cell"
-                                                                           subtitle:@""
-                                                                               icon:[SCISymbol symbolWithName:@"rectangle.stack"]
-                                                                        navSections:@[@{
-                                                                            @"header": @"",
-                                                                            @"rows": @[]
-                                                                        }]
-                                                ]
-                                            ],
-                                            @"footer": @"_ Example"
-                                        }
-                                        ]
-                ],
+                                        }]
+                                }
+                            ]
+                        },
                 [SCISetting linkCellWithTitle:@"Developer Peki Scripter"
                                      subtitle:@"Creator of PekiWare"
                                          icon:[SCISymbol symbolWithName:@"person.crop.circle.fill"
@@ -284,16 +258,15 @@
                                                                    size:22.0]
                                           url:@"https://discord.gg/ZbZCBGazAM"],
                 [SCISetting linkCellWithTitle:@"Discord server"
-                                     subtitle:@"Join the Peki community"
+                                     subtitle:@"Join to Peki community"
                                          icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right.fill"
                                                                   color:[UIColor systemBlueColor]
                                                                    size:20.0]
                                           url:@"https://discord.gg/ZbZCBGazAM"]
             ]
-        },
+        }
     ];
 }
-
 
 #pragma mark - Title
 
