@@ -50,7 +50,7 @@
                                                 [SCISetting switchCellWithTitle:@"No suggested chats" subtitle:@"Hides the suggested broadcast channels in direct messages" defaultsKey:@"no_suggested_chats"],
                                                 [SCISetting switchCellWithTitle:@"No suggested users" subtitle:@"Hides all suggested users for you to follow, outside your feed" defaultsKey:@"no_suggested_users"]
                                             ]
-                                        }]
+                                        ]
                 ],
                 [SCISetting navigationCellWithTitle:@"Feed"
                                            subtitle:@""
@@ -65,7 +65,7 @@
                                                 [SCISetting switchCellWithTitle:@"No suggested reels" subtitle:@"Hides suggested reels to watch" defaultsKey:@"no_suggested_reels"],
                                                 [SCISetting switchCellWithTitle:@"No suggested threads posts" subtitle:@"Hides suggested threads posts" defaultsKey:@"no_suggested_threads"]
                                             ]
-                                        }]
+                                        ]
                 ],
                 [SCISetting navigationCellWithTitle:@"Reels"
                                            subtitle:@""
@@ -84,7 +84,7 @@
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Disable scrolling reels" subtitle:@"Prevents reels from being scrolled to the next video" defaultsKey:@"disable_scrolling_reels" requiresRestart:YES]
                                             ]
-                                        }]
+                                        ]
                 ],
                 [SCISetting navigationCellWithTitle:@"Saving"
                                            subtitle:@""
@@ -104,7 +104,7 @@
                                                 [SCISetting stepperCellWithTitle:@"Finger count for long-press" subtitle:@"Downloads with %@ %@" defaultsKey:@"dw_finger_count" min:1 max:5 step:1 label:@"fingers" singularLabel:@"finger"],
                                                 [SCISetting stepperCellWithTitle:@"Long-press hold time" subtitle:@"Press finger(s) for %@ %@" defaultsKey:@"dw_finger_duration" min:0 max:10 step:0.25 label:@"sec" singularLabel:@"sec"]
                                             ]
-                                        }]
+                                        ]
                 ],
                 [SCISetting navigationCellWithTitle:@"Stories and messages"
                                            subtitle:@""
@@ -119,7 +119,7 @@
                                                 [SCISetting switchCellWithTitle:@"Disable story seen receipt" subtitle:@"Hides the notification for others when you view their story" defaultsKey:@"no_seen_receipt"],
                                                 [SCISetting switchCellWithTitle:@"Disable view-once limitations" subtitle:@"Makes view-once messages behave like normal visual messages (loopable/pauseable)" defaultsKey:@"disable_view_once_limitations"]
                                             ]
-                                        }]
+                                        ]
                 ],
                 [SCISetting navigationCellWithTitle:@"Navigation"
                                            subtitle:@""
@@ -139,7 +139,7 @@
                                                 [SCISetting switchCellWithTitle:@"Hide reels tab" subtitle:@"Hides the reels tab on the bottom navigation bar" defaultsKey:@"hide_reels_tab" requiresRestart:YES],
                                                 [SCISetting switchCellWithTitle:@"Hide create tab" subtitle:@"Hides the create tab on the bottom navigation bar" defaultsKey:@"hide_create_tab" requiresRestart:YES]
                                             ]
-                                        }]
+                                        ]
                 ],
                 [SCISetting navigationCellWithTitle:@"Confirm actions"
                                            subtitle:@""
@@ -164,7 +164,7 @@
                                                 [SCISetting switchCellWithTitle:@"Confirm changing theme" subtitle:@"Shows an alert when you change a chat theme to confirm" defaultsKey:@"change_direct_theme_confirm"],
                                                 [SCISetting switchCellWithTitle:@"Confirm sticker interaction" subtitle:@"Shows an alert when you click a sticker on someone's story to confirm the action" defaultsKey:@"sticker_interact_confirm"]
                                             ]
-                                        }]
+                                        ]
                 ]
             ]
         },
@@ -247,7 +247,8 @@
                                             @"header": @"Instagram",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
-                                        }]
+                                            ]
+                                        }
                                 }
                             ]
                         },
