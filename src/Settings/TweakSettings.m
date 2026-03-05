@@ -196,7 +196,7 @@
                                         }
                                 }
                             ]
-                        },
+                        }
                 [SCISetting linkCellWithTitle:@"Developer Peki Scripter"
                                      subtitle:@"Creator of PekiWare"
                                          icon:[SCISymbol symbolWithName:@"person.crop.circle.fill"
