@@ -181,6 +181,26 @@
     return setting;
 }
 
+# pragma mark + menuWithTitle
+
++ (UIMenu *)menuWithTitle:(NSString *)title items:(NSArray *)items {
+    NSMutableArray<UIMenuElement *> *children = [NSMutableArray array];
+    
+    for (NSDictionary *item in items) {
+        UICommand *command = [UICommand commandWithTitle:item[@"title"]
+                                               image:nil
+                                              action:@selector(menuChanged:)
+                                        propertyList:@{
+                                            @"defaultsKey": @"test_menu_cell",
+                                            @"value": item[@"value"]
+                                        }
+        ];
+        [children addObject:command];
+    }
+    
+    return [UIMenu menuWithTitle:title image:nil identifier:nil options:0 children:children];
+}
+
 #pragma mark + navigationCellWithTitle
 
 + (instancetype)navigationCellWithTitle:(NSString *)title
