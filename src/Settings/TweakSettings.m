@@ -224,7 +224,7 @@
 
 + (NSDictionary *)menus {
     return @{
-        @"reels_tap_control": [self menuWithItems:@[
+        @"reels_tap_control": [self menuWithTitle:@"Tap Controls" items:@[
             @{@"title": @"Default", @"value": @"default"},
             @{@"title": @"Play/Pause", @"value": @"play_pause"},
             @{@"title": @"Mute/Unmute", @"value": @"mute_unmute"},
@@ -233,7 +233,7 @@
             @{@"title": @"Share", @"value": @"share"},
             @{@"title": @"None", @"value": @"none"}
         ]],
-        @"nav_icon_ordering": [self menuWithItems:@[
+        @"nav_icon_ordering": [self menuWithTitle:@"Icon order" items:@[
             @{@"title": @"Default", @"value": @"default"},
             @{@"title": @"Create first", @"value": @"create_first"},
             @{@"title": @"Reels first", @"value": @"reels_first"},
@@ -242,7 +242,7 @@
             @{@"title": @"No reels", @"value": @"no_reels"},
             @{@"title": @"No shop", @"value": @"no_shop"}
         ]],
-        @"swipe_nav_tabs": [self menuWithItems:@[
+        @"swipe_nav_tabs": [self menuWithTitle:@"Swipe between tabs" items:@[
             @{@"title": @"Default", @"value": @"default"},
             @{@"title": @"Enabled", @"value": @"enabled"},
             @{@"title": @"Disabled", @"value": @"disabled"}
