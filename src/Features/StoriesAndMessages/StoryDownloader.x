@@ -1,5 +1,5 @@
-#import "InstagramHeaders.h"
-#import "Utils.h"
+#import "../../InstagramHeaders.h"
+#import "../../Utils.h"
 
 // Story Downloader - Simple implementation to avoid compilation errors
 %hook IGStoryViewer
