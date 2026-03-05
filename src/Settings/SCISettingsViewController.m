@@ -1,5 +1,4 @@
 #import "SCISettingsViewController.h"
-#import <QuartzCore/QuartzCore.h>
 
 static char rowStaticRef[] = "row";
 
@@ -8,8 +7,6 @@ static char rowStaticRef[] = "row";
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, copy) NSArray *sections;
 @property (nonatomic) BOOL reduceMargin;
-@property (nonatomic, strong) CADisplayLink *colorDisplayLink;
-@property (nonatomic) CFTimeInterval colorAnimationStartTime;
 
 @end
 
@@ -61,10 +58,6 @@ static char rowStaticRef[] = "row";
     self.tableView.delegate = self;
 
     [self.view addSubview:self.tableView];
-
-    self.colorAnimationStartTime = CACurrentMediaTime();
-    self.colorDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateRainbowColors)];
-    [self.colorDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -85,10 +78,6 @@ static char rowStaticRef[] = "row";
         // Done with first-time setup for this version
         [[NSUserDefaults standardUserDefaults] setValue:SCIVersionString forKey:@"SCInstaFirstRun"];
     }
-}
-
-- (void)dealloc {
-    [self.colorDisplayLink invalidate];
 }
 
 #pragma mark - UITableViewDataSource
@@ -175,26 +164,6 @@ static char rowStaticRef[] = "row";
             
             cell.accessoryView = stepper;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            break;
-        }
-            
-        case SCITableCellTextField: {
-            UITextField *textField = [UITextField new];
-            textField.placeholder = row.placeholder;
-            textField.text = [[NSUserDefaults standardUserDefaults] stringForKey:row.defaultsKey] ?: @"";
-            textField.borderStyle = UITextBorderStyleRoundedRect;
-            textField.textAlignment = NSTextAlignmentRight;
-            textField.keyboardType = UIKeyboardTypeNumberPad;
-            
-            // Store row reference for the text field
-            objc_setAssociatedObject(textField, rowStaticRef, row, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            
-            [textField addTarget:self action:@selector(textFieldChanged:) forControlEvents:UIControlEventEditingChanged];
-            textField.tag = indexPath.row;
-            
-            cell.accessoryView = textField;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            
             break;
         }
             
@@ -291,22 +260,9 @@ static char rowStaticRef[] = "row";
     SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
     [[NSUserDefaults standardUserDefaults] setDouble:sender.value forKey:row.defaultsKey];
     
-    // Update cell to reflect new value
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:sender.tag inSection:0]];
-    if (cell && cell.contentView.subviews.count > 0) {
-        UIListContentConfiguration *config = (UIListContentConfiguration *)cell.contentConfiguration;
-        if (row.subtitle.length) {
-            config.secondaryText = [self formatString:row.subtitle withValue:sender.value label:row.label singularLabel:row.singularLabel];
-        }
-    }
-}
-
-- (void)textFieldChanged:(UITextField *)sender {
-    SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
+    NSLog(@"Stepper changed: %f", sender.value);
     
-    if (row) {
-        [[NSUserDefaults standardUserDefaults] setObject:sender.text forKey:row.defaultsKey];
-    }
+    [self reloadCellForView:sender];
 }
 
 - (void)menuChanged:(UICommand *)command {
@@ -324,45 +280,6 @@ static char rowStaticRef[] = "row";
 }
 
 #pragma mark - Helper
-
-- (UIColor *)rainbowColorForOffset:(CGFloat)offset {
-    CFTimeInterval elapsed = CACurrentMediaTime() - self.colorAnimationStartTime;
-    CGFloat speed = 0.15;
-    CGFloat hue = fmod(elapsed * speed + offset, 1.0);
-    return [UIColor colorWithHue:hue saturation:0.95 brightness:1.0 alpha:1.0];
-}
-
-- (void)updateRainbowColors {
-    UIColor *titleColor = [self rainbowColorForOffset:0.0];
-    NSMutableDictionary *attributes = [[self.navigationController.navigationBar titleTextAttributes] mutableCopy] ?: [NSMutableDictionary dictionary];
-    attributes[NSForegroundColorAttributeName] = titleColor;
-    self.navigationController.navigationBar.titleTextAttributes = attributes;
-
-    NSArray<UITableViewCell *> *visibleCells = self.tableView.visibleCells;
-    [visibleCells enumerateObjectsUsingBlock:^(UITableViewCell *cell, NSUInteger idx, BOOL *stop) {
-        CGFloat offset = (CGFloat)idx * 0.08f;
-        UIColor *textColor = [self rainbowColorForOffset:offset];
-        UIListContentConfiguration *config = (UIListContentConfiguration *)cell.contentConfiguration;
-        config.textProperties.color = textColor;
-        config.secondaryTextProperties.color = [self rainbowColorForOffset:offset + 0.15f];
-        cell.contentConfiguration = config;
-    }];
-
-    NSInteger sectionsCount = [self.tableView numberOfSections];
-    for (NSInteger section = 0; section < sectionsCount; section++) {
-        UIView *headerView = [self.tableView headerViewForSection:section];
-        if ([headerView isKindOfClass:[UITableViewHeaderFooterView class]]) {
-            UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)headerView;
-            header.textLabel.textColor = [self rainbowColorForOffset:(CGFloat)section * 0.12f];
-        }
-
-        UIView *footerView = [self.tableView footerViewForSection:section];
-        if ([footerView isKindOfClass:[UITableViewHeaderFooterView class]]) {
-            UITableViewHeaderFooterView *footer = (UITableViewHeaderFooterView *)footerView;
-            footer.textLabel.textColor = [self rainbowColorForOffset:(CGFloat)section * 0.12f + 0.2f];
-        }
-    }
-}
 
 - (NSString *)formatString:(NSString *)template withValue:(double)value label:(NSString *)label singularLabel:(NSString *)singularLabel {
     // Singular or plural labels

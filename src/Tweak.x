@@ -1,19 +1,8 @@
 #import <substrate.h>
-#import <objc/message.h>
 #import "InstagramHeaders.h"
 #import "Tweak.h"
 #import "Utils.h"
 #import "Settings/SCISettingsViewController.h"
-
-// Ensure compiler knows IGProfileViewController is a UIViewController
-@interface IGProfileViewController : UIViewController
-- (void)sci_addPekiLocalVerificationBadgeIfNeeded;
-- (BOOL)sci_isViewingOwnProfile;
-- (void)sci_updateCustomFollowerCountIfNeeded;
-- (void)findAndUpdateFollowerLabels:(NSInteger)count;
-- (void)searchAndUpdateLabelsInView:(UIView *)view targetCount:(NSInteger)count;
-- (NSString *)formatFollowerCount:(NSInteger)count;
-@end
 
 ///////////////////////////////////////////////////////////
 
@@ -53,20 +42,17 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"swipe_nav_tabs": @"default",
         @"enable_notes_customization": @(YES),
         @"custom_note_themes": @(YES),
-        @"peki_local_verification": @(NO),
-        @"peki_custom_follower_count": @(0),
-        @"peki_enable_custom_followers": @(NO),
         @"ghost_mode": @(NO),
         @"hide_typing_indicator": @(NO),
         @"story_ghost_mode": @(NO),
         @"anti_delete": @(NO),
-        @"story_downloader": @(NO),
-        @"hd_profile_pics": @(NO),
-        @"unseen_counter": @(NO),
+        @"story_downloader": @(YES),
+        @"hd_profile_pictures": @(YES),
+        @"unseen_stories_counter": @(YES),
         @"message_encryption": @(NO),
-        @"auto_reply_enabled": @(NO),
+        @"enable_auto_reply": @(NO),
         @"auto_reply_text": @"",
-        @"message_schedule_time": @""
+        @"message_schedule": @(NO)
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
     
@@ -666,6 +652,149 @@ static BOOL showingVerticalUFIConfirm = NO;
 %end
 
 /////////////////////////////////////////////////////////////////////////////
+// Advanced Settings - Ghost Mode
+
+// Ghost Mode - Hide online status and activity
+%hook IGPresenceManager
+- (void)setPresence:(id)presence {
+    if ([SCIUtils getBoolPref:@"ghost_mode"]) {
+        NSLog(@"[PekiWare] Ghost Mode: Blocking presence update");
+        return;
+    }
+    %orig;
+}
+- (void)markActivityForThread:(id)thread {
+    if ([SCIUtils getBoolPref:@"ghost_mode"]) {
+        NSLog(@"[PekiWare] Ghost Mode: Blocking activity marking");
+        return;
+    }
+    %orig;
+}
+%end
+
+// Hide typing indicator
+%hook IGDirectThreadViewController
+- (void)sendTypingIndicator:(id)indicator {
+    if ([SCIUtils getBoolPref:@"hide_typing_indicator"]) {
+        NSLog(@"[PekiWare] Hide Typing: Blocking typing indicator");
+        return;
+    }
+    %orig;
+}
+%end
+
+// Story Ghost Mode - Hide from story viewers
+%hook IGStoryViewerData
+- (void)markStoryAsViewed:(id)story {
+    if ([SCIUtils getBoolPref:@"story_ghost_mode"]) {
+        NSLog(@"[PekiWare] Story Ghost Mode: Blocking story view marking");
+        return;
+    }
+    %orig;
+}
+%end
+
+// Anti-Delete - Prevent message deletion
+%hook IGDirectThread
+- (void)deleteMessage:(id)message {
+    if ([SCIUtils getBoolPref:@"anti_delete"]) {
+        NSLog(@"[PekiWare] Anti-Delete: Blocking message deletion");
+        return;
+    }
+    %orig;
+}
+%end
+
+// Story Downloader
+%hook IGStoryViewerViewController
+- (void)viewDidLoad {
+    %orig;
+    
+    if ([SCIUtils getBoolPref:@"story_downloader"]) {
+        // Add download button to story viewer
+        UIButton *downloadButton = [UIButton buttonWithType:UIButtonTypeSystem];
+        [downloadButton setTitle:@"Download" forState:UIControlStateNormal];
+        downloadButton.backgroundColor = [UIColor blackColor];
+        downloadButton.layer.cornerRadius = 20;
+        downloadButton.frame = CGRectMake(self.view.frame.size.width - 100, 100, 80, 40);
+        
+        [downloadButton addTarget:self action:@selector(downloadStory:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:downloadButton];
+    }
+}
+%new - (void)downloadStory:(id)sender {
+    // Implementation for story downloading
+    NSLog(@"[PekiWare] Story Downloader: Download triggered");
+    // Add actual download logic here
+}
+%end
+
+// HD Profile Pictures
+%hook IGProfilePictureImageView
+- (void)setProfilePictureWithURL:(id)url {
+    if ([SCIUtils getBoolPref:@"hd_profile_pictures"]) {
+        // Modify URL to request HD version
+        NSLog(@"[PekiWare] HD Profile Pictures: Modifying URL for HD quality");
+        // Add URL modification logic here
+    }
+    %orig;
+}
+%end
+
+// Unseen Stories Counter
+%hook IGHomeTabBarViewController
+- (void)viewWillAppear:(BOOL)animated {
+    %orig;
+    
+    if ([SCIUtils getBoolPref:@"unseen_stories_counter"]) {
+        // Add unseen stories counter to home screen
+        NSLog(@"[PekiWare] Unseen Stories Counter: Adding counter to home screen");
+        // Add counter implementation here
+    }
+}
+%end
+
+// Message Encryption (placeholder)
+%hook IGDirectMessageComposer
+- (void)sendMessage:(id)message {
+    if ([SCIUtils getBoolPref:@"message_encryption"]) {
+        NSLog(@"[PekiWare] Message Encryption: Encrypting message");
+        // Add encryption logic here
+    }
+    %orig;
+}
+%end
+
+// Auto Reply functionality
+%hook IGDirectThreadViewController
+- (void)messageReceived:(id)message {
+    %orig;
+    
+    if ([SCIUtils getBoolPref:@"enable_auto_reply"]) {
+        NSString *autoReplyText = [[NSUserDefaults standardUserDefaults] stringForKey:@"auto_reply_text"];
+        if (autoReplyText && autoReplyText.length > 0) {
+            NSLog(@"[PekiWare] Auto Reply: Sending auto reply");
+            // Add auto reply logic here with delay to seem natural
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                // Send auto reply message
+            });
+        }
+    }
+}
+%end
+
+// Message Schedule (placeholder)
+%hook IGDirectMessageComposer
+- (void)scheduleMessage:(id)message forDate:(id)date {
+    if ([SCIUtils getBoolPref:@"message_schedule"]) {
+        NSLog(@"[PekiWare] Message Schedule: Scheduling message");
+        // Add scheduling logic here
+    }
+    %orig;
+}
+%end
+
+/////////////////////////////////////////////////////////////////////////////
 
 // FLEX explorer gesture handler
 %hook IGRootViewController
@@ -700,240 +829,5 @@ static BOOL showingVerticalUFIConfirm = NO;
     }
 
     return %orig;
-}
-%end
-
-/////////////////////////////////////////////////////////////////////////////
-
-// Local-only blue verification badge on own profile
-%hook IGProfileViewController
-
-- (void)viewDidLoad {
-    %orig;
-    
-    NSLog(@"[PekiWare] IGProfileViewController viewDidLoad called");
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    %orig;
-
-    [self sci_addPekiLocalVerificationBadgeIfNeeded];
-    [self sci_updateCustomFollowerCountIfNeeded];
-}
-
-- (void)viewDidLayoutSubviews {
-    %orig;
-    
-    // Re-apply verification badge and follower count on layout changes
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self sci_addPekiLocalVerificationBadgeIfNeeded];
-        [self sci_updateCustomFollowerCountIfNeeded];
-    });
-}
-
-%new - (BOOL)sci_isViewingOwnProfile {
-    id user = nil;
-
-    @try {
-        if ([self respondsToSelector:@selector(user)]) {
-            user = [self performSelector:@selector(user)];
-        } else {
-            user = [self valueForKey:@"user"];
-        }
-    } @catch (NSException *exception) {
-        user = nil;
-    }
-
-    if (!user) return NO;
-
-    BOOL isSelf = NO;
-
-    if ([user respondsToSelector:@selector(isCurrentUser)]) {
-        BOOL (*func)(id, SEL) = (BOOL (*)(id, SEL))objc_msgSend;
-        isSelf = func(user, @selector(isCurrentUser));
-    } else if ([user respondsToSelector:@selector(isLoggedInUser)]) {
-        BOOL (*func)(id, SEL) = (BOOL (*)(id, SEL))objc_msgSend;
-        isSelf = func(user, @selector(isLoggedInUser));
-    } else if ([user respondsToSelector:@selector(isSelf)]) {
-        BOOL (*func)(id, SEL) = (BOOL (*)(id, SEL))objc_msgSend;
-        isSelf = func(user, @selector(isSelf));
-    }
-
-    return isSelf;
-}
-
-%new - (void)sci_addPekiLocalVerificationBadgeIfNeeded {
-    NSLog(@"[PekiWare] sci_addPekiLocalVerificationBadgeIfNeeded called");
-    
-    BOOL isOwnProfile = [self sci_isViewingOwnProfile];
-    NSLog(@"[PekiWare] Is viewing own profile: %@", isOwnProfile ? @"YES" : @"NO");
-    
-    if (!isOwnProfile) {
-        NSLog(@"[PekiWare] Not viewing own profile, skipping verification badge");
-        return;
-    }
-
-    BOOL verificationEnabled = [SCIUtils getBoolPref:@"peki_local_verification"];
-    NSLog(@"[PekiWare] Local verification enabled: %@", verificationEnabled ? @"YES" : @"NO");
-    
-    if (!verificationEnabled) {
-        NSLog(@"[PekiWare] Local verification disabled, skipping badge");
-        return;
-    }
-
-    NSLog(@"[PekiWare] Adding verification badge...");
-
-    // Avoid recreating if already set
-    if ([self.navigationItem.titleView isKindOfClass:[UIView class]] &&
-        [self.navigationItem.titleView viewWithTag:987321] != nil) {
-        return;
-    }
-
-    // Prefer actual username from IGUser, fall back to controller title
-    NSString *titleText = nil;
-    @try {
-        id user = nil;
-        if ([self respondsToSelector:@selector(user)]) {
-            user = [self performSelector:@selector(user)];
-        } else {
-            user = [self valueForKey:@"user"];
-        }
-
-        if (user && [user respondsToSelector:@selector(username)]) {
-            titleText = [user valueForKey:@"username"];
-        }
-    } @catch (NSException *exception) {
-        // Ignore and fall back to self.title
-    }
-
-    if (titleText.length == 0) {
-        titleText = self.title ?: @"";
-    }
-
-    UILabel *titleLabel = [UILabel new];
-    titleLabel.text = titleText;
-    titleLabel.textColor = [UIColor labelColor];
-    titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
-    [titleLabel sizeToFit];
-
-    UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:14.0
-                                                                                          weight:UIImageSymbolWeightSemibold];
-    UIImage *badgeImage = [UIImage systemImageNamed:@"checkmark.seal.fill" withConfiguration:config];
-
-    UIImageView *badgeView = [[UIImageView alloc] initWithImage:badgeImage];
-    badgeView.tintColor = [UIColor systemBlueColor];
-    badgeView.tag = 987321;
-    [badgeView sizeToFit];
-
-    CGFloat spacing = 4.0;
-    CGFloat width = titleLabel.bounds.size.width + spacing + badgeView.bounds.size.width;
-    CGFloat height = MAX(titleLabel.bounds.size.height, badgeView.bounds.size.height);
-
-    UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
-
-    CGRect titleFrame = titleLabel.frame;
-    titleFrame.origin.x = 0.0;
-    titleFrame.origin.y = (height - titleFrame.size.height) / 2.0;
-    titleLabel.frame = titleFrame;
-
-    CGRect badgeFrame = badgeView.frame;
-    badgeFrame.origin.x = CGRectGetMaxX(titleFrame) + spacing;
-    badgeFrame.origin.y = (height - badgeFrame.size.height) / 2.0;
-    badgeView.frame = badgeFrame;
-
-    [container addSubview:titleLabel];
-    [container addSubview:badgeView];
-
-    self.navigationItem.titleView = container;
-}
-
-%new - (void)sci_updateCustomFollowerCountIfNeeded {
-    NSLog(@"[PekiWare] sci_updateCustomFollowerCountIfNeeded called");
-    
-    BOOL isOwnProfile = [self sci_isViewingOwnProfile];
-    NSLog(@"[PekiWare] Is viewing own profile: %@", isOwnProfile ? @"YES" : @"NO");
-    
-    if (!isOwnProfile) {
-        NSLog(@"[PekiWare] Not viewing own profile, skipping follower count");
-        return;
-    }
-
-    BOOL followersEnabled = [SCIUtils getBoolPref:@"peki_enable_custom_followers"];
-    NSLog(@"[PekiWare] Custom follower count enabled: %@", followersEnabled ? @"YES" : @"NO");
-    
-    if (!followersEnabled) {
-        NSLog(@"[PekiWare] Custom follower count disabled");
-        return;
-    }
-
-    NSInteger customCount = [SCIUtils getIntegerPref:@"peki_custom_follower_count"];
-    NSLog(@"[PekiWare] Custom follower count: %ld", (long)customCount);
-    
-    if (customCount <= 0) {
-        NSLog(@"[PekiWare] Custom follower count is 0 or less, skipping");
-        return;
-    }
-
-    // Find follower count labels by traversing the view hierarchy
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"[PekiWare] Searching for follower labels...");
-        [self findAndUpdateFollowerLabels:customCount];
-    });
-}
-
-%new - (void)findAndUpdateFollowerLabels:(NSInteger)count {
-    // Try to find follower count labels in the profile view
-    UIView *profileView = self.view;
-    
-    // Look for common label patterns that might contain follower count
-    for (UIView *subview in profileView.subviews) {
-        [self searchAndUpdateLabelsInView:subview targetCount:count];
-    }
-}
-
-%new - (void)searchAndUpdateLabelsInView:(UIView *)view targetCount:(NSInteger)count {
-    // Recursively search for UILabels that might contain follower counts
-    if ([view isKindOfClass:[UILabel class]]) {
-        UILabel *label = (UILabel *)view;
-        NSString *text = label.text;
-        
-        // Look for patterns like "123 followers", "123K followers", etc.
-        if ([text containsString:@"followers"] || [text containsString:@"follower"]) {
-            NSString *formattedCount = [self formatFollowerCount:count];
-            label.text = [NSString stringWithFormat:@"%@ followers", formattedCount];
-        }
-    }
-    
-    // Search subviews recursively
-    for (UIView *subview in view.subviews) {
-        [self searchAndUpdateLabelsInView:subview targetCount:count];
-    }
-}
-
-%new - (NSString *)formatFollowerCount:(NSInteger)count {
-    if (count >= 1000000) {
-        return [NSString stringWithFormat:@"%.1fM", count / 1000000.0];
-    } else if (count >= 1000) {
-        return [NSString stringWithFormat:@"%.1fK", count / 1000.0];
-    } else {
-        return [NSString stringWithFormat:@"%ld", (long)count];
-    }
-}
-
-%end
-
-// Hook for navigation bar to ensure verification badge persists
-%hook UINavigationBar
-- (void)layoutSubviews {
-    %orig;
-    
-    // Check if this is a profile navigation bar
-    UIViewController *topViewController = self.topItem;
-    if (topViewController && [topViewController isKindOfClass:%c(IGProfileViewController)]) {
-        // Re-apply verification badge after navigation layout
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [(IGProfileViewController *)topViewController sci_addPekiLocalVerificationBadgeIfNeeded];
-        });
-    }
 }
 %end

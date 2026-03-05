@@ -130,23 +130,6 @@
     return setting;
 }
 
-#pragma mark + textFieldCellWithTitle
-
-+ (instancetype)textFieldCellWithTitle:(NSString *)title
-                           subtitle:(NSString *)subtitle
-                        defaultsKey:(NSString *)defaultsKey
-                        placeholder:(NSString *)placeholder
-{
-    SCISetting *setting = [[self alloc] initWithType:SCITableCellTextField];
-    
-    setting.title = title;
-    setting.subtitle = subtitle;
-    setting.defaultsKey = defaultsKey;
-    setting.placeholder = placeholder;
-    
-    return setting;
-}
-
 #pragma mark + buttonCellWithTitle
 
 + (instancetype)buttonCellWithTitle:(NSString *)title
@@ -179,26 +162,6 @@
     setting.baseMenu = menu;
     
     return setting;
-}
-
-# pragma mark + menuWithTitle
-
-+ (UIMenu *)menuWithTitle:(NSString *)title items:(NSArray *)items {
-    NSMutableArray<UIMenuElement *> *children = [NSMutableArray array];
-    
-    for (NSDictionary *item in items) {
-        UICommand *command = [UICommand commandWithTitle:item[@"title"]
-                                               image:nil
-                                              action:@selector(menuChanged:)
-                                        propertyList:@{
-                                            @"defaultsKey": @"test_menu_cell",
-                                            @"value": item[@"value"]
-                                        }
-        ];
-        [children addObject:command];
-    }
-    
-    return [UIMenu menuWithTitle:title image:nil identifier:nil options:0 children:children];
 }
 
 #pragma mark + navigationCellWithTitle

@@ -12,11 +12,6 @@
 
     return [[NSUserDefaults standardUserDefaults] doubleForKey:key];
 }
-+ (NSInteger)getIntegerPref:(NSString *)key {
-    if (![key length] || [[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) return 0;
-
-    return [[NSUserDefaults standardUserDefaults] integerForKey:key];
-}
 + (NSString *)getStringPref:(NSString *)key {
     if (![key length] || [[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) return @"";
 
@@ -261,61 +256,6 @@
     } else {
         return stringValue.length - (decimalRange.location + decimalRange.length);
     }
-}
-
-// Download
-+ (void)downloadMediaFromURL:(id)url withFilename:(NSString *)filename {
-    @try {
-        if (!url || !filename) {
-            NSLog(@"[PekiWare] Invalid URL or filename");
-            return;
-        }
-        
-        NSURL *downloadURL = [NSURL URLWithString:url];
-        if (!downloadURL) {
-            NSLog(@"[PekiWare] Invalid download URL: %@", url);
-            return;
-        }
-        
-        // Download task
-        NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:downloadURL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            if (error) {
-                NSLog(@"[PekiWare] Download error: %@", error.localizedDescription);
-                return;
-            }
-            
-            if (data) {
-                // Save to photo library
-                UIImage *image = [UIImage imageWithData:data];
-                if (image) {
-                    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
-                    NSLog(@"[PekiWare] Story saved to photo library");
-                }
-            }
-        }];
-        
-        [task resume];
-    } @catch (NSException *exception) {
-        NSLog(@"[PekiWare] Download exception: %@", exception.reason);
-    }
-}
-
-+ (void)showSuccessHUD:(NSString *)message {
-    JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleExtraLight];
-    HUD.textLabel.text = message;
-    HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
-    HUD.position = JGProgressHUDPositionCenter;
-    [HUD showInView:topMostController().view];
-    [HUD dismissAfterDelay:2.0];
-}
-
-+ (void)showErrorHUD:(NSString *)message {
-    JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleExtraLight];
-    HUD.textLabel.text = message;
-    HUD.indicatorView = [[JGProgressHUDErrorIndicatorView alloc] init];
-    HUD.position = JGProgressHUDPositionCenter;
-    [HUD showInView:topMostController().view];
-    [HUD dismissAfterDelay:2.0];
 }
 
 @end
