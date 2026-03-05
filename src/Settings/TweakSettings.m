@@ -194,9 +194,9 @@
                                                 [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
                                             ]
                                         }
-                                }
+                                }]
                             ]
-                        },
+                        }
                 [SCISetting linkCellWithTitle:@"Developer Peki Scripter"
                                      subtitle:@"Creator of PekiWare"
                                          icon:[SCISymbol symbolWithName:@"person.crop.circle.fill"
