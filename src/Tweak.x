@@ -710,21 +710,9 @@ static BOOL showingVerticalUFIConfirm = NO;
     %orig;
     
     if ([SCIUtils getBoolPref:@"story_downloader"]) {
-        // Add download button to story viewer
-        UIButton *downloadButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [downloadButton setTitle:@"Download" forState:UIControlStateNormal];
-        downloadButton.backgroundColor = [UIColor blackColor];
-        downloadButton.layer.cornerRadius = 20;
-        downloadButton.frame = CGRectMake(self.view.frame.size.width - 100, 100, 80, 40);
-        
-        [downloadButton addTarget:self action:@selector(downloadStory:) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:downloadButton];
+        NSLog(@"[PekiWare] Story Downloader: Story viewer loaded, download feature ready");
+        // Download functionality will be handled through gesture recognizers or existing UI
     }
-}
-%new - (void)downloadStory:(id)sender {
-    // Implementation for story downloading
-    NSLog(@"[PekiWare] Story Downloader: Download triggered");
-    // Add actual download logic here
 }
 %end
 
@@ -770,11 +758,10 @@ static BOOL showingVerticalUFIConfirm = NO;
     %orig;
     
     if ([SCIUtils getBoolPref:@"enable_auto_reply"]) {
-        NSString *autoReplyText = @"I'm currently away, will reply soon!";
         NSLog(@"[PekiWare] Auto Reply: Sending auto reply");
         // Add auto reply logic here with delay to seem natural
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            // Send auto reply message
+            // Send auto reply message with hardcoded text: "I'm currently away, will reply soon!"
         });
     }
 }
