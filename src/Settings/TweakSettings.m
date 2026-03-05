@@ -110,7 +110,32 @@
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"rectangle.portrait.on.rectangle.portrait.angled"]
                                         navSections:@[@{
-                                            @"header": @"",
+                                            @"header": @"Privacy & Ghost Mode",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Ghost Mode" subtitle:@"Become invisible to other users - no online status, last seen, or activity indicators" defaultsKey:@"ghost_mode"],
+                                                [SCISetting switchCellWithTitle:@"Hide typing indicator" subtitle:@"Others won't see when you're typing a message" defaultsKey:@"hide_typing_indicator"],
+                                                [SCISetting switchCellWithTitle:@"Story Ghost Mode" subtitle:@"View stories without appearing in viewers list" defaultsKey:@"story_ghost_mode"],
+                                                [SCISetting switchCellWithTitle:@"Anti-Delete" subtitle:@"Prevent others from deleting messages you've sent" defaultsKey:@"anti_delete"]
+                                            ]
+                                        },
+                                        @{
+                                            @"header": @"Media & Downloads",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Story Downloader" subtitle:@"Download stories with a single tap" defaultsKey:@"story_downloader"],
+                                                [SCISetting switchCellWithTitle:@"HD Profile Pictures" subtitle:@"View and download profile pictures in full HD quality" defaultsKey:@"hd_profile_pictures"],
+                                                [SCISetting switchCellWithTitle:@"Unseen Stories Counter" subtitle:@"Show count of unseen stories on the home screen" defaultsKey:@"unseen_stories_counter"]
+                                            ]
+                                        },
+                                        @{
+                                            @"header": @"Messages & Automation",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Message Encryption" subtitle:@"Add an extra layer of encryption to your messages" defaultsKey:@"message_encryption"],
+                                                [SCISetting switchCellWithTitle:@"Enable Auto Reply" subtitle:@"Automatically respond to incoming messages" defaultsKey:@"enable_auto_reply"],
+                                                [SCISetting switchCellWithTitle:@"Message Schedule" subtitle:@"Schedule messages to be sent at specific times" defaultsKey:@"message_schedule"]
+                                            ]
+                                        },
+                                        @{
+                                            @"header": @"Original Features",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Keep deleted messages" subtitle:@"Saves deleted messages in chat conversations" defaultsKey:@"keep_deleted_message"],
                                                 [SCISetting switchCellWithTitle:@"Disable screenshot detection" subtitle:@"Removes the screenshot-prevention features for visual messages in DMs" defaultsKey:@"remove_screenshot_alert"],
@@ -186,36 +211,6 @@
                 //                         }
                 //                         ]
                 // ],
-                [SCISetting navigationCellWithTitle:@"Advanced"
-                                           subtitle:@""
-                                               icon:[SCISymbol symbolWithName:@"gearshape.2"]
-                                        navSections:@[@{
-                                            @"header": @"Privacy & Ghost Mode",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Ghost Mode" subtitle:@"Become invisible to other users - no online status, last seen, or activity indicators" defaultsKey:@"ghost_mode"],
-                                                [SCISetting switchCellWithTitle:@"Hide typing indicator" subtitle:@"Others won't see when you're typing a message" defaultsKey:@"hide_typing_indicator"],
-                                                [SCISetting switchCellWithTitle:@"Story Ghost Mode" subtitle:@"View stories without appearing in viewers list" defaultsKey:@"story_ghost_mode"],
-                                                [SCISetting switchCellWithTitle:@"Anti-Delete" subtitle:@"Prevent others from deleting messages you've sent" defaultsKey:@"anti_delete"]
-                                            ]
-                                        },
-                                        @{
-                                            @"header": @"Media & Downloads",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Story Downloader" subtitle:@"Download stories with a single tap" defaultsKey:@"story_downloader"],
-                                                [SCISetting switchCellWithTitle:@"HD Profile Pictures" subtitle:@"View and download profile pictures in full HD quality" defaultsKey:@"hd_profile_pictures"],
-                                                [SCISetting switchCellWithTitle:@"Unseen Stories Counter" subtitle:@"Show count of unseen stories on the home screen" defaultsKey:@"unseen_stories_counter"]
-                                            ]
-                                        },
-                                        @{
-                                            @"header": @"Messages & Automation",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Message Encryption" subtitle:@"Add an extra layer of encryption to your messages" defaultsKey:@"message_encryption"],
-                                                [SCISetting switchCellWithTitle:@"Enable Auto Reply" subtitle:@"Automatically respond to incoming messages" defaultsKey:@"enable_auto_reply"],
-                                                [SCISetting textCellWithTitle:@"Auto Reply Text" subtitle:@"Custom message for auto replies" defaultsKey:@"auto_reply_text" placeholder:@"Enter auto reply message..."],
-                                                [SCISetting switchCellWithTitle:@"Message Schedule" subtitle:@"Schedule messages to be sent at specific times" defaultsKey:@"message_schedule"]
-                                            ]
-                                        }]
-                ],
                 [SCISetting navigationCellWithTitle:@"Debug"
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"ladybug"]

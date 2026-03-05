@@ -51,7 +51,6 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"unseen_stories_counter": @(YES),
         @"message_encryption": @(NO),
         @"enable_auto_reply": @(NO),
-        @"auto_reply_text": @"",
         @"message_schedule": @(NO)
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
@@ -771,14 +770,12 @@ static BOOL showingVerticalUFIConfirm = NO;
     %orig;
     
     if ([SCIUtils getBoolPref:@"enable_auto_reply"]) {
-        NSString *autoReplyText = [[NSUserDefaults standardUserDefaults] stringForKey:@"auto_reply_text"];
-        if (autoReplyText && autoReplyText.length > 0) {
-            NSLog(@"[PekiWare] Auto Reply: Sending auto reply");
-            // Add auto reply logic here with delay to seem natural
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                // Send auto reply message
-            });
-        }
+        NSString *autoReplyText = @"I'm currently away, will reply soon!";
+        NSLog(@"[PekiWare] Auto Reply: Sending auto reply");
+        // Add auto reply logic here with delay to seem natural
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            // Send auto reply message
+        });
     }
 }
 %end
