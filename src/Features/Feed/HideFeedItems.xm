@@ -116,18 +116,21 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 // Suggested posts/reels
 %hook IGMainFeedListAdapterDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
-    return removeItemsInList(%orig, YES);
+    NSArray *origObjs = %orig;
+    return removeItemsInList(origObjs, YES);
 }
 %end
 %hook IGSundialFeedDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
-    return removeItemsInList(%orig, NO);
+    NSArray *origObjs = %orig;
+    return removeItemsInList(origObjs, NO);
 }
 %end
 %hook IGContextualFeedViewController
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        return removeItemsInList(%orig, NO);
+        NSArray *origObjs = %orig;
+    return removeItemsInList(origObjs, NO);
     }
 
     return %orig;
@@ -136,7 +139,8 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGVideoFeedViewController
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        return removeItemsInList(%orig, NO);
+        NSArray *origObjs = %orig;
+    return removeItemsInList(origObjs, NO);
     }
 
     return %orig;
@@ -145,7 +149,8 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGChainingFeedViewController
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        return removeItemsInList(%orig, NO);
+        NSArray *origObjs = %orig;
+    return removeItemsInList(origObjs, NO);
     }
 
     return %orig;
@@ -240,7 +245,8 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGExploreListKitDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        return removeItemsInList(%orig, NO);
+        NSArray *origObjs = %orig;
+    return removeItemsInList(origObjs, NO);
     }
 
     return %orig;
