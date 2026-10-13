@@ -30,26 +30,39 @@
 
 %hook IGSundialFeedViewController
 - (void)triggerRefreshFromTabTap {
-    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
+    static BOOL confirmingRefresh = NO;
+    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"] && !confirmingRefresh) {
         NSLog(@"[PekiWare] Reel refresh triggered");
-        
-        [SCIUtils showConfirmation:^(void) { %orig; } title:@"Refresh Reels"];
-    } else {
-        return %orig;
+
+        confirmingRefresh = YES;
+        [SCIUtils showConfirmation:^{
+            confirmingRefresh = NO;
+            [self triggerRefreshFromTabTap];
+        } cancelHandler:^{
+            confirmingRefresh = NO;
+        } title:@"Refresh Reels"];
+        return;
     }
+    return %orig;
 }
 - (void)_refreshReelsWithParamsForNetworkRequest:(NSInteger)arg1 userDidPullToRefresh:(BOOL)arg2 {
-    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
+    static BOOL confirmingRefreshParams = NO;
+    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"] && !confirmingRefreshParams) {
         NSLog(@"[PekiWare] Reel refresh triggered");
-        
-        [SCIUtils showConfirmation:^(void) { %orig; }
+
+        confirmingRefreshParams = YES;
+        [SCIUtils showConfirmation:^{
+            confirmingRefreshParams = NO;
+            [self _refreshReelsWithParamsForNetworkRequest:arg1 userDidPullToRefresh:arg2];
+        }
                      cancelHandler:^(void) {
+                         confirmingRefreshParams = NO;
                          IGRefreshControl *_refreshControl = MSHookIvar<IGRefreshControl *>(self, "_refreshControl");
                          [self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
                      }
                              title:@"Refresh Reels"];
-    } else {
-        return %orig(arg1, arg2);
+        return;
     }
+    return %orig(arg1, arg2);
 }
 %end

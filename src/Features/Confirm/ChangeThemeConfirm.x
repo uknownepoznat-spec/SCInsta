@@ -3,33 +3,54 @@
 
 %hook IGDirectThreadThemePickerViewController
 - (void)themeNewPickerSectionController:(id)arg1 didSelectTheme:(id)arg2 atIndex:(NSInteger)arg3 {
-    if ([SCIUtils getBoolPref:@"change_direct_theme_confirm"]) {
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"change_direct_theme_confirm"] && !confirming) {
         NSLog(@"[PekiWare] Confirm change direct theme triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
-    } else {
-        return %orig;
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self themeNewPickerSectionController:arg1 didSelectTheme:arg2 atIndex:arg3];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
     }
+    return %orig;
 }
 - (void)themePickerSectionController:(id)arg1 didSelectThemeId:(id)arg2 {
-    if ([SCIUtils getBoolPref:@"change_direct_theme_confirm"]) {
+    static BOOL confirmingId = NO;
+    if ([SCIUtils getBoolPref:@"change_direct_theme_confirm"] && !confirmingId) {
         NSLog(@"[PekiWare] Confirm change direct theme triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
-    } else {
-        return %orig;
+        confirmingId = YES;
+        [SCIUtils showConfirmation:^{
+            confirmingId = NO;
+            [self themePickerSectionController:arg1 didSelectThemeId:arg2];
+        } cancelHandler:^{
+            confirmingId = NO;
+        }];
+        return;
     }
+    return %orig;
 }
 %end
 
 %hook IGDirectThreadThemeKitSwift.IGDirectThreadThemePreviewController
 - (void)primaryButtonTapped {
-    if ([SCIUtils getBoolPref:@"change_direct_theme_confirm"]) {
+    static BOOL confirmingPrimary = NO;
+    if ([SCIUtils getBoolPref:@"change_direct_theme_confirm"] && !confirmingPrimary) {
         NSLog(@"[PekiWare] Confirm change direct theme triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
-    } else {
-        return %orig;
+        confirmingPrimary = YES;
+        [SCIUtils showConfirmation:^{
+            confirmingPrimary = NO;
+            [self primaryButtonTapped];
+        } cancelHandler:^{
+            confirmingPrimary = NO;
+        }];
+        return;
     }
+    return %orig;
 }
 %end

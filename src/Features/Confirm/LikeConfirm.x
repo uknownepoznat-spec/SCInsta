@@ -3,115 +3,335 @@
 ///////////////////////////////////////////////////////////
 
 // Confirmation handlers
-
-#define CONFIRMPOSTLIKE(orig)                             \
-    if ([SCIUtils getBoolPref:@"like_confirm"]) {           \
-        NSLog(@"[PekiWare] Confirm post like triggered");  \
-                                                          \
-        [SCIUtils showConfirmation:^(void) { orig; }];    \
-    }                                                     \
-    else {                                                \
-        return orig;                                      \
-    }                                                     \
-
-#define CONFIRMREELSLIKE(orig)                            \
-    if ([SCIUtils getBoolPref:@"like_confirm_reels"]) {     \
-        NSLog(@"[PekiWare] Confirm reels like triggered"); \
-                                                          \
-        [SCIUtils showConfirmation:^(void) { orig; }];    \
-    }                                                     \
-    else {                                                \
-        return orig;                                      \
-    }                                                     \
-
-///////////////////////////////////////////////////////////
+// NOTE: Never use %orig inside showConfirmation blocks (breaks on new Theos).
+// Use guard + re-invoke pattern instead.
 
 // Liking posts
 %hook IGUFIButtonBarView
 - (void)_onLikeButtonPressed:(id)arg1 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _onLikeButtonPressed:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 %hook IGFeedPhotoView
 - (void)_onDoubleTap:(id)arg1 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _onDoubleTap:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 %hook IGVideoPlayerOverlayContainerView
 - (void)_handleDoubleTapGesture:(id)arg1 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _handleDoubleTapGesture:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 
 // Liking reels
 %hook IGSundialViewerVideoCell
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
-    CONFIRMREELSLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm reels like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self controlsOverlayControllerDidTapLikeButton:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)controlsOverlayControllerDidLongPressLikeButton:(id)arg1 gestureRecognizer:(id)arg2 {
-    CONFIRMREELSLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm reels like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self controlsOverlayControllerDidLongPressLikeButton:arg1 gestureRecognizer:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
-    CONFIRMREELSLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm reels like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self gestureController:arg1 didObserveDoubleTap:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 %hook IGSundialViewerPhotoCell
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
-    CONFIRMREELSLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm reels like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self controlsOverlayControllerDidTapLikeButton:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
-    CONFIRMREELSLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm reels like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self gestureController:arg1 didObserveDoubleTap:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 %hook IGSundialViewerCarouselCell
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
-    CONFIRMREELSLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm reels like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self controlsOverlayControllerDidTapLikeButton:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
-    CONFIRMREELSLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm reels like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self gestureController:arg1 didObserveDoubleTap:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 
 // Liking comments
 %hook IGCommentCellController
 - (void)commentCell:(id)arg1 didTapLikeButton:(id)arg2 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self commentCell:arg1 didTapLikeButton:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)commentCell:(id)arg1 didTapLikedByButtonForUser:(id)arg2 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self commentCell:arg1 didTapLikedByButtonForUser:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)commentCellDidLongPressOnLikeButton:(id)arg1 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self commentCellDidLongPressOnLikeButton:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)commentCellDidEndLongPressOnLikeButton:(id)arg1 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self commentCellDidEndLongPressOnLikeButton:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)commentCellDidDoubleTap:(id)arg1 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self commentCellDidDoubleTap:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 %hook IGFeedItemPreviewCommentCell
 - (void)_didTapLikeButton {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _didTapLikeButton];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 
 // Liking stories
 %hook IGStoryFullscreenDefaultFooterView
 - (void)_handleLikeTapped {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _handleLikeTapped];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)_likeTapped {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _likeTapped];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)inputView:(id)arg1 didTapLikeButton:(id)arg2 {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self inputView:arg1 didTapLikeButton:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 
 // DM like button (seems to be hidden)
 %hook IGDirectThreadViewController
 - (void)_didTapLikeButton {
-    CONFIRMPOSTLIKE(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm post like triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _didTapLikeButton];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end

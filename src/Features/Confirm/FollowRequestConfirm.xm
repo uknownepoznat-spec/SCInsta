@@ -2,21 +2,35 @@
 
 %hook IGPendingRequestView
 - (void)_onApproveButtonTapped {
-    if ([SCIUtils getBoolPref:@"follow_request_confirm"]) {
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"follow_request_confirm"] && !confirming) {
         NSLog(@"[PekiWare] Confirm follow request triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
-    } else {
-        return %orig;
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _onApproveButtonTapped];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
     }
+    return %orig;
 }
 - (void)_onIgnoreButtonTapped {
-    if ([SCIUtils getBoolPref:@"follow_request_confirm"]) {
+    static BOOL confirmingIgnore = NO;
+    if ([SCIUtils getBoolPref:@"follow_request_confirm"] && !confirmingIgnore) {
         NSLog(@"[PekiWare] Confirm follow request triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
-    } else {
-        return %orig;
+        confirmingIgnore = YES;
+        [SCIUtils showConfirmation:^{
+            confirmingIgnore = NO;
+            [self _onIgnoreButtonTapped];
+        } cancelHandler:^{
+            confirmingIgnore = NO;
+        }];
+        return;
     }
+    return %orig;
 }
 %end

@@ -2,12 +2,19 @@
 
 %hook IGCommentComposer.IGCommentComposerController
 - (void)onSendButtonTap {
-    if ([SCIUtils getBoolPref:@"post_comment_confirm"]) {
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"post_comment_confirm"] && !confirming) {
         NSLog(@"[PekiWare] Confirm post comment triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
-    } else {
-        return %orig;
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self onSendButtonTap];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
     }
+    return %orig;
 }
 %end

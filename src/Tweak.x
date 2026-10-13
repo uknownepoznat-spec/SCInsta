@@ -590,14 +590,20 @@ static BOOL showingVerticalUFIConfirm = NO;
 
 %hook IGFeedItemUFICell
 - (void)UFIButtonBarDidTapOnLike:(id)arg1 {
-    if ([SCIUtils getBoolPref:@"like_confirm"]) {
+    static BOOL confirmingLike = NO;
+    if ([SCIUtils getBoolPref:@"like_confirm"] && !confirmingLike) {
         NSLog(@"[PekiWare] Confirm post like triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
+        confirmingLike = YES;
+        [SCIUtils showConfirmation:^{
+            confirmingLike = NO;
+            [self UFIButtonBarDidTapOnLike:arg1];
+        } cancelHandler:^{
+            confirmingLike = NO;
+        }];
+        return;
     }
-    else {
-        return %orig;
-    }  
+    return %orig;
 }
 
 - (void)UFIButtonBarDidTapOnRepost:(id)arg1 {
@@ -608,8 +614,11 @@ static BOOL showingVerticalUFIConfirm = NO;
 
         showingFeedItemUFIConfirm = YES;
 
-        [SCIUtils showConfirmation:^(void) { %orig; showingFeedItemUFIConfirm = NO; }
-                     cancelHandler:^(void) { showingFeedItemUFIConfirm = NO; }];
+        [SCIUtils showConfirmation:^{
+            showingFeedItemUFIConfirm = NO;
+            [self UFIButtonBarDidTapOnRepost:arg1];
+        } cancelHandler:^(void) { showingFeedItemUFIConfirm = NO; }];
+        return;
     }
     else {
         return %orig;
@@ -647,8 +656,11 @@ static BOOL showingVerticalUFIConfirm = NO;
 
         showingVerticalUFIConfirm = YES;
 
-        [SCIUtils showConfirmation:^(void) { %orig; showingVerticalUFIConfirm = NO; }
-                     cancelHandler:^(void) { showingVerticalUFIConfirm = NO; }];
+        [SCIUtils showConfirmation:^{
+            showingVerticalUFIConfirm = NO;
+            [self _didTapLikeButton:arg1];
+        } cancelHandler:^(void) { showingVerticalUFIConfirm = NO; }];
+        return;
     }
     else {
         return %orig;
@@ -674,8 +686,11 @@ static BOOL showingVerticalUFIConfirm = NO;
 
         showingVerticalUFIConfirm = YES;
 
-        [SCIUtils showConfirmation:^(void) { %orig; showingVerticalUFIConfirm = NO; }
-                     cancelHandler:^(void) { showingVerticalUFIConfirm = NO; }];
+        [SCIUtils showConfirmation:^{
+            showingVerticalUFIConfirm = NO;
+            [self _didTapRepostButton:arg1];
+        } cancelHandler:^(void) { showingVerticalUFIConfirm = NO; }];
+        return;
     }
     else {
         return %orig;

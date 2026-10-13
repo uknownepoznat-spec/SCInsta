@@ -2,18 +2,7 @@
 #import "../../InstagramHeaders.h"
 
 ////////////////////////////////////////////////////////
-
-#define CONFIRMFOLLOW(orig)                            \
-    if ([SCIUtils getBoolPref:@"follow_confirm"]) {             \
-        NSLog(@"[PekiWare] Confirm follow triggered");  \
-                                                       \
-        [SCIUtils showConfirmation:^(void) { orig; }]; \
-    }                                                  \
-    else {                                             \
-        return orig;                                   \
-    }                                                  \
-
-////////////////////////////////////////////////////////
+// NOTE: Never pass %orig through macros or inside blocks.
 
 // Follow button on profile page
 %hook IGFollowController
@@ -23,7 +12,19 @@
 
     // Only show confirm dialog if user is not following
     if (UserFollowStatus == 2) {
-        CONFIRMFOLLOW(%orig);
+        static BOOL confirming = NO;
+        if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
+            NSLog(@"[PekiWare] Confirm follow triggered");
+            confirming = YES;
+            [SCIUtils showConfirmation:^{
+                confirming = NO;
+                [self _didPressFollowButton];
+            } cancelHandler:^{
+                confirming = NO;
+            }];
+            return;
+        }
+        return %orig;
     }
     else {
         return %orig;
@@ -34,43 +35,127 @@
 // Follow button on discover people page
 %hook IGDiscoverPeopleButtonGroupView
 - (void)_onFollowButtonTapped:(id)arg1 {
-    CONFIRMFOLLOW(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm follow triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _onFollowButtonTapped:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 - (void)_onFollowingButtonTapped:(id)arg1 {
-    CONFIRMFOLLOW(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm follow triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _onFollowingButtonTapped:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 
 // Suggested for you (home feed & profile) follow button
 %hook IGHScrollAYMFCell
 - (void)_didTapAYMFActionButton {
-    CONFIRMFOLLOW(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm follow triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _didTapAYMFActionButton];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 %hook IGHScrollAYMFActionButton
 - (void)_didTapTextActionButton {
-    CONFIRMFOLLOW(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm follow triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _didTapTextActionButton];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 
 // Follow button on reels
 %hook IGUnifiedVideoFollowButton
 - (void)_hackilyHandleOurOwnButtonTaps:(id)arg1 event:(id)arg2 {
-    CONFIRMFOLLOW(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm follow triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self _hackilyHandleOurOwnButtonTaps:arg1 event:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 
 // Follow text on profile (when collapsed into top bar) 
 %hook IGProfileViewController
 - (void)navigationItemsControllerDidTapHeaderFollowButton:(id)arg1 {
-    CONFIRMFOLLOW(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm follow triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self navigationItemsControllerDidTapHeaderFollowButton:arg1];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 
 // Follow button on suggested friends (in story section)
 %hook IGStorySectionController
 - (void)followButtonTapped:(id)arg1 cell:(id)arg2 {
-    CONFIRMFOLLOW(%orig);
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
+        NSLog(@"[PekiWare] Confirm follow triggered");
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self followButtonTapped:arg1 cell:arg2];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
+    }
+    return %orig;
 }
 %end
 

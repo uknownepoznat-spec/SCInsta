@@ -3,13 +3,20 @@
 // Legacy hook (for non ai voices interface)
 %hook IGDirectThreadViewController
 - (void)voiceRecordViewController:(id)arg1 didRecordAudioClipWithURL:(id)arg2 waveform:(id)arg3 duration:(CGFloat)arg4 entryPoint:(NSInteger)arg5 {
-    if ([SCIUtils getBoolPref:@"voice_message_confirm"]) {
+    static BOOL confirming = NO;
+    if ([SCIUtils getBoolPref:@"voice_message_confirm"] && !confirming) {
         NSLog(@"[PekiWare] DM audio message confirm triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
-    } else {
-        return %orig;
+        confirming = YES;
+        [SCIUtils showConfirmation:^{
+            confirming = NO;
+            [self voiceRecordViewController:arg1 didRecordAudioClipWithURL:arg2 waveform:arg3 duration:arg4 entryPoint:arg5];
+        } cancelHandler:^{
+            confirming = NO;
+        }];
+        return;
     }
+    return %orig;
 }
 %end
 
@@ -27,12 +34,19 @@
 // Demangled name: IGDirectAIVoiceUIKit.CompactBarContentView
 %hook _TtC20IGDirectAIVoiceUIKitP33_5754F7617E0D924F9A84EFA352BBD29A21CompactBarContentView
 - (void)didTapSend {
-    if ([SCIUtils getBoolPref:@"voice_message_confirm"]) {
+    static BOOL confirmingSend = NO;
+    if ([SCIUtils getBoolPref:@"voice_message_confirm"] && !confirmingSend) {
         NSLog(@"[PekiWare] DM audio message confirm triggered");
 
-        [SCIUtils showConfirmation:^(void) { %orig; }];
-    } else {
-        return %orig;
+        confirmingSend = YES;
+        [SCIUtils showConfirmation:^{
+            confirmingSend = NO;
+            [self didTapSend];
+        } cancelHandler:^{
+            confirmingSend = NO;
+        }];
+        return;
     }
+    return %orig;
 }
 %end
