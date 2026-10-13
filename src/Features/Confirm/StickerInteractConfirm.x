@@ -9,7 +9,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _didTap:arg1 forEvent:arg2];
+            [(id)self _didTap:arg1 forEvent:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];

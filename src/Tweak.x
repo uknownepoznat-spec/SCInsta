@@ -79,7 +79,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 
             // Display settings modal on screen
             NSLog(@"[PekiWare] Displaying PekiWare first-time settings modal");
-            UIViewController *rootController = [[self window] rootViewController];
+            UIViewController *rootController = [[(id)self window] rootViewController];
             SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
 
@@ -597,7 +597,7 @@ static BOOL showingVerticalUFIConfirm = NO;
         confirmingLike = YES;
         [SCIUtils showConfirmation:^{
             confirmingLike = NO;
-            [self UFIButtonBarDidTapOnLike:arg1];
+            [(id)self UFIButtonBarDidTapOnLike:arg1];
         } cancelHandler:^{
             confirmingLike = NO;
         }];
@@ -616,7 +616,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 
         [SCIUtils showConfirmation:^{
             showingFeedItemUFIConfirm = NO;
-            [self UFIButtonBarDidTapOnRepost:arg1];
+            [(id)self UFIButtonBarDidTapOnRepost:arg1];
         } cancelHandler:^(void) { showingFeedItemUFIConfirm = NO; }];
         return;
     }
@@ -629,7 +629,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     if ([SCIUtils getBoolPref:@"repost_confirm"]) {
         NSLog(@"[PekiWare] Confirm repost triggered (long press hack)");
 
-        [self UFIButtonBarDidTapOnRepost:nil];
+        [(id)self UFIButtonBarDidTapOnRepost:nil];
     }
     else {
         return %orig;
@@ -639,7 +639,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     if ([SCIUtils getBoolPref:@"repost_confirm"]) {
         NSLog(@"[PekiWare] Confirm repost triggered (long press hack)");
 
-        [self UFIButtonBarDidTapOnRepost:nil];
+        [(id)self UFIButtonBarDidTapOnRepost:nil];
     }
     else {
         return %orig;
@@ -658,7 +658,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 
         [SCIUtils showConfirmation:^{
             showingVerticalUFIConfirm = NO;
-            [self _didTapLikeButton:arg1];
+            [(id)self _didTapLikeButton:arg1];
         } cancelHandler:^(void) { showingVerticalUFIConfirm = NO; }];
         return;
     }
@@ -671,7 +671,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     if ([SCIUtils getBoolPref:@"like_confirm_reels"]) {
         NSLog(@"[PekiWare] Confirm reels like triggered (long press hack)");
 
-        [self _didTapLikeButton:nil];
+        [(id)self _didTapLikeButton:nil];
     }
     else {
         return %orig;
@@ -688,7 +688,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 
         [SCIUtils showConfirmation:^{
             showingVerticalUFIConfirm = NO;
-            [self _didTapRepostButton:arg1];
+            [(id)self _didTapRepostButton:arg1];
         } cancelHandler:^(void) { showingVerticalUFIConfirm = NO; }];
         return;
     }
@@ -701,7 +701,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     if ([SCIUtils getBoolPref:@"repost_confirm"]) {
         NSLog(@"[PekiWare] Confirm repost triggered (long press hack)");
 
-        [self _didTapRepostButton:nil];
+        [(id)self _didTapRepostButton:nil];
     }
     else {
         return %orig;

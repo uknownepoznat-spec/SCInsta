@@ -9,7 +9,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self swipeableScrollManagerDidEndDraggingAboveSwipeThreshold:arg1];
+            [(id)self swipeableScrollManagerDidEndDraggingAboveSwipeThreshold:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -26,7 +26,7 @@
         confirmingBtn = YES;
         [SCIUtils showConfirmation:^{
             confirmingBtn = NO;
-            [self shhModeTransitionButtonDidTap:arg1];
+            [(id)self shhModeTransitionButtonDidTap:arg1];
         } cancelHandler:^{
             confirmingBtn = NO;
         }];
@@ -43,7 +43,7 @@
         confirmingToggle = YES;
         [SCIUtils showConfirmation:^{
             confirmingToggle = NO;
-            [self messageListViewControllerDidToggleShhMode:arg1];
+            [(id)self messageListViewControllerDidToggleShhMode:arg1];
         } cancelHandler:^{
             confirmingToggle = NO;
         }];

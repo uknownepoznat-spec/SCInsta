@@ -18,7 +18,7 @@
             confirming = YES;
             [SCIUtils showConfirmation:^{
                 confirming = NO;
-                [self _didPressFollowButton];
+                [(id)self _didPressFollowButton];
             } cancelHandler:^{
                 confirming = NO;
             }];
@@ -41,7 +41,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _onFollowButtonTapped:arg1];
+            [(id)self _onFollowButtonTapped:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -56,7 +56,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _onFollowingButtonTapped:arg1];
+            [(id)self _onFollowingButtonTapped:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -75,7 +75,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _didTapAYMFActionButton];
+            [(id)self _didTapAYMFActionButton];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -92,7 +92,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _didTapTextActionButton];
+            [(id)self _didTapTextActionButton];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -111,7 +111,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _hackilyHandleOurOwnButtonTaps:arg1 event:arg2];
+            [(id)self _hackilyHandleOurOwnButtonTaps:arg1 event:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -130,7 +130,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self navigationItemsControllerDidTapHeaderFollowButton:arg1];
+            [(id)self navigationItemsControllerDidTapHeaderFollowButton:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -149,7 +149,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self followButtonTapped:arg1 cell:arg2];
+            [(id)self followButtonTapped:arg1 cell:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];

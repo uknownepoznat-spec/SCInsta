@@ -10,7 +10,7 @@
         confirmingCall = YES;
         [SCIUtils showConfirmation:^{
             confirmingCall = NO;
-            [self _didTapAudioButton:arg1];
+            [(id)self _didTapAudioButton:arg1];
         } cancelHandler:^{
             confirmingCall = NO;
         }];
@@ -28,7 +28,7 @@
         confirmingVideoCall = YES;
         [SCIUtils showConfirmation:^{
             confirmingVideoCall = NO;
-            [self _didTapVideoButton:arg1];
+            [(id)self _didTapVideoButton:arg1];
         } cancelHandler:^{
             confirmingVideoCall = NO;
         }];

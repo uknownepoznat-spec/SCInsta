@@ -37,7 +37,7 @@
         confirmingRefresh = YES;
         [SCIUtils showConfirmation:^{
             confirmingRefresh = NO;
-            [self triggerRefreshFromTabTap];
+            [(id)self triggerRefreshFromTabTap];
         } cancelHandler:^{
             confirmingRefresh = NO;
         } title:@"Refresh Reels"];
@@ -53,12 +53,12 @@
         confirmingRefreshParams = YES;
         [SCIUtils showConfirmation:^{
             confirmingRefreshParams = NO;
-            [self _refreshReelsWithParamsForNetworkRequest:arg1 userDidPullToRefresh:arg2];
+            [(id)self _refreshReelsWithParamsForNetworkRequest:arg1 userDidPullToRefresh:arg2];
         }
                      cancelHandler:^(void) {
                          confirmingRefreshParams = NO;
                          IGRefreshControl *_refreshControl = MSHookIvar<IGRefreshControl *>(self, "_refreshControl");
-                         [self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
+                         [(id)self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
                      }
                              title:@"Refresh Reels"];
         return;

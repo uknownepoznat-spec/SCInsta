@@ -10,7 +10,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self themeNewPickerSectionController:arg1 didSelectTheme:arg2 atIndex:arg3];
+            [(id)self themeNewPickerSectionController:arg1 didSelectTheme:arg2 atIndex:arg3];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -26,7 +26,7 @@
         confirmingId = YES;
         [SCIUtils showConfirmation:^{
             confirmingId = NO;
-            [self themePickerSectionController:arg1 didSelectThemeId:arg2];
+            [(id)self themePickerSectionController:arg1 didSelectThemeId:arg2];
         } cancelHandler:^{
             confirmingId = NO;
         }];
@@ -45,7 +45,7 @@
         confirmingPrimary = YES;
         [SCIUtils showConfirmation:^{
             confirmingPrimary = NO;
-            [self primaryButtonTapped];
+            [(id)self primaryButtonTapped];
         } cancelHandler:^{
             confirmingPrimary = NO;
         }];

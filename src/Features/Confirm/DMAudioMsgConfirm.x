@@ -10,7 +10,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self voiceRecordViewController:arg1 didRecordAudioClipWithURL:arg2 waveform:arg3 duration:arg4 entryPoint:arg5];
+            [(id)self voiceRecordViewController:arg1 didRecordAudioClipWithURL:arg2 waveform:arg3 duration:arg4 entryPoint:arg5];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -41,7 +41,7 @@
         confirmingSend = YES;
         [SCIUtils showConfirmation:^{
             confirmingSend = NO;
-            [self didTapSend];
+            [(id)self didTapSend];
         } cancelHandler:^{
             confirmingSend = NO;
         }];

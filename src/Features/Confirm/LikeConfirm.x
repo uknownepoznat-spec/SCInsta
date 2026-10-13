@@ -15,7 +15,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _onLikeButtonPressed:arg1];
+            [(id)self _onLikeButtonPressed:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -32,7 +32,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _onDoubleTap:arg1];
+            [(id)self _onDoubleTap:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -49,7 +49,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _handleDoubleTapGesture:arg1];
+            [(id)self _handleDoubleTapGesture:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -68,7 +68,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self controlsOverlayControllerDidTapLikeButton:arg1];
+            [(id)self controlsOverlayControllerDidTapLikeButton:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -83,7 +83,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self controlsOverlayControllerDidLongPressLikeButton:arg1 gestureRecognizer:arg2];
+            [(id)self controlsOverlayControllerDidLongPressLikeButton:arg1 gestureRecognizer:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -98,7 +98,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self gestureController:arg1 didObserveDoubleTap:arg2];
+            [(id)self gestureController:arg1 didObserveDoubleTap:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -115,7 +115,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self controlsOverlayControllerDidTapLikeButton:arg1];
+            [(id)self controlsOverlayControllerDidTapLikeButton:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -130,7 +130,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self gestureController:arg1 didObserveDoubleTap:arg2];
+            [(id)self gestureController:arg1 didObserveDoubleTap:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -147,7 +147,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self controlsOverlayControllerDidTapLikeButton:arg1];
+            [(id)self controlsOverlayControllerDidTapLikeButton:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -162,7 +162,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self gestureController:arg1 didObserveDoubleTap:arg2];
+            [(id)self gestureController:arg1 didObserveDoubleTap:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -181,7 +181,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self commentCell:arg1 didTapLikeButton:arg2];
+            [(id)self commentCell:arg1 didTapLikeButton:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -196,7 +196,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self commentCell:arg1 didTapLikedByButtonForUser:arg2];
+            [(id)self commentCell:arg1 didTapLikedByButtonForUser:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -211,7 +211,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self commentCellDidLongPressOnLikeButton:arg1];
+            [(id)self commentCellDidLongPressOnLikeButton:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -226,7 +226,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self commentCellDidEndLongPressOnLikeButton:arg1];
+            [(id)self commentCellDidEndLongPressOnLikeButton:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -241,7 +241,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self commentCellDidDoubleTap:arg1];
+            [(id)self commentCellDidDoubleTap:arg1];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -258,7 +258,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _didTapLikeButton];
+            [(id)self _didTapLikeButton];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -277,7 +277,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _handleLikeTapped];
+            [(id)self _handleLikeTapped];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -292,7 +292,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _likeTapped];
+            [(id)self _likeTapped];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -307,7 +307,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self inputView:arg1 didTapLikeButton:arg2];
+            [(id)self inputView:arg1 didTapLikeButton:arg2];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -326,7 +326,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _didTapLikeButton];
+            [(id)self _didTapLikeButton];
         } cancelHandler:^{
             confirming = NO;
         }];

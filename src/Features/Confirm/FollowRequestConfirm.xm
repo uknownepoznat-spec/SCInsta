@@ -9,7 +9,7 @@
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
-            [self _onApproveButtonTapped];
+            [(id)self _onApproveButtonTapped];
         } cancelHandler:^{
             confirming = NO;
         }];
@@ -25,7 +25,7 @@
         confirmingIgnore = YES;
         [SCIUtils showConfirmation:^{
             confirmingIgnore = NO;
-            [self _onIgnoreButtonTapped];
+            [(id)self _onIgnoreButtonTapped];
         } cancelHandler:^{
             confirmingIgnore = NO;
         }];
