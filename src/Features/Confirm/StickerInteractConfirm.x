@@ -1,5 +1,9 @@
 #import "../../Utils.h"
 
+@interface IGStoryViewerTapTarget (SCInstaConfirm)
+- (void)_didTap:(id)arg1 forEvent:(id)arg2;
+@end
+
 %hook IGStoryViewerTapTarget
 - (void)_didTap:(id)arg1 forEvent:(id)arg2 {
     static BOOL confirming = NO;

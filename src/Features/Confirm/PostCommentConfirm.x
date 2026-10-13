@@ -1,5 +1,9 @@
 #import "../../Utils.h"
 
+@interface IGCommentComposer.IGCommentComposerController (SCInstaConfirm)
+- (void)onSendButtonTap;
+@end
+
 %hook IGCommentComposer.IGCommentComposerController
 - (void)onSendButtonTap {
     static BOOL confirming = NO;

@@ -588,6 +588,10 @@ shouldPersistLastBugReportId:(id)arg6
 static BOOL showingFeedItemUFIConfirm = NO;
 static BOOL showingVerticalUFIConfirm = NO;
 
+@interface IGFeedItemUFICell (SCInstaConfirm)
+- (void)UFIButtonBarDidTapOnLike:(id)arg1;
+@end
+
 %hook IGFeedItemUFICell
 - (void)UFIButtonBarDidTapOnLike:(id)arg1 {
     static BOOL confirmingLike = NO;

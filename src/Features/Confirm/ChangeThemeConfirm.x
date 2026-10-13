@@ -1,6 +1,14 @@
 #import "../../InstagramHeaders.h"
 #import "../../Utils.h"
 
+@interface IGDirectThreadThemePickerViewController (SCInstaConfirm)
+- (void)themeNewPickerSectionController:(id)arg1 didSelectTheme:(id)arg2 atIndex:(NSInteger)arg3;
+- (void)themePickerSectionController:(id)arg1 didSelectThemeId:(id)arg2;
+@end
+@interface IGDirectThreadThemeKitSwift.IGDirectThreadThemePreviewController (SCInstaConfirm)
+- (void)primaryButtonTapped;
+@end
+
 %hook IGDirectThreadThemePickerViewController
 - (void)themeNewPickerSectionController:(id)arg1 didSelectTheme:(id)arg2 atIndex:(NSInteger)arg3 {
     static BOOL confirming = NO;

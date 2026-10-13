@@ -1,5 +1,10 @@
 #import "../../Utils.h"
 
+@interface IGPendingRequestView (SCInstaConfirm)
+- (void)_onApproveButtonTapped;
+- (void)_onIgnoreButtonTapped;
+@end
+
 %hook IGPendingRequestView
 - (void)_onApproveButtonTapped {
     static BOOL confirming = NO;

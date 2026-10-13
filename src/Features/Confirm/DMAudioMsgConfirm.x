@@ -1,5 +1,15 @@
 #import "../../Utils.h"
 
+@interface IGDirectThreadViewController (SCInstaVoiceConfirm)
+- (void)voiceRecordViewController:(id)arg1 didRecordAudioClipWithURL:(id)arg2 waveform:(id)arg3 duration:(CGFloat)arg4 entryPoint:(NSInteger)arg5;
+@end
+@interface IGDirectComposer (SCInstaVoiceConfirm)
+- (void)_didLongPressVoiceMessage:(id)arg1;
+@end
+@interface _TtC20IGDirectAIVoiceUIKitP33_5754F7617E0D924F9A84EFA352BBD29A21CompactBarContentView (SCInstaVoiceConfirm)
+- (void)didTapSend;
+@end
+
 // Legacy hook (for non ai voices interface)
 %hook IGDirectThreadViewController
 - (void)voiceRecordViewController:(id)arg1 didRecordAudioClipWithURL:(id)arg2 waveform:(id)arg3 duration:(CGFloat)arg4 entryPoint:(NSInteger)arg5 {

@@ -1,5 +1,10 @@
 #import "../../Utils.h"
 
+@interface IGDirectThreadCallButtonsCoordinator (SCInstaConfirm)
+- (void)_didTapAudioButton:(id)arg1;
+- (void)_didTapVideoButton:(id)arg1;
+@end
+
 %hook IGDirectThreadCallButtonsCoordinator
 // Voice Call
 - (void)_didTapAudioButton:(id)arg1 {

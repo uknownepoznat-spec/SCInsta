@@ -1,10 +1,45 @@
 #import "../../Utils.h"
 
-///////////////////////////////////////////////////////////
-
-// Confirmation handlers
-// NOTE: Never use %orig inside showConfirmation blocks (breaks on new Theos).
-// Use guard + re-invoke pattern instead.
+@interface IGUFIButtonBarView (SCInstaConfirm)
+- (void)_onLikeButtonPressed:(id)arg1;
+@end
+@interface IGFeedPhotoView (SCInstaConfirm)
+- (void)_onDoubleTap:(id)arg1;
+@end
+@interface IGVideoPlayerOverlayContainerView (SCInstaConfirm)
+- (void)_handleDoubleTapGesture:(id)arg1;
+@end
+@interface IGSundialViewerVideoCell (SCInstaConfirm)
+- (void)controlsOverlayControllerDidTapLikeButton:(id)arg1;
+- (void)controlsOverlayControllerDidLongPressLikeButton:(id)arg1 gestureRecognizer:(id)arg2;
+- (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2;
+@end
+@interface IGSundialViewerPhotoCell (SCInstaConfirm)
+- (void)controlsOverlayControllerDidTapLikeButton:(id)arg1;
+- (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2;
+@end
+@interface IGSundialViewerCarouselCell (SCInstaConfirm)
+- (void)controlsOverlayControllerDidTapLikeButton:(id)arg1;
+- (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2;
+@end
+@interface IGCommentCellController (SCInstaConfirm)
+- (void)commentCell:(id)arg1 didTapLikeButton:(id)arg2;
+- (void)commentCell:(id)arg1 didTapLikedByButtonForUser:(id)arg2;
+- (void)commentCellDidLongPressOnLikeButton:(id)arg1;
+- (void)commentCellDidEndLongPressOnLikeButton:(id)arg1;
+- (void)commentCellDidDoubleTap:(id)arg1;
+@end
+@interface IGFeedItemPreviewCommentCell (SCInstaConfirm)
+- (void)_didTapLikeButton;
+@end
+@interface IGStoryFullscreenDefaultFooterView (SCInstaConfirm)
+- (void)_handleLikeTapped;
+- (void)_likeTapped;
+- (void)inputView:(id)arg1 didTapLikeButton:(id)arg2;
+@end
+@interface IGDirectThreadViewController (SCInstaLikeConfirm)
+- (void)_didTapLikeButton;
+@end
 
 // Liking posts
 %hook IGUFIButtonBarView

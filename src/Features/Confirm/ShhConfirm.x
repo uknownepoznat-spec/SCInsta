@@ -1,5 +1,11 @@
 #import "../../Utils.h"
 
+@interface IGDirectThreadViewController (SCInstaShhConfirm)
+- (void)swipeableScrollManagerDidEndDraggingAboveSwipeThreshold:(id)arg1;
+- (void)shhModeTransitionButtonDidTap:(id)arg1;
+- (void)messageListViewControllerDidToggleShhMode:(id)arg1;
+@end
+
 %hook IGDirectThreadViewController
 - (void)swipeableScrollManagerDidEndDraggingAboveSwipeThreshold:(id)arg1 {
     static BOOL confirming = NO;

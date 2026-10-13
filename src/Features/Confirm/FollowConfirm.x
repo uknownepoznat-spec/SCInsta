@@ -1,8 +1,28 @@
 #import "../../Utils.h"
 #import "../../InstagramHeaders.h"
 
-////////////////////////////////////////////////////////
-// NOTE: Never pass %orig through macros or inside blocks.
+@interface IGFollowController (SCInstaConfirm)
+- (void)_didPressFollowButton;
+@end
+@interface IGDiscoverPeopleButtonGroupView (SCInstaConfirm)
+- (void)_onFollowButtonTapped:(id)arg1;
+- (void)_onFollowingButtonTapped:(id)arg1;
+@end
+@interface IGHScrollAYMFCell (SCInstaConfirm)
+- (void)_didTapAYMFActionButton;
+@end
+@interface IGHScrollAYMFActionButton (SCInstaConfirm)
+- (void)_didTapTextActionButton;
+@end
+@interface IGUnifiedVideoFollowButton (SCInstaConfirm)
+- (void)_hackilyHandleOurOwnButtonTaps:(id)arg1 event:(id)arg2;
+@end
+@interface IGProfileViewController (SCInstaConfirm)
+- (void)navigationItemsControllerDidTapHeaderFollowButton:(id)arg1;
+@end
+@interface IGStorySectionController (SCInstaConfirm)
+- (void)followButtonTapped:(id)arg1 cell:(id)arg2;
+@end
 
 // Follow button on profile page
 %hook IGFollowController

@@ -1,5 +1,10 @@
 #import "../../Utils.h"
 
+@interface IGSundialFeedViewController (SCInstaConfirm)
+- (void)triggerRefreshFromTabTap;
+- (void)_refreshReelsWithParamsForNetworkRequest:(NSInteger)arg1 userDidPullToRefresh:(BOOL)arg2;
+@end
+
 %hook IGSundialPlaybackControlsTestConfiguration
 - (id)initWithLauncherSet:(id)set
                      tapToPauseEnabled:(_Bool)tapPauseEnabled
