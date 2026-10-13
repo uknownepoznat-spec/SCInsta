@@ -1,6 +1,6 @@
 #import "../../Utils.h"
 
-@interface IGPendingRequestView (SCInstaConfirm)
+@interface IGPendingRequestView : UIView
 - (void)_onApproveButtonTapped;
 - (void)_onIgnoreButtonTapped;
 @end

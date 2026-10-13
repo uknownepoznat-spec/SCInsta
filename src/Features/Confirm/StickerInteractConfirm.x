@@ -1,6 +1,6 @@
 #import "../../Utils.h"
 
-@interface IGStoryViewerTapTarget (SCInstaConfirm)
+@interface IGStoryViewerTapTarget : NSObject
 - (void)_didTap:(id)arg1 forEvent:(id)arg2;
 @end
 

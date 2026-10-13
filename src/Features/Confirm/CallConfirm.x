@@ -1,6 +1,6 @@
 #import "../../Utils.h"
 
-@interface IGDirectThreadCallButtonsCoordinator (SCInstaConfirm)
+@interface IGDirectThreadCallButtonsCoordinator : NSObject
 - (void)_didTapAudioButton:(id)arg1;
 - (void)_didTapVideoButton:(id)arg1;
 @end

@@ -1,12 +1,12 @@
 #import "../../Utils.h"
 
-@interface IGUFIButtonBarView (SCInstaConfirm)
+@interface IGUFIButtonBarView : UIView
 - (void)_onLikeButtonPressed:(id)arg1;
 @end
 @interface IGFeedPhotoView (SCInstaConfirm)
 - (void)_onDoubleTap:(id)arg1;
 @end
-@interface IGVideoPlayerOverlayContainerView (SCInstaConfirm)
+@interface IGVideoPlayerOverlayContainerView : UIView
 - (void)_handleDoubleTapGesture:(id)arg1;
 @end
 @interface IGSundialViewerVideoCell (SCInstaConfirm)
@@ -14,30 +14,30 @@
 - (void)controlsOverlayControllerDidLongPressLikeButton:(id)arg1 gestureRecognizer:(id)arg2;
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2;
 @end
-@interface IGSundialViewerPhotoCell (SCInstaConfirm)
+@interface IGSundialViewerPhotoCell : UIView
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1;
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2;
 @end
-@interface IGSundialViewerCarouselCell (SCInstaConfirm)
+@interface IGSundialViewerCarouselCell : UIView
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1;
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2;
 @end
-@interface IGCommentCellController (SCInstaConfirm)
+@interface IGCommentCellController : NSObject
 - (void)commentCell:(id)arg1 didTapLikeButton:(id)arg2;
 - (void)commentCell:(id)arg1 didTapLikedByButtonForUser:(id)arg2;
 - (void)commentCellDidLongPressOnLikeButton:(id)arg1;
 - (void)commentCellDidEndLongPressOnLikeButton:(id)arg1;
 - (void)commentCellDidDoubleTap:(id)arg1;
 @end
-@interface IGFeedItemPreviewCommentCell (SCInstaConfirm)
+@interface IGFeedItemPreviewCommentCell : UIView
 - (void)_didTapLikeButton;
 @end
-@interface IGStoryFullscreenDefaultFooterView (SCInstaConfirm)
+@interface IGStoryFullscreenDefaultFooterView : UIView
 - (void)_handleLikeTapped;
 - (void)_likeTapped;
 - (void)inputView:(id)arg1 didTapLikeButton:(id)arg2;
 @end
-@interface IGDirectThreadViewController (SCInstaLikeConfirm)
+@interface IGDirectThreadViewController : UIViewController
 - (void)_didTapLikeButton;
 @end
 

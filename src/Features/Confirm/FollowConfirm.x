@@ -4,23 +4,23 @@
 @interface IGFollowController (SCInstaConfirm)
 - (void)_didPressFollowButton;
 @end
-@interface IGDiscoverPeopleButtonGroupView (SCInstaConfirm)
+@interface IGDiscoverPeopleButtonGroupView : UIView
 - (void)_onFollowButtonTapped:(id)arg1;
 - (void)_onFollowingButtonTapped:(id)arg1;
 @end
-@interface IGHScrollAYMFCell (SCInstaConfirm)
+@interface IGHScrollAYMFCell : UIView
 - (void)_didTapAYMFActionButton;
 @end
-@interface IGHScrollAYMFActionButton (SCInstaConfirm)
+@interface IGHScrollAYMFActionButton : UIView
 - (void)_didTapTextActionButton;
 @end
-@interface IGUnifiedVideoFollowButton (SCInstaConfirm)
+@interface IGUnifiedVideoFollowButton : UIView
 - (void)_hackilyHandleOurOwnButtonTaps:(id)arg1 event:(id)arg2;
 @end
-@interface IGProfileViewController (SCInstaConfirm)
+@interface IGProfileViewController : UIViewController
 - (void)navigationItemsControllerDidTapHeaderFollowButton:(id)arg1;
 @end
-@interface IGStorySectionController (SCInstaConfirm)
+@interface IGStorySectionController : NSObject
 - (void)followButtonTapped:(id)arg1 cell:(id)arg2;
 @end
 

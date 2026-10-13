@@ -1,6 +1,6 @@
 #import "../../Utils.h"
 
-@interface IGDirectThreadViewController (SCInstaShhConfirm)
+@interface IGDirectThreadViewController : UIViewController
 - (void)swipeableScrollManagerDidEndDraggingAboveSwipeThreshold:(id)arg1;
 - (void)shhModeTransitionButtonDidTap:(id)arg1;
 - (void)messageListViewControllerDidToggleShhMode:(id)arg1;
