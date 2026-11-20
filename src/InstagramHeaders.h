@@ -300,7 +300,6 @@
 @end
 
 @interface IGBadgedNavigationButton : UIView
-- (void)scInstallSettingsLongPressIfNeeded; // new
 - (void)addLongPressGestureRecognizer; // new
 @end
 
