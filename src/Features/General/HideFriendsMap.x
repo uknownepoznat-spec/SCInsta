@@ -13,7 +13,7 @@
             if ([obj isKindOfClass:%c(IGDirectNotesTrayUserViewModel)]) {
 
                 if ([[obj valueForKey:@"notePk"] isEqualToString:@"friends_map"]) {
-                    NSLog(@"[PekiWare] Hiding friends map");
+                    NSLog(@"[Peki Scripter] Hiding friends map");
 
                     shouldHide = YES;
                 }

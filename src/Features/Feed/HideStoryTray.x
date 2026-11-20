@@ -5,7 +5,7 @@
 %hook IGMainStoryTrayDataSource
 - (id)initWithUserSession:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_stories_tray"]) {
-        NSLog(@"[PekiWare] Hiding story tray");
+        NSLog(@"[Peki Scripter] Hiding story tray");
 
         return nil;
     }

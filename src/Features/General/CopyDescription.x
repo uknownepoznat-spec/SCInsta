@@ -33,7 +33,7 @@
                                                    withTemplate:@""]
           stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
-    NSLog(@"[PekiWare] Copying description");
+    NSLog(@"[Peki Scripter] Copying description");
 
     // Copy text to system clipboard
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];

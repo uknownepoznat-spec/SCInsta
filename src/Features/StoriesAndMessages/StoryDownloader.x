@@ -7,7 +7,7 @@
     %orig;
     
     if ([SCIUtils getBoolPref:@"story_downloader"]) {
-        NSLog(@"[PekiWare] Story Downloader: Feature enabled");
+        NSLog(@"[Peki Scripter] Story Downloader: Feature enabled");
         // Story downloader functionality will be handled through existing download mechanisms
     }
 }

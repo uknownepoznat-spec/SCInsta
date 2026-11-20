@@ -4,7 +4,7 @@
 - (void)onSendButtonTap {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"post_comment_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post comment triggered");
+        NSLog(@"[Peki Scripter] Confirm post comment triggered");
 
         confirming = YES;
         [SCIUtils showConfirmation:^{

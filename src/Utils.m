@@ -51,7 +51,7 @@
     if (deletionErrors.count > 1) {
 
         for (NSError *error in deletionErrors) {
-            NSLog(@"[PekiWare] File Deletion Error: %@", error);
+            NSLog(@"[Peki Scripter] File Deletion Error: %@", error);
         }
 
     }
@@ -78,7 +78,8 @@
 
 // Colours
 + (UIColor *)SCIColor_Primary {
-    return [UIColor colorWithRed:0/255.0 green:152/255.0 blue:254/255.0 alpha:1];
+    // Clean cobalt accent: consistent, professional, and intentionally not a gradient.
+    return [UIColor colorWithRed:37/255.0 green:99/255.0 blue:235/255.0 alpha:1];
 };
 
 // Errors

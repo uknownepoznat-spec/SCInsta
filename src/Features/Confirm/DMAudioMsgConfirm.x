@@ -12,7 +12,7 @@
 - (void)voiceRecordViewController:(id)arg1 didRecordAudioClipWithURL:(id)arg2 waveform:(id)arg3 duration:(CGFloat)arg4 entryPoint:(NSInteger)arg5 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"voice_message_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] DM audio message confirm triggered");
+        NSLog(@"[Peki Scripter] DM audio message confirm triggered");
 
         confirming = YES;
         [SCIUtils showConfirmation:^{
@@ -43,7 +43,7 @@
 - (void)didTapSend {
     static BOOL confirmingSend = NO;
     if ([SCIUtils getBoolPref:@"voice_message_confirm"] && !confirmingSend) {
-        NSLog(@"[PekiWare] DM audio message confirm triggered");
+        NSLog(@"[Peki Scripter] DM audio message confirm triggered");
 
         confirmingSend = YES;
         [SCIUtils showConfirmation:^{

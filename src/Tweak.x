@@ -22,7 +22,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 // Tweak first-time setup
 %hook IGInstagramAppDelegate
 - (_Bool)application:(UIApplication *)application willFinishLaunchingWithOptions:(id)arg2 {
-    // Default PekiWare config
+    // Default Peki Scripter config
     NSDictionary *sciDefaults = @{
         @"hide_ads": @(YES),
         @"copy_description": @(YES),
@@ -75,10 +75,10 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
             ![[[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] isEqualToString:SCIVersionString]
             || [SCIUtils getBoolPref:@"tweak_settings_app_launch"]
         ) {
-            NSLog(@"[PekiWare] First run, initializing");
+            NSLog(@"[Peki Scripter] First run, initializing");
 
             // Display settings modal on screen
-            NSLog(@"[PekiWare] Displaying PekiWare first-time settings modal");
+            NSLog(@"[Peki Scripter] Displaying Peki Scripter first-time settings modal");
             UIViewController *rootController = [[(id)self window] rootViewController];
             SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
@@ -87,7 +87,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         }
     });
 
-    NSLog(@"[PekiWare] Cleaning cache...");
+    NSLog(@"[Peki Scripter] Cleaning cache...");
     [SCIUtils cleanCache];
 
     if ([SCIUtils getBoolPref:@"flex_app_launch"]) {
@@ -158,7 +158,7 @@ shouldPersistLastBugReportId:(id)arg6
 %hook IGDirectVisualMessageScreenshotSafetyLogger
 - (id)initWithUserSession:(id)arg1 entryPoint:(NSInteger)arg2 {
     if ([SCIUtils getBoolPref:@"remove_screenshot_alert"]) {
-        NSLog(@"[PekiWare] Disable visual message screenshot safety logger");
+        NSLog(@"[Peki Scripter] Disable visual message screenshot safety logger");
         return nil;
     }
 
@@ -247,7 +247,7 @@ shouldPersistLastBugReportId:(id)arg6
             // Broadcast channels
             if ([[obj valueForKey:@"uniqueIdentifier"] isEqualToString:@"channels"]) {
                 if ([SCIUtils getBoolPref:@"no_suggested_chats"]) {
-                    NSLog(@"[PekiWare] Hiding suggested chats (header)");
+                    NSLog(@"[Peki Scripter] Hiding suggested chats (header)");
 
                     shouldHide = YES;
                 }
@@ -256,7 +256,7 @@ shouldPersistLastBugReportId:(id)arg6
             // Ask Meta AI
             else if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"Ask Meta AI"]) {
                 if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                    NSLog(@"[PekiWare] Hiding meta ai suggested chats (header)");
+                    NSLog(@"[Peki Scripter] Hiding meta ai suggested chats (header)");
 
                     shouldHide = YES;
                 }
@@ -265,7 +265,7 @@ shouldPersistLastBugReportId:(id)arg6
             // AI
             else if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"AI"]) {
                 if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                    NSLog(@"[PekiWare] Hiding ai suggested chats (header)");
+                    NSLog(@"[Peki Scripter] Hiding ai suggested chats (header)");
 
                     shouldHide = YES;
                 }
@@ -281,7 +281,7 @@ shouldPersistLastBugReportId:(id)arg6
         ) {
 
             if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                    NSLog(@"[PekiWare] Hiding suggested chats (ai agents)");
+                    NSLog(@"[Peki Scripter] Hiding suggested chats (ai agents)");
 
                 shouldHide = YES;
             }
@@ -294,7 +294,7 @@ shouldPersistLastBugReportId:(id)arg6
             // Broadcast channels
             if ([[obj recipient] isBroadcastChannel]) {
                 if ([SCIUtils getBoolPref:@"no_suggested_chats"]) {
-                    NSLog(@"[PekiWare] Hiding suggested chats (broadcast channels recipient)");
+                    NSLog(@"[Peki Scripter] Hiding suggested chats (broadcast channels recipient)");
 
                     shouldHide = YES;
                 }
@@ -303,7 +303,7 @@ shouldPersistLastBugReportId:(id)arg6
             // Meta AI (special section types)
             else if (([obj sectionType] == 20) || [obj sectionType] == 18) {
                 if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                    NSLog(@"[PekiWare] Hiding meta ai suggested chats (meta ai recipient)");
+                    NSLog(@"[Peki Scripter] Hiding meta ai suggested chats (meta ai recipient)");
 
                     shouldHide = YES;
                 }
@@ -312,7 +312,7 @@ shouldPersistLastBugReportId:(id)arg6
             // Meta AI (catch-all)
             else if ([[[obj recipient] threadName] isEqualToString:@"Meta AI"]) {
                 if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                    NSLog(@"[PekiWare] Hiding meta ai suggested chats (meta ai recipient)");
+                    NSLog(@"[Peki Scripter] Hiding meta ai suggested chats (meta ai recipient)");
 
                     shouldHide = YES;
                 }
@@ -346,7 +346,7 @@ shouldPersistLastBugReportId:(id)arg6
 
                 // "AI Chats"
                 if ([[obj valueForKey:@"title"] isEqualToString:@"AI chats"]) {
-                    NSLog(@"[PekiWare] Hiding meta ai: direct thread creation ai chats section");
+                    NSLog(@"[Peki Scripter] Hiding meta ai: direct thread creation ai chats section");
 
                     shouldHide = YES;
                 }
@@ -357,7 +357,7 @@ shouldPersistLastBugReportId:(id)arg6
 
                 // Meta AI suggested user
                 if ([[[obj recipient] threadName] isEqualToString:@"Meta AI"]) {
-                    NSLog(@"[PekiWare] Hiding meta ai: direct thread creation ai suggestion");
+                    NSLog(@"[Peki Scripter] Hiding meta ai: direct thread creation ai suggestion");
 
                     shouldHide = YES;
                 }
@@ -369,7 +369,7 @@ shouldPersistLastBugReportId:(id)arg6
         // Invite friends to insta contacts upsell
         if ([SCIUtils getBoolPref:@"no_suggested_users"]) {
             if ([obj isKindOfClass:%c(IGContactInvitesSearchUpsellViewModel)]) {
-                NSLog(@"[PekiWare] Hiding suggested users: invite contacts upsell");
+                NSLog(@"[Peki Scripter] Hiding suggested users: invite contacts upsell");
 
                 shouldHide = YES;
             }
@@ -400,7 +400,7 @@ shouldPersistLastBugReportId:(id)arg6
             // "Suggestions" header
             if ([[obj title] isEqualToString:@"Suggestions"]) {
                 if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                    NSLog(@"[PekiWare] Hiding suggested chats (header: messages tab)");
+                    NSLog(@"[Peki Scripter] Hiding suggested chats (header: messages tab)");
 
                     shouldHide = YES;
                 }
@@ -409,7 +409,7 @@ shouldPersistLastBugReportId:(id)arg6
             // "Accounts to follow/message" header
             else if ([[obj title] hasPrefix:@"Accounts to"]) {
                 if ([SCIUtils getBoolPref:@"no_suggested_users"]) {
-                    NSLog(@"[PekiWare] Hiding suggested users: (header: inbox view)");
+                    NSLog(@"[Peki Scripter] Hiding suggested users: (header: inbox view)");
 
                     shouldHide = YES;
                 }
@@ -420,7 +420,7 @@ shouldPersistLastBugReportId:(id)arg6
         // Suggested recipients
         else if ([obj isKindOfClass:%c(IGDirectInboxSuggestedThreadCellViewModel)]) {
             if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                NSLog(@"[PekiWare] Hiding suggested chats (recipients: channels tab)");
+                NSLog(@"[Peki Scripter] Hiding suggested chats (recipients: channels tab)");
 
                 shouldHide = YES;
             }
@@ -429,7 +429,7 @@ shouldPersistLastBugReportId:(id)arg6
         // "Accounts to follow" recipients
         else if ([obj isKindOfClass:%c(IGDiscoverPeopleItemConfiguration)] || [obj isKindOfClass:%c(IGDiscoverPeopleConnectionItemConfiguration)]) {
             if ([SCIUtils getBoolPref:@"no_suggested_users"]) {
-                NSLog(@"[PekiWare] Hiding suggested chats: (recipients: inbox view)");
+                NSLog(@"[Peki Scripter] Hiding suggested chats: (recipients: inbox view)");
 
                 shouldHide = YES;
             }
@@ -549,7 +549,7 @@ shouldPersistLastBugReportId:(id)arg6
             // This hides as many recommended models as possible, without hiding genuine models
             // Most recommended models share a 32 digit id, unlike normal accounts
             if ([obj isKindOfClass:%c(IGStoryTrayViewModel)] && [obj.pk length] == 32) {
-                NSLog(@"[PekiWare] Hiding suggested users: story tray");
+                NSLog(@"[Peki Scripter] Hiding suggested users: story tray");
 
                 shouldHide = YES;
             }
@@ -558,7 +558,7 @@ shouldPersistLastBugReportId:(id)arg6
         if ([SCIUtils getBoolPref:@"hide_ads"]) {
             // "New!" account id is 3538572169
             if ([obj isKindOfClass:%c(IGStoryTrayViewModel)] && (obj.isUnseenNux == YES || [obj.pk isEqualToString:@"3538572169"])) {
-                NSLog(@"[PekiWare] Removing ads: story tray");
+                NSLog(@"[Peki Scripter] Removing ads: story tray");
 
                 shouldHide = YES;
             }
@@ -596,7 +596,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 - (void)UFIButtonBarDidTapOnLike:(id)arg1 {
     static BOOL confirmingLike = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirmingLike) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
 
         confirmingLike = YES;
         [SCIUtils showConfirmation:^{
@@ -614,7 +614,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     if (showingFeedItemUFIConfirm) return;
 
     if ([SCIUtils getBoolPref:@"repost_confirm"]) {
-        NSLog(@"[PekiWare] Confirm repost triggered");
+        NSLog(@"[Peki Scripter] Confirm repost triggered");
 
         showingFeedItemUFIConfirm = YES;
 
@@ -631,7 +631,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 
 - (void)UFIButtonBarDidLongPressOnRepost:(id)arg1 {
     if ([SCIUtils getBoolPref:@"repost_confirm"]) {
-        NSLog(@"[PekiWare] Confirm repost triggered (long press hack)");
+        NSLog(@"[Peki Scripter] Confirm repost triggered (long press hack)");
 
         [(id)self UFIButtonBarDidTapOnRepost:nil];
     }
@@ -641,7 +641,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 }
 - (void)UFIButtonBarDidLongPressOnRepost:(id)arg1 withGestureRecognizer:(id)arg2 {
     if ([SCIUtils getBoolPref:@"repost_confirm"]) {
-        NSLog(@"[PekiWare] Confirm repost triggered (long press hack)");
+        NSLog(@"[Peki Scripter] Confirm repost triggered (long press hack)");
 
         [(id)self UFIButtonBarDidTapOnRepost:nil];
     }
@@ -656,7 +656,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     if (showingVerticalUFIConfirm) return;
 
     if ([SCIUtils getBoolPref:@"like_confirm_reels"]) {
-        NSLog(@"[PekiWare] Confirm reels like triggered");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered");
 
         showingVerticalUFIConfirm = YES;
 
@@ -673,7 +673,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 
 - (void)_didLongPressLikeButton:(id)arg1 {
     if ([SCIUtils getBoolPref:@"like_confirm_reels"]) {
-        NSLog(@"[PekiWare] Confirm reels like triggered (long press hack)");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered (long press hack)");
 
         [(id)self _didTapLikeButton:nil];
     }
@@ -686,7 +686,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     if (showingVerticalUFIConfirm) return;
 
     if ([SCIUtils getBoolPref:@"repost_confirm"]) {
-        NSLog(@"[PekiWare] Confirm repost triggered");
+        NSLog(@"[Peki Scripter] Confirm repost triggered");
 
         showingVerticalUFIConfirm = YES;
 
@@ -703,7 +703,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 
 - (void)_didLongPressRepostButton:(id)arg1 {
     if ([SCIUtils getBoolPref:@"repost_confirm"]) {
-        NSLog(@"[PekiWare] Confirm repost triggered (long press hack)");
+        NSLog(@"[Peki Scripter] Confirm repost triggered (long press hack)");
 
         [(id)self _didTapRepostButton:nil];
     }
@@ -720,14 +720,14 @@ static BOOL showingVerticalUFIConfirm = NO;
 %hook IGPresenceManager
 - (void)setPresence:(id)presence {
     if ([SCIUtils getBoolPref:@"ghost_mode"]) {
-        NSLog(@"[PekiWare] Ghost Mode: Blocking presence update");
+        NSLog(@"[Peki Scripter] Ghost Mode: Blocking presence update");
         return;
     }
     %orig;
 }
 - (void)markActivityForThread:(id)thread {
     if ([SCIUtils getBoolPref:@"ghost_mode"]) {
-        NSLog(@"[PekiWare] Ghost Mode: Blocking activity marking");
+        NSLog(@"[Peki Scripter] Ghost Mode: Blocking activity marking");
         return;
     }
     %orig;
@@ -738,7 +738,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 %hook IGDirectThreadViewController
 - (void)sendTypingIndicator:(id)indicator {
     if ([SCIUtils getBoolPref:@"hide_typing_indicator"]) {
-        NSLog(@"[PekiWare] Hide Typing: Blocking typing indicator");
+        NSLog(@"[Peki Scripter] Hide Typing: Blocking typing indicator");
         return;
     }
     %orig;
@@ -749,7 +749,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 %hook IGStoryViewerData
 - (void)markStoryAsViewed:(id)story {
     if ([SCIUtils getBoolPref:@"story_ghost_mode"]) {
-        NSLog(@"[PekiWare] Story Ghost Mode: Blocking story view marking");
+        NSLog(@"[Peki Scripter] Story Ghost Mode: Blocking story view marking");
         return;
     }
     %orig;
@@ -760,7 +760,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 %hook IGDirectThread
 - (void)deleteMessage:(id)message {
     if ([SCIUtils getBoolPref:@"anti_delete"]) {
-        NSLog(@"[PekiWare] Anti-Delete: Blocking message deletion");
+        NSLog(@"[Peki Scripter] Anti-Delete: Blocking message deletion");
         return;
     }
     %orig;
@@ -773,7 +773,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     %orig;
     
     if ([SCIUtils getBoolPref:@"story_downloader"]) {
-        NSLog(@"[PekiWare] Story Downloader: Story viewer loaded, download feature ready");
+        NSLog(@"[Peki Scripter] Story Downloader: Story viewer loaded, download feature ready");
         // Download functionality will be handled through gesture recognizers or existing UI
     }
 }
@@ -784,7 +784,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 - (void)setProfilePictureWithURL:(id)url {
     if ([SCIUtils getBoolPref:@"hd_profile_pictures"]) {
         // Modify URL to request HD version
-        NSLog(@"[PekiWare] HD Profile Pictures: Modifying URL for HD quality");
+        NSLog(@"[Peki Scripter] HD Profile Pictures: Modifying URL for HD quality");
         // Add URL modification logic here
     }
     %orig;
@@ -798,7 +798,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     
     if ([SCIUtils getBoolPref:@"unseen_stories_counter"]) {
         // Add unseen stories counter to home screen
-        NSLog(@"[PekiWare] Unseen Stories Counter: Adding counter to home screen");
+        NSLog(@"[Peki Scripter] Unseen Stories Counter: Adding counter to home screen");
         // Add counter implementation here
     }
 }
@@ -808,7 +808,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 %hook IGDirectMessageComposer
 - (void)sendMessage:(id)message {
     if ([SCIUtils getBoolPref:@"message_encryption"]) {
-        NSLog(@"[PekiWare] Message Encryption: Encrypting message");
+        NSLog(@"[Peki Scripter] Message Encryption: Encrypting message");
         // Add encryption logic here
     }
     %orig;
@@ -821,7 +821,7 @@ static BOOL showingVerticalUFIConfirm = NO;
     %orig;
     
     if ([SCIUtils getBoolPref:@"enable_auto_reply"]) {
-        NSLog(@"[PekiWare] Auto Reply: Sending auto reply");
+        NSLog(@"[Peki Scripter] Auto Reply: Sending auto reply");
         // Add auto reply logic here with delay to seem natural
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             // Send auto reply message with hardcoded text: "I'm currently away, will reply soon!"
@@ -834,7 +834,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 %hook IGDirectMessageComposer
 - (void)scheduleMessage:(id)message forDate:(id)date {
     if ([SCIUtils getBoolPref:@"message_schedule"]) {
-        NSLog(@"[PekiWare] Message Schedule: Scheduling message");
+        NSLog(@"[Peki Scripter] Message Schedule: Scheduling message");
         // Add scheduling logic here
     }
     %orig;

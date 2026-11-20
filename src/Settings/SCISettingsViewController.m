@@ -49,13 +49,30 @@ static char rowStaticRef[] = "row";
     [super viewDidLoad];
 
     self.navigationController.navigationBar.prefersLargeTitles = NO;
-    self.view.backgroundColor = UIColor.systemBackgroundColor;
+    
+    // Minimal, premium settings styling: one solid accent and no rainbow gradients.
+    UINavigationBarAppearance *navigationAppearance = [UINavigationBarAppearance new];
+    [navigationAppearance configureWithDefaultBackground];
+    navigationAppearance.backgroundColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traits) {
+        return traits.userInterfaceStyle == UIUserInterfaceStyleDark
+            ? [UIColor colorWithRed:11/255.0 green:18/255.0 blue:32/255.0 alpha:1]
+            : [UIColor colorWithRed:248/255.0 green:250/255.0 blue:252/255.0 alpha:1];
+    }];
+    navigationAppearance.titleTextAttributes = @{
+        NSForegroundColorAttributeName: [UIColor labelColor],
+        NSFontAttributeName: [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold]
+    };
+    self.navigationController.navigationBar.standardAppearance = navigationAppearance;
+    self.navigationController.navigationBar.scrollEdgeAppearance = navigationAppearance;
+    self.navigationController.navigationBar.tintColor = [SCIUtils SCIColor_Primary];
+    self.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
 
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleInsetGrouped];
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.tableView.dataSource = self;
     self.tableView.contentInset = UIEdgeInsetsMake(self.reduceMargin ? -30 : -10, 0, 0, 0);
     self.tableView.delegate = self;
+    self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
 
     [self.view addSubview:self.tableView];
 }
@@ -64,8 +81,8 @@ static char rowStaticRef[] = "row";
     [super viewWillDisappear:animated];
     
     if (![[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"]) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"PekiWare Settings Info"
-                                                                       message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open PekiWare settings."
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Peki Scripter Settings Info"
+                                                                       message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open Peki Scripter settings."
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         
         [alert addAction:[UIAlertAction actionWithTitle:@"I understand!"

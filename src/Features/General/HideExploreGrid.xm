@@ -4,7 +4,7 @@
 %hook IGExploreGridViewController
 - (void)viewDidLoad {
     if ([SCIUtils getBoolPref:@"hide_explore_grid"]) {
-        NSLog(@"[PekiWare] Hiding explore grid");
+        NSLog(@"[Peki Scripter] Hiding explore grid");
 
         [[self view] removeFromSuperview];
 
@@ -20,7 +20,7 @@
     %orig;
 
     if ([SCIUtils getBoolPref:@"hide_explore_grid"]) {
-        NSLog(@"[PekiWare] Hiding explore grid");
+        NSLog(@"[Peki Scripter] Hiding explore grid");
 
         IGShimmeringGridView *shimmeringGridView = MSHookIvar<IGShimmeringGridView *>(self, "_shimmeringGridView");
         if (shimmeringGridView != nil) {

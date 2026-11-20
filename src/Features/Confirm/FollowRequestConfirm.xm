@@ -9,7 +9,7 @@
 - (void)_onApproveButtonTapped {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"follow_request_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm follow request triggered");
+        NSLog(@"[Peki Scripter] Confirm follow request triggered");
 
         confirming = YES;
         [SCIUtils showConfirmation:^{
@@ -25,7 +25,7 @@
 - (void)_onIgnoreButtonTapped {
     static BOOL confirmingIgnore = NO;
     if ([SCIUtils getBoolPref:@"follow_request_confirm"] && !confirmingIgnore) {
-        NSLog(@"[PekiWare] Confirm follow request triggered");
+        NSLog(@"[Peki Scripter] Confirm follow request triggered");
 
         confirmingIgnore = YES;
         [SCIUtils showConfirmation:^{

@@ -8,7 +8,7 @@
     if ([[_origModel title] isEqualToString:@"Suggested"]) {
 
         if ([SCIUtils getBoolPref:@"no_suggested_chats"]) {
-            NSLog(@"[PekiWare] Hiding suggested chats (header: channels tab)");
+            NSLog(@"[Peki Scripter] Hiding suggested chats (header: channels tab)");
 
             return nil;
         }

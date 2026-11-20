@@ -8,7 +8,7 @@
 - (void)_didTap:(id)arg1 forEvent:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"sticker_interact_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm sticker interact triggered");
+        NSLog(@"[Peki Scripter] Confirm sticker interact triggered");
 
         confirming = YES;
         [SCIUtils showConfirmation:^{

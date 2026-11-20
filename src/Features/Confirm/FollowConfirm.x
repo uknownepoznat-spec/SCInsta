@@ -34,7 +34,7 @@
     if (UserFollowStatus == 2) {
         static BOOL confirming = NO;
         if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
-            NSLog(@"[PekiWare] Confirm follow triggered");
+            NSLog(@"[Peki Scripter] Confirm follow triggered");
             confirming = YES;
             [SCIUtils showConfirmation:^{
                 confirming = NO;
@@ -57,7 +57,7 @@
 - (void)_onFollowButtonTapped:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm follow triggered");
+        NSLog(@"[Peki Scripter] Confirm follow triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -72,7 +72,7 @@
 - (void)_onFollowingButtonTapped:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm follow triggered");
+        NSLog(@"[Peki Scripter] Confirm follow triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -91,7 +91,7 @@
 - (void)_didTapAYMFActionButton {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm follow triggered");
+        NSLog(@"[Peki Scripter] Confirm follow triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -108,7 +108,7 @@
 - (void)_didTapTextActionButton {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm follow triggered");
+        NSLog(@"[Peki Scripter] Confirm follow triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -127,7 +127,7 @@
 - (void)_hackilyHandleOurOwnButtonTaps:(id)arg1 event:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm follow triggered");
+        NSLog(@"[Peki Scripter] Confirm follow triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -146,7 +146,7 @@
 - (void)navigationItemsControllerDidTapHeaderFollowButton:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm follow triggered");
+        NSLog(@"[Peki Scripter] Confirm follow triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -165,7 +165,7 @@
 - (void)followButtonTapped:(id)arg1 cell:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"follow_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm follow triggered");
+        NSLog(@"[Peki Scripter] Confirm follow triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;

@@ -6,7 +6,7 @@
     %orig;
 
     if ([SCIUtils getBoolPref:@"disable_scrolling_reels"]) {
-        NSLog(@"[PekiWare] Disabling scrolling reels");
+        NSLog(@"[Peki Scripter] Disabling scrolling reels");
         
         self.scrollEnabled = false;
     }
@@ -14,7 +14,7 @@
 
 - (void)setScrollEnabled:(BOOL)arg1 {
     if ([SCIUtils getBoolPref:@"disable_scrolling_reels"]) {
-        NSLog(@"[PekiWare] Disabling scrolling reels");
+        NSLog(@"[Peki Scripter] Disabling scrolling reels");
         
         return %orig(NO);
     }

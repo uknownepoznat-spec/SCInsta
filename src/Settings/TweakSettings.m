@@ -222,19 +222,27 @@
                                                 [SCISetting switchCellWithTitle:@"Open FLEX on app focus" subtitle:@"Automatically opens the FLEX explorer when the app is focused" defaultsKey:@"flex_app_start"]
                                             ]
                                         },
-                                        @{
-                                            @"header": @"PekiWare",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the PekiWare settings when the app launches" defaultsKey:@"tweak_settings_app_launch"],
-                                                [SCISetting buttonCellWithTitle:@"Reset onboarding completion state"
+                                         @{
+                                             @"header": @"Peki Scripter",
+                                             @"rows": @[
+                                                 [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the Peki Scripter settings when the app launches" defaultsKey:@"tweak_settings_app_launch"],
+                                                 [SCISetting buttonCellWithTitle:@"Reset onboarding completion state"
                                                                            subtitle:@""
                                                                                icon:nil
-                                                                             action:^(void) { [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SCInstaFirstRun"]; [SCIUtils showRestartConfirmation];}
-                                                ],
-                                            ]
-                                        },
-                                        @{
-                                            @"header": @"Instagram",
+                                                                              action:^(void) { [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SCInstaFirstRun"]; [SCIUtils showRestartConfirmation];}
+                                                 ],
+                                             ]
+                                         },
+                                         @{
+                                             @"header": @"Developer",
+                                             @"rows": @[
+                                                 [SCISetting staticCellWithTitle:@"Peki Scripter" subtitle:@"Custom Instagram experience • built with precision" icon:[SCISymbol symbolWithName:@"hammer.fill" color:[SCIUtils SCIColor_Primary] size:20.0]],
+                                                 [SCISetting linkCellWithTitle:@"Discord" subtitle:@"pekiscripter" icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right.fill" color:[SCIUtils SCIColor_Primary] size:20.0] url:@"https://discord.com"],
+                                                 [SCISetting linkCellWithTitle:@"TikTok" subtitle:@"@peki_scripter" icon:[SCISymbol symbolWithName:@"play.rectangle.fill" color:[SCIUtils SCIColor_Primary] size:20.0] url:@"https://www.tiktok.com/@peki_scripter"]
+                                             ]
+                                         },
+                                         @{
+                                             @"header": @"Instagram",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
                                             ]
@@ -280,7 +288,7 @@
 ///
 
 + (NSString *)title {
-    return @"PekiWare Settings";
+    return @"Peki Scripter Settings";
 }
 
 

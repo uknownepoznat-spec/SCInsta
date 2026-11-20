@@ -10,7 +10,7 @@
 - (void)swipeableScrollManagerDidEndDraggingAboveSwipeThreshold:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"shh_mode_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm shh mode triggered");
+        NSLog(@"[Peki Scripter] Confirm shh mode triggered");
 
         confirming = YES;
         [SCIUtils showConfirmation:^{
@@ -27,7 +27,7 @@
 - (void)shhModeTransitionButtonDidTap:(id)arg1 {
     static BOOL confirmingBtn = NO;
     if ([SCIUtils getBoolPref:@"shh_mode_confirm"] && !confirmingBtn) {
-        NSLog(@"[PekiWare] Confirm shh mode triggered");
+        NSLog(@"[Peki Scripter] Confirm shh mode triggered");
 
         confirmingBtn = YES;
         [SCIUtils showConfirmation:^{
@@ -44,7 +44,7 @@
 - (void)messageListViewControllerDidToggleShhMode:(id)arg1 {
     static BOOL confirmingToggle = NO;
     if ([SCIUtils getBoolPref:@"shh_mode_confirm"] && !confirmingToggle) {
-        NSLog(@"[PekiWare] Confirm shh mode triggered");
+        NSLog(@"[Peki Scripter] Confirm shh mode triggered");
 
         confirmingToggle = YES;
         [SCIUtils showConfirmation:^{

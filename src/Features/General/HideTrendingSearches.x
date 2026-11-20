@@ -7,7 +7,7 @@
 
     if ([[self delegate] isKindOfClass:%c(IGSearchTypeaheadNavigationHeaderView)]) {
         if ([SCIUtils getBoolPref:@"hide_trending_searches"]) {
-            NSLog(@"[PekiWare] Hiding trending searches");
+            NSLog(@"[Peki Scripter] Hiding trending searches");
 
             [self removeFromSuperview];
         }

@@ -10,7 +10,7 @@
 - (void)_didTapAudioButton:(id)arg1 {
     static BOOL confirmingCall = NO;
     if ([SCIUtils getBoolPref:@"call_confirm"] && !confirmingCall) {
-        NSLog(@"[PekiWare] Call confirm triggered");
+        NSLog(@"[Peki Scripter] Call confirm triggered");
 
         confirmingCall = YES;
         [SCIUtils showConfirmation:^{
@@ -28,7 +28,7 @@
 - (void)_didTapVideoButton:(id)arg1 {
     static BOOL confirmingVideoCall = NO;
     if ([SCIUtils getBoolPref:@"call_confirm"] && !confirmingVideoCall) {
-        NSLog(@"[PekiWare] Call confirm triggered");
+        NSLog(@"[Peki Scripter] Call confirm triggered");
 
         confirmingVideoCall = YES;
         [SCIUtils showConfirmation:^{

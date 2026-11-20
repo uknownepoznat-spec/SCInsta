@@ -23,7 +23,7 @@
 
         // Refresh option picker
         if ([self respondsToSelector:@selector(reloadData)]) {
-            NSLog(@"[PekiWare] Enable all text effects: Reloading data...");
+            NSLog(@"[Peki Scripter] Enable all text effects: Reloading data...");
             [self reloadData];
         }
 

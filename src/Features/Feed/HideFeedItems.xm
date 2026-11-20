@@ -14,14 +14,14 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
                 ([obj isKindOfClass:%c(IGMedia)] && !((IGMedia *)obj).isOrganicMedia)
                 || ([obj isKindOfClass:%c(IGFeedGroupHeaderViewModel)] && [[obj title] isEqualToString:@"Suggested Posts"])
             ) {
-                NSLog(@"[PekiWare] Removing suggested posts");
+                NSLog(@"[Peki Scripter] Removing suggested posts");
 
                 continue;
             }
 
             // Suggested stories (carousel)
             if ([obj isKindOfClass:%c(IGInFeedStoriesTrayModel)]) {
-                NSLog(@"[PekiWare] Hiding suggested stories carousel");
+                NSLog(@"[Peki Scripter] Hiding suggested stories carousel");
 
                 continue;
             }
@@ -31,7 +31,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
         // Remove suggested reels (carousel)
         if (isFeed && [SCIUtils getBoolPref:@"no_suggested_reels"]) {
             if ([obj isKindOfClass:%c(IGFeedScrollableClipsModel)]) {
-                NSLog(@"[PekiWare] Hiding suggested reels carousel");
+                NSLog(@"[Peki Scripter] Hiding suggested reels carousel");
 
                 continue;
             }
@@ -42,14 +42,14 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
             
             // Feed
             if (isFeed && [obj isKindOfClass:%c(IGHScrollAYMFModel)]) {
-                NSLog(@"[PekiWare] Hiding accounts suggested for you (feed)");
+                NSLog(@"[Peki Scripter] Hiding accounts suggested for you (feed)");
 
                 continue;
             }
 
             // Reels
             if ([obj isKindOfClass:%c(IGSuggestedUserInReelsModel)]) {
-                NSLog(@"[PekiWare] Hiding accounts suggested for you (reels)");
+                NSLog(@"[Peki Scripter] Hiding accounts suggested for you (reels)");
 
                 continue;
             }
@@ -61,7 +61,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
             // Feed (carousel)
             if (isFeed) {
                 if ([obj isKindOfClass:%c(IGBloksFeedUnitModel)] || [obj isKindOfClass:objc_getClass("IGThreadsInFeedModels.IGThreadsInFeedModel")]) {
-                    NSLog(@"[PekiWare] Hiding suggested threads posts (carousel)");
+                    NSLog(@"[Peki Scripter] Hiding suggested threads posts (carousel)");
 
                     continue;
                 }
@@ -69,7 +69,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 
             // Reels
             if ([obj isKindOfClass:%c(IGSundialNetegoItem)]) {
-                NSLog(@"[PekiWare] Hiding suggested threads posts (reels)");
+                NSLog(@"[Peki Scripter] Hiding suggested threads posts (reels)");
 
                 continue;
             }
@@ -79,7 +79,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
         // Remove story tray
         if (isFeed && [SCIUtils getBoolPref:@"hide_stories_tray"]) {
             if ([obj isKindOfClass:%c(IGStoryDataController)]) {
-                NSLog(@"[PekiWare] Hiding stories tray");
+                NSLog(@"[Peki Scripter] Hiding stories tray");
 
                 continue;
             }
@@ -88,7 +88,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
         // Hide entire feed
         if (isFeed && [SCIUtils getBoolPref:@"hide_entire_feed"]) {
             if ([obj isKindOfClass:%c(IGPostCreationManager)] || [obj isKindOfClass:%c(IGMedia)] || [obj isKindOfClass:%c(IGEndOfFeedDemarcatorModel)] || [obj isKindOfClass:%c(IGSpinnerLabelViewModel)]) {
-                NSLog(@"[PekiWare] Hiding entire feed");
+                NSLog(@"[Peki Scripter] Hiding entire feed");
 
                 continue;
             }
@@ -101,7 +101,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
                 || ([obj isKindOfClass:%c(IGDiscoveryGridItem)] && [[obj model] isKindOfClass:%c(IGAdItem)])
                 || [obj isKindOfClass:%c(IGAdItem)]
             ) {
-                NSLog(@"[PekiWare] Removing ads");
+                NSLog(@"[Peki Scripter] Removing ads");
 
                 continue;
             }
@@ -159,7 +159,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGStoryAdPool
 - (id)initWithUserSession:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        NSLog(@"[PekiWare] Removing ads");
+        NSLog(@"[Peki Scripter] Removing ads");
 
         return nil;
     }
@@ -170,7 +170,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGStoryAdsManager
 - (id)initWithUserSession:(id)arg1 storyViewerLoggingContext:(id)arg2 storyFullscreenSectionLoggingContext:(id)arg3 viewController:(id)arg4 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        NSLog(@"[PekiWare] Removing ads");
+        NSLog(@"[Peki Scripter] Removing ads");
 
         return nil;
     }
@@ -181,7 +181,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGStoryAdsFetcher
 - (id)initWithUserSession:(id)arg1 delegate:(id)arg2 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        NSLog(@"[PekiWare] Removing ads");
+        NSLog(@"[Peki Scripter] Removing ads");
 
         return nil;
     }
@@ -193,7 +193,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGStoryAdsResponseParser
 - (id)parsedObjectFromResponse:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        NSLog(@"[PekiWare] Removing ads");
+        NSLog(@"[Peki Scripter] Removing ads");
 
         return nil;
     }
@@ -202,7 +202,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 }
 - (id)initWithReelStore:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        NSLog(@"[PekiWare] Removing ads");
+        NSLog(@"[Peki Scripter] Removing ads");
 
         return nil;
     }
@@ -213,7 +213,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGStoryAdsOptInTextView
 - (id)initWithBrandedContentStyledString:(id)arg1 sponsoredPostLabel:(id)arg2 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        NSLog(@"[PekiWare] Removing ads");
+        NSLog(@"[Peki Scripter] Removing ads");
 
         return nil;
     }
@@ -224,7 +224,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %hook IGSundialAdsResponseParser
 - (id)parsedObjectFromResponse:(id)arg1 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        NSLog(@"[PekiWare] Removing ads");
+        NSLog(@"[Peki Scripter] Removing ads");
 
         return nil;
     }
@@ -233,7 +233,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 }
 - (id)initWithMediaStore:(id)arg1 userStore:(id)arg2 {
     if ([SCIUtils getBoolPref:@"hide_ads"]) {
-        NSLog(@"[PekiWare] Removing ads");
+        NSLog(@"[Peki Scripter] Removing ads");
         
         return nil;
     }
@@ -295,7 +295,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
     %orig;
 
     if ([SCIUtils getBoolPref:@"no_suggested_post"]) {
-        NSLog(@"[PekiWare] Hiding end of feed message");
+        NSLog(@"[Peki Scripter] Hiding end of feed message");
 
         // Hide suggested for you text
         UILabel *_titleLabel = MSHookIvar<UILabel *>(self, "_titleLabel");

@@ -37,7 +37,7 @@
 - (void)triggerRefreshFromTabTap {
     static BOOL confirmingRefresh = NO;
     if ([SCIUtils getBoolPref:@"refresh_reel_confirm"] && !confirmingRefresh) {
-        NSLog(@"[PekiWare] Reel refresh triggered");
+        NSLog(@"[Peki Scripter] Reel refresh triggered");
 
         confirmingRefresh = YES;
         [SCIUtils showConfirmation:^{
@@ -53,7 +53,7 @@
 - (void)_refreshReelsWithParamsForNetworkRequest:(NSInteger)arg1 userDidPullToRefresh:(BOOL)arg2 {
     static BOOL confirmingRefreshParams = NO;
     if ([SCIUtils getBoolPref:@"refresh_reel_confirm"] && !confirmingRefreshParams) {
-        NSLog(@"[PekiWare] Reel refresh triggered");
+        NSLog(@"[Peki Scripter] Reel refresh triggered");
 
         confirmingRefreshParams = YES;
         [SCIUtils showConfirmation:^{

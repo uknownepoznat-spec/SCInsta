@@ -5,7 +5,7 @@
     %orig;
 
     if ([SCIUtils getBoolPref:@"hide_reels_header"]) {
-        NSLog(@"[PekiWare] Hiding reels header");
+        NSLog(@"[Peki Scripter] Hiding reels header");
 
         [self removeFromSuperview];
     }

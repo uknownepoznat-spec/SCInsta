@@ -6,10 +6,10 @@
 - (BOOL)isActive {
     BOOL ghostMode = [SCIUtils getBoolPref:@"ghost_mode"];
     BOOL original = %orig;
-    NSLog(@"[PekiWare] Ghost Mode: %@, Original isActive: %@", ghostMode ? @"ON" : @"OFF", original ? @"YES" : @"NO");
+    NSLog(@"[Peki Scripter] Ghost Mode: %@, Original isActive: %@", ghostMode ? @"ON" : @"OFF", original ? @"YES" : @"NO");
     
     if (ghostMode) {
-        NSLog(@"[PekiWare] Ghost Mode - User appears inactive");
+        NSLog(@"[Peki Scripter] Ghost Mode - User appears inactive");
         return NO;
     }
     return original;
@@ -18,10 +18,10 @@
 - (BOOL)isOnline {
     BOOL ghostMode = [SCIUtils getBoolPref:@"ghost_mode"];
     BOOL original = %orig;
-    NSLog(@"[PekiWare] Ghost Mode: %@, Original isOnline: %@", ghostMode ? @"ON" : @"OFF", original ? @"YES" : @"NO");
+    NSLog(@"[Peki Scripter] Ghost Mode: %@, Original isOnline: %@", ghostMode ? @"ON" : @"OFF", original ? @"YES" : @"NO");
     
     if (ghostMode) {
-        NSLog(@"[PekiWare] Ghost Mode - User appears offline");
+        NSLog(@"[Peki Scripter] Ghost Mode - User appears offline");
         return NO;
     }
     return original;
@@ -40,7 +40,7 @@
 %hook IGDirectThread
 - (void)setIsTyping:(BOOL)typing {
     if ([SCIUtils getBoolPref:@"hide_typing_indicator"]) {
-        NSLog(@"[PekiWare] Blocking typing indicator");
+        NSLog(@"[Peki Scripter] Blocking typing indicator");
         return;
     }
     %orig;
@@ -51,7 +51,7 @@
 %hook IGStoryViewer
 - (void)viewDidAppear:(BOOL)animated {
     if ([SCIUtils getBoolPref:@"story_ghost_mode"]) {
-        NSLog(@"[PekiWare] Story Ghost Mode - Viewing without being seen");
+        NSLog(@"[Peki Scripter] Story Ghost Mode - Viewing without being seen");
         return;
     }
     %orig;
@@ -59,7 +59,7 @@
 
 - (void)markStoryAsSeen:(id)story {
     if ([SCIUtils getBoolPref:@"story_ghost_mode"]) {
-        NSLog(@"[PekiWare] Blocking story seen notification");
+        NSLog(@"[Peki Scripter] Blocking story seen notification");
         return;
     }
     %orig;
@@ -70,7 +70,7 @@
 %hook IGDirectMessage
 - (void)setIsDeleted:(BOOL)deleted {
     if ([SCIUtils getBoolPref:@"anti_delete"] && deleted) {
-        NSLog(@"[PekiWare] Anti-Delete - Protecting message from deletion");
+        NSLog(@"[Peki Scripter] Anti-Delete - Protecting message from deletion");
         return;
     }
     %orig;
@@ -89,7 +89,7 @@ static void initMessageScheduler() {
 - (void)sendMessageWithText:(id)text {
     NSString *scheduleTime = [SCIUtils getStringPref:@"message_schedule_time"];
     if (scheduleTime && ![scheduleTime isEqualToString:@""]) {
-        NSLog(@"[PekiWare] Scheduling message for: %@", scheduleTime);
+        NSLog(@"[Peki Scripter] Scheduling message for: %@", scheduleTime);
         [_scheduledMessages setObject:text forKey:scheduleTime];
         return;
     }
@@ -103,7 +103,7 @@ static void initMessageScheduler() {
     if ([SCIUtils getBoolPref:@"auto_reply_enabled"]) {
         NSString *autoReplyText = [SCIUtils getStringPref:@"auto_reply_text"];
         if (autoReplyText && ![autoReplyText isEqualToString:@""]) {
-            NSLog(@"[PekiWare] Auto-replying with: %@", autoReplyText);
+            NSLog(@"[Peki Scripter] Auto-replying with: %@", autoReplyText);
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 // Auto-reply logic here
             });
@@ -119,7 +119,7 @@ static void initMessageScheduler() {
     %orig;
     
     if ([SCIUtils getBoolPref:@"hd_profile_pics"]) {
-        NSLog(@"[PekiWare] Enabling HD profile pictures");
+        NSLog(@"[Peki Scripter] Enabling HD profile pictures");
     }
 }
 %end
@@ -128,7 +128,7 @@ static void initMessageScheduler() {
 %hook IGDirectComposer
 - (void)sendMessage:(id)message {
     if ([SCIUtils getBoolPref:@"message_encryption"]) {
-        NSLog(@"[PekiWare] Encrypting message");
+        NSLog(@"[Peki Scripter] Encrypting message");
     }
     %orig;
 }

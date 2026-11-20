@@ -46,7 +46,7 @@
 - (void)_onLikeButtonPressed:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -63,7 +63,7 @@
 - (void)_onDoubleTap:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -80,7 +80,7 @@
 - (void)_handleDoubleTapGesture:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -99,7 +99,7 @@
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm reels like triggered");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -114,7 +114,7 @@
 - (void)controlsOverlayControllerDidLongPressLikeButton:(id)arg1 gestureRecognizer:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm reels like triggered");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -129,7 +129,7 @@
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm reels like triggered");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -146,7 +146,7 @@
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm reels like triggered");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -161,7 +161,7 @@
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm reels like triggered");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -178,7 +178,7 @@
 - (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm reels like triggered");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -193,7 +193,7 @@
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm_reels"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm reels like triggered");
+        NSLog(@"[Peki Scripter] Confirm reels like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -212,7 +212,7 @@
 - (void)commentCell:(id)arg1 didTapLikeButton:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -227,7 +227,7 @@
 - (void)commentCell:(id)arg1 didTapLikedByButtonForUser:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -242,7 +242,7 @@
 - (void)commentCellDidLongPressOnLikeButton:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -257,7 +257,7 @@
 - (void)commentCellDidEndLongPressOnLikeButton:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -272,7 +272,7 @@
 - (void)commentCellDidDoubleTap:(id)arg1 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -289,7 +289,7 @@
 - (void)_didTapLikeButton {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -308,7 +308,7 @@
 - (void)_handleLikeTapped {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -323,7 +323,7 @@
 - (void)_likeTapped {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -338,7 +338,7 @@
 - (void)inputView:(id)arg1 didTapLikeButton:(id)arg2 {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;
@@ -357,7 +357,7 @@
 - (void)_didTapLikeButton {
     static BOOL confirming = NO;
     if ([SCIUtils getBoolPref:@"like_confirm"] && !confirming) {
-        NSLog(@"[PekiWare] Confirm post like triggered");
+        NSLog(@"[Peki Scripter] Confirm post like triggered");
         confirming = YES;
         [SCIUtils showConfirmation:^{
             confirming = NO;

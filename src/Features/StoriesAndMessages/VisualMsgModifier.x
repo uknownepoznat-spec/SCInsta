@@ -12,7 +12,7 @@
         if (mode == 0) {
             mode = 1;
 
-            NSLog(@"[PekiWare] Modifying visual message from read-once to replayable");
+            NSLog(@"[Peki Scripter] Modifying visual message from read-once to replayable");
         }
     }
     
