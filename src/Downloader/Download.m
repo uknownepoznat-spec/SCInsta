@@ -18,6 +18,8 @@
     return self;
 }
 - (void)downloadFileWithURL:(NSURL *)url fileExtension:(NSString *)fileExtension hudLabel:(NSString *)hudLabel {
+    if (self.downloading) return;
+    self.downloading = YES;
     // Show progress gui
     self.hud = [[JGProgressHUD alloc] init];
     self.hud.textLabel.text = hudLabel != nil ? hudLabel : @"Downloading";
@@ -68,16 +70,23 @@
 }
 - (void)downloadDidFinishWithError:(NSError *)error {
     dispatch_async(dispatch_get_main_queue(), ^{
+        self.downloading = NO;
+        [self.hud dismiss];
         // Check if it actually errored (not cancelled)
         if (error && error.code != NSURLErrorCancelled) {
             NSLog(@"[Peki Scripter] Download: Download failed with error: \"%@\"", error);
-            [SCIUtils showErrorHUDWithDescription:@"Error, try again later"];
+            [SCIUtils showErrorHUDWithDescription:error.localizedDescription ?: @"Download failed. Please try again."];
         }
     });
 }
 - (void)downloadDidFinishWithFileURL:(NSURL *)fileURL {
     dispatch_async(dispatch_get_main_queue(), ^{
+        self.downloading = NO;
         [self.hud dismiss];
+        if (!fileURL || ![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path]) {
+            [SCIUtils showErrorHUDWithDescription:@"The downloaded file could not be found."];
+            return;
+        }
 
         NSLog(@"[Peki Scripter] Download: Download finished with url: \"%@\"", [fileURL absoluteString]);
         NSLog(@"[Peki Scripter] Download: Completed with action %d", (int)self.action);

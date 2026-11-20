@@ -44,6 +44,7 @@
 + (JGProgressHUD *)showErrorHUDWithDescription:(NSString *)errorDesc dismissAfterDelay:(CGFloat)dismissDelay;
 
 // Media
++ (id)mediaValueForObject:(id)object key:(NSString *)key;
 + (NSURL *)getPhotoUrl:(IGPhoto *)photo;
 + (NSURL *)getPhotoUrlForMedia:(IGMedia *)media;
 

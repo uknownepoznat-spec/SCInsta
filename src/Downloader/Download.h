@@ -18,6 +18,7 @@ typedef NS_ENUM(NSUInteger, DownloadAction) {
 
 @property (nonatomic, strong) SCIDownloadManager *downloadManager;
 @property (nonatomic, strong) JGProgressHUD *hud;
+@property (nonatomic) BOOL downloading;
 
 - (instancetype)initWithAction:(DownloadAction)action showProgress:(BOOL)showProgress;
 

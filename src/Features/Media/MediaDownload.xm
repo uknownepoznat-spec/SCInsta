@@ -1,6 +1,7 @@
 #import "../../InstagramHeaders.h"
 #import "../../Utils.h"
 #import "../../Downloader/Download.h"
+#import <objc/runtime.h>
 
 static SCIDownloadDelegate *imageDownloadDelegate;
 static SCIDownloadDelegate *videoDownloadDelegate;
@@ -12,6 +13,53 @@ static void initDownloaders () {
         imageDownloadDelegate = [[SCIDownloadDelegate alloc] initWithAction:quickLook showProgress:NO];
         videoDownloadDelegate = [[SCIDownloadDelegate alloc] initWithAction:share showProgress:YES];
     });
+}
+
+@interface SCIStoryDownloadGesture : UILongPressGestureRecognizer <UIGestureRecognizerDelegate>
+@end
+
+@implementation SCIStoryDownloadGesture
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gesture
+        shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)other {
+    return ![other isKindOfClass:[SCIStoryDownloadGesture class]];
+}
+@end
+
+static char SCIStoryGestureKey;
+static void SCIInstallStoryGesture(UIView *view) {
+    if (objc_getAssociatedObject(view, &SCIStoryGestureKey)) return;
+    SCIStoryDownloadGesture *gesture = [[SCIStoryDownloadGesture alloc]
+        initWithTarget:view action:NSSelectorFromString(@"handleLongPress:")];
+    gesture.minimumPressDuration = MAX(0.3, [SCIUtils getDoublePref:@"dw_finger_duration"]);
+    gesture.numberOfTouchesRequired = MAX(1, MIN(5, (NSInteger)[SCIUtils getDoublePref:@"dw_finger_count"]));
+    gesture.cancelsTouchesInView = NO;
+    gesture.delegate = gesture;
+    [view addGestureRecognizer:gesture];
+    objc_setAssociatedObject(view, &SCIStoryGestureKey, gesture, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+static void SCIDownloadStory(UIView *view, BOOL video) {
+    id item = [SCIUtils mediaValueForObject:view key:@"item"];
+    if (!item) {
+        id delegate = [SCIUtils mediaValueForObject:view key:@"captionDelegate"];
+        item = [SCIUtils mediaValueForObject:delegate key:@"currentStoryItem"];
+    }
+    if (!item) {
+        id controller = [SCIUtils nearestViewControllerForView:view];
+        id dataSource = [SCIUtils mediaValueForObject:controller key:@"dataSource"];
+        item = [SCIUtils mediaValueForObject:dataSource key:@"currentMessage"];
+    }
+    NSURL *url = video ? [SCIUtils getVideoUrlForMedia:item] : [SCIUtils getPhotoUrlForMedia:item];
+    if (!url) {
+        NSLog(@"[Peki Scripter] Unsupported story media: view=%@ item=%@",
+            NSStringFromClass(view.class), NSStringFromClass([item class]));
+        [SCIUtils showErrorHUDWithDescription:@"This story format is not supported yet. Try reopening the story."];
+        return;
+    }
+    initDownloaders();
+    // Share both media types, so Save Image/Save Video is available consistently.
+    NSString *extension = url.pathExtension.length ? url.pathExtension : (video ? @"mp4" : @"jpg");
+    [videoDownloadDelegate downloadFileWithURL:url fileExtension:extension hudLabel:@"Saving story"];
 }
 
 /* * Feed * */
@@ -196,36 +244,18 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIUtils getBoolPref:@"dw_story"]) {
+    if ([SCIUtils getBoolPref:@"dw_story"] && [SCIUtils getBoolPref:@"story_downloader"]) {
         [self addLongPressGestureRecognizer];
     }
 
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    NSLog(@"[Peki Scripter] Adding story photo download long press gesture recognizer");
-
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
-
-    [self addGestureRecognizer:longPress];
+    SCIInstallStoryGesture(self);
 }
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
-
-    NSURL *photoUrl = [SCIUtils getPhotoUrlForMedia:[self item]];
-    if (!photoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Could not extract photo url from story"];
-        
-        return;
-    }
-
-    // Download image & show in share menu
-    initDownloaders();
-    [imageDownloadDelegate downloadFileWithURL:photoUrl
-                                 fileExtension:[[photoUrl lastPathComponent]pathExtension]
-                                      hudLabel:nil];
+    SCIDownloadStory(self, NO);
 }
 %end
 
@@ -234,37 +264,18 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIUtils getBoolPref:@"dw_story"]) {
+    if ([SCIUtils getBoolPref:@"dw_story"] && [SCIUtils getBoolPref:@"story_downloader"]) {
         [self addLongPressGestureRecognizer];
     }
 
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    //NSLog(@"[Peki Scripter] Adding story video download long press gesture recognizer");
-
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
-
-    [self addGestureRecognizer:longPress];
+    SCIInstallStoryGesture(self);
 }
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
-
-    NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.item];
-    
-    if (!videoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
-
-        return;
-    }
-
-    // Download video & show in share menu
-    initDownloaders();
-    [videoDownloadDelegate downloadFileWithURL:videoUrl
-                                 fileExtension:[[videoUrl lastPathComponent] pathExtension]
-                                      hudLabel:nil];
+    SCIDownloadStory(self, YES);
 }
 %end
 
@@ -273,58 +284,18 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIUtils getBoolPref:@"dw_story"]) {
+    if ([SCIUtils getBoolPref:@"dw_story"] && [SCIUtils getBoolPref:@"story_downloader"]) {
         [self addLongPressGestureRecognizer];
     }
 
     return;
 }
 %new - (void)addLongPressGestureRecognizer {
-    //NSLog(@"[Peki Scripter] Adding story video download long press gesture recognizer");
-
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
-
-    [self addGestureRecognizer:longPress];
+    SCIInstallStoryGesture(self);
 }
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
-
-    NSURL *videoUrl;
-
-    IGStoryFullscreenSectionController *captionDelegate = self.captionDelegate;
-    if (captionDelegate) {
-        videoUrl = [SCIUtils getVideoUrlForMedia:captionDelegate.currentStoryItem];
-    }
-    else {
-        // Direct messages video player
-        id parentVC = [SCIUtils nearestViewControllerForView:self];
-        if (!parentVC || ![parentVC isKindOfClass:%c(IGDirectVisualMessageViewerController)]) return;
-
-        IGDirectVisualMessageViewerViewModeAwareDataSource *_dataSource = MSHookIvar<IGDirectVisualMessageViewerViewModeAwareDataSource *>(parentVC, "_dataSource");
-        if (!_dataSource) return;
-        
-        IGDirectVisualMessage *_currentMessage = MSHookIvar<IGDirectVisualMessage *>(_dataSource, "_currentMessage"); 
-        if (!_currentMessage) return;
-        
-        IGVideo *rawVideo = _currentMessage.rawVideo;
-        if (!rawVideo) return;
-        
-        videoUrl = [SCIUtils getVideoUrl:rawVideo];
-    }
-    
-    if (!videoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
-
-        return;
-    }
-
-    // Download video & show in share menu
-    initDownloaders();
-    [videoDownloadDelegate downloadFileWithURL:videoUrl
-                                 fileExtension:[[videoUrl lastPathComponent] pathExtension]
-                                      hudLabel:nil];
+    SCIDownloadStory(self, YES);
 }
 %end
 

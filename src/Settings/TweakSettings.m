@@ -16,10 +16,10 @@
 + (NSArray *)sections {
     return @[
         @{
-            @"header": @"",
+            @"header": @"YOUR MODULES",
             @"rows": @[
-                [SCISetting navigationCellWithTitle:@"General"
-                                           subtitle:@""
+                 [SCISetting navigationCellWithTitle:@"General"
+                                            subtitle:@"A cleaner, quieter Instagram"
                                                icon:[SCISymbol symbolWithName:@"gear"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -52,8 +52,8 @@
                                             ]
                                         }]
                 ],
-                [SCISetting navigationCellWithTitle:@"Feed"
-                                           subtitle:@""
+                 [SCISetting navigationCellWithTitle:@"Feed"
+                                            subtitle:@"Choose what deserves your attention"
                                                icon:[SCISymbol symbolWithName:@"rectangle.stack"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -67,8 +67,8 @@
                                             ]
                                         }]
                 ],
-                [SCISetting navigationCellWithTitle:@"Reels"
-                                           subtitle:@""
+                 [SCISetting navigationCellWithTitle:@"Reels"
+                                            subtitle:@"Playback, gestures and focus"
                                                icon:[SCISymbol symbolWithName:@"film.stack"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -86,8 +86,8 @@
                                             ]
                                         }]
                 ],
-                [SCISetting navigationCellWithTitle:@"Saving"
-                                           subtitle:@""
+                 [SCISetting navigationCellWithTitle:@"Saving"
+                                            subtitle:@"Downloads and long-press controls"
                                                icon:[SCISymbol symbolWithName:@"tray.and.arrow.down"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -106,8 +106,8 @@
                                             ]
                                         }]
                 ],
-                [SCISetting navigationCellWithTitle:@"Stories and messages"
-                                           subtitle:@""
+                 [SCISetting navigationCellWithTitle:@"Stories and messages"
+                                            subtitle:@"Privacy, stories and conversations"
                                                icon:[SCISymbol symbolWithName:@"rectangle.portrait.on.rectangle.portrait.angled"]
                                         navSections:@[@{
                                             @"header": @"Privacy & Ghost Mode",
@@ -121,7 +121,7 @@
                                         @{
                                             @"header": @"Media & Downloads",
                                             @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Story Downloader" subtitle:@"Download stories with a single tap" defaultsKey:@"story_downloader"],
+                                                [SCISetting switchCellWithTitle:@"Story Downloader" subtitle:@"Story saving uses Saving → Download stories and your configured long-press gesture" defaultsKey:@"story_downloader"],
                                                 [SCISetting switchCellWithTitle:@"HD Profile Pictures" subtitle:@"View and download profile pictures in full HD quality" defaultsKey:@"hd_profile_pictures"],
                                                 [SCISetting switchCellWithTitle:@"Unseen Stories Counter" subtitle:@"Show count of unseen stories on the home screen" defaultsKey:@"unseen_stories_counter"]
                                             ]
@@ -146,8 +146,8 @@
                                             ]
                                         }]
                 ],
-                [SCISetting navigationCellWithTitle:@"Navigation"
-                                           subtitle:@""
+                 [SCISetting navigationCellWithTitle:@"Navigation"
+                                            subtitle:@"Make the app move your way"
                                                icon:[SCISymbol symbolWithName:@"hand.draw.fill"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -166,8 +166,8 @@
                                             ]
                                         }]
                 ],
-                [SCISetting navigationCellWithTitle:@"Confirm actions"
-                                           subtitle:@""
+                 [SCISetting navigationCellWithTitle:@"Confirm actions"
+                                            subtitle:@"Fewer accidental taps"
                                                icon:[SCISymbol symbolWithName:@"checkmark"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -234,14 +234,6 @@
                                              ]
                                          },
                                          @{
-                                             @"header": @"Developer",
-                                             @"rows": @[
-                                                 [SCISetting staticCellWithTitle:@"Peki Scripter" subtitle:@"Custom Instagram experience • built with precision" icon:[SCISymbol symbolWithName:@"hammer.fill" color:[SCIUtils SCIColor_Primary] size:20.0]],
-                                                 [SCISetting linkCellWithTitle:@"Discord" subtitle:@"pekiscripter" icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right.fill" color:[SCIUtils SCIColor_Primary] size:20.0] url:@"https://discord.com"],
-                                                 [SCISetting linkCellWithTitle:@"TikTok" subtitle:@"@peki_scripter" icon:[SCISymbol symbolWithName:@"play.rectangle.fill" color:[SCIUtils SCIColor_Primary] size:20.0] url:@"https://www.tiktok.com/@peki_scripter"]
-                                             ]
-                                         },
-                                         @{
                                              @"header": @"Instagram",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
@@ -277,6 +269,22 @@
                 ]
             ]
         },
+        @{
+            @"header": @"DEVELOPER",
+            @"footer": @"Tap Discord to copy the username. TikTok opens the developer profile.",
+            @"rows": @[
+                [SCISetting staticCellWithTitle:@"Peki Scripter" subtitle:@"Developer & custom build" icon:[SCISymbol symbolWithName:@"chevron.left.forwardslash.chevron.right"]],
+                [SCISetting buttonCellWithTitle:@"Discord" subtitle:@"pekiscripter · Tap to copy"
+                    icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right"]
+                    action:^{
+                        [UIPasteboard generalPasteboard].string = @"pekiscripter";
+                        UINotificationFeedbackGenerator *feedback = [UINotificationFeedbackGenerator new];
+                        [feedback notificationOccurred:UINotificationFeedbackTypeSuccess];
+                    }],
+                [SCISetting linkCellWithTitle:@"TikTok" subtitle:@"@peki_scripter"
+                    icon:[SCISymbol symbolWithName:@"play.rectangle"] url:@"https://www.tiktok.com/@peki_scripter"]
+            ]
+        }
     ];
 }
 

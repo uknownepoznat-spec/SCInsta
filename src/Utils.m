@@ -1,5 +1,52 @@
 #import "Utils.h"
 
+// Story wrappers and the types inside URL lists vary between Instagram releases.
+static id SCIMediaValue(id object, NSString *key) {
+    if (!object || object == [NSNull null]) return nil;
+    @try {
+        id value = [object isKindOfClass:[NSDictionary class]] ? object[key] : [object valueForKey:key];
+        return value == [NSNull null] ? nil : value;
+    } @catch (NSException *exception) {
+        return nil;
+    }
+}
+
+static NSURL *SCIExtractMediaURL(id object, BOOL video, NSUInteger depth) {
+    if (!object || object == [NSNull null] || depth > 6) return nil;
+    if ([object isKindOfClass:[NSString class]] || [object isKindOfClass:[NSURL class]]) {
+        NSURL *url = [object isKindOfClass:[NSURL class]] ? object : [NSURL URLWithString:object];
+        NSString *scheme = url.scheme.lowercaseString;
+        return ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"http"]) ? url : nil;
+    }
+    if ([object isKindOfClass:[NSArray class]] || [object isKindOfClass:[NSSet class]]) {
+        for (id entry in object) {
+            NSURL *url = SCIExtractMediaURL(entry, video, depth + 1);
+            if (url) return url;
+        }
+        return nil;
+    }
+    if (!video && [object respondsToSelector:@selector(imageURLForWidth:)]) {
+        @try {
+            NSURL *url = SCIExtractMediaURL([(IGPhoto *)object imageURLForWidth:4096.0], NO, depth + 1);
+            if (url) return url;
+        } @catch (NSException *exception) {
+            NSLog(@"[Peki Scripter] Photo URL lookup failed: %@", exception.name);
+        }
+    }
+    NSArray *keys = video
+        ? @[@"sortedVideoURLsBySize", @"allVideoURLs", @"videoVersions", @"video_versions",
+            @"videoURL", @"video", @"rawVideo", @"media", @"storyItem", @"item", @"url"]
+        : @[@"photo", @"imageVersions2", @"image_versions2", @"candidates",
+            @"media", @"storyItem", @"item", @"imageURL", @"url"];
+    for (NSString *key in keys) {
+        id value = SCIMediaValue(object, key);
+        if (!value || value == object) continue;
+        NSURL *url = SCIExtractMediaURL(value, video, depth + 1);
+        if (url) return url;
+    }
+    return nil;
+}
+
 @implementation SCIUtils
 
 + (BOOL)getBoolPref:(NSString *)key {
@@ -68,12 +115,16 @@
     [topMostController() presentViewController:previewController animated:true completion:nil];
 }
 + (void)showShareVC:(id)item {
+    if (!item) return;
+    UIViewController *presenter = topMostController();
+    if (!presenter.view.window || presenter.isBeingDismissed || presenter.isBeingPresented) return;
     UIActivityViewController *acVC = [[UIActivityViewController alloc] initWithActivityItems:@[item] applicationActivities:nil];
-    if (is_iPad()) {
-        acVC.popoverPresentationController.sourceView = topMostController().view;
-        acVC.popoverPresentationController.sourceRect = CGRectMake(topMostController().view.bounds.size.width / 2.0, topMostController().view.bounds.size.height / 2.0, 1.0, 1.0);
+    if (acVC.popoverPresentationController) {
+        acVC.popoverPresentationController.sourceView = presenter.view;
+        acVC.popoverPresentationController.sourceRect = CGRectMake(presenter.view.bounds.size.width / 2.0, presenter.view.bounds.size.height / 2.0, 1.0, 1.0);
+        acVC.popoverPresentationController.permittedArrowDirections = 0;
     }
-    [topMostController() presentViewController:acVC animated:true completion:nil];
+    [presenter presentViewController:acVC animated:true completion:nil];
 }
 
 // Colours
@@ -106,45 +157,21 @@
 }
 
 // Media
++ (id)mediaValueForObject:(id)object key:(NSString *)key {
+    return SCIMediaValue(object, key);
+}
+
 + (NSURL *)getPhotoUrl:(IGPhoto *)photo {
-    if (!photo) return nil;
-
-    // Get highest quality photo link
-    NSURL *photoUrl = [photo imageURLForWidth:100000.00];
-
-    return photoUrl;
+    return SCIExtractMediaURL(photo, NO, 0);
 }
 + (NSURL *)getPhotoUrlForMedia:(IGMedia *)media {
-    if (!media) return nil;
-
-    IGPhoto *photo = media.photo;
-
-    return [SCIUtils getPhotoUrl:photo];
+    return SCIExtractMediaURL(media, NO, 0);
 }
 + (NSURL *)getVideoUrl:(IGVideo *)video {
-    if (!video) return nil;
-
-    // The past (pre v398)
-    if ([video respondsToSelector:@selector(sortedVideoURLsBySize)]) {
-        NSArray<NSDictionary *> *sorted = [video sortedVideoURLsBySize];
-        NSString *urlString = sorted.firstObject[@"url"];
-        return urlString.length ? [NSURL URLWithString:urlString] : nil;
-    }
-
-    // The present (post v398)
-    if ([video respondsToSelector:@selector(allVideoURLs)]) {
-        return [[video allVideoURLs] anyObject];
-    }
-
-    return nil;
+    return SCIExtractMediaURL(video, YES, 0);
 }
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media {
-    if (!media) return nil;
-
-    IGVideo *video = media.video;
-    if (!video) return nil;
-
-    return [SCIUtils getVideoUrl:video];
+    return SCIExtractMediaURL(media, YES, 0);
 }
 
 // View Controllers

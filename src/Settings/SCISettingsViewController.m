@@ -2,6 +2,24 @@
 
 static char rowStaticRef[] = "row";
 
+static UIColor *SCISettingsBackground(void) {
+    return [UIColor colorWithRed:0.035 green:0.047 blue:0.071 alpha:1];
+}
+
+static UIColor *SCISettingsSurface(void) {
+    return [UIColor colorWithRed:0.067 green:0.082 blue:0.114 alpha:1];
+}
+
+static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weight, UIColor *color) {
+    UILabel *label = [UILabel new];
+    label.text = text;
+    label.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:[UIFont systemFontOfSize:size weight:weight]];
+    label.adjustsFontForContentSizeCategory = YES;
+    label.textColor = color;
+    label.numberOfLines = 0;
+    return label;
+}
+
 @interface SCISettingsViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
@@ -48,33 +66,96 @@ static char rowStaticRef[] = "row";
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    self.navigationController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     self.navigationController.navigationBar.prefersLargeTitles = NO;
     
     // Minimal, premium settings styling: one solid accent and no rainbow gradients.
     UINavigationBarAppearance *navigationAppearance = [UINavigationBarAppearance new];
-    [navigationAppearance configureWithDefaultBackground];
-    navigationAppearance.backgroundColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traits) {
-        return traits.userInterfaceStyle == UIUserInterfaceStyleDark
-            ? [UIColor colorWithRed:11/255.0 green:18/255.0 blue:32/255.0 alpha:1]
-            : [UIColor colorWithRed:248/255.0 green:250/255.0 blue:252/255.0 alpha:1];
-    }];
+    [navigationAppearance configureWithOpaqueBackground];
+    navigationAppearance.backgroundColor = SCISettingsBackground();
+    navigationAppearance.shadowColor = UIColor.clearColor;
     navigationAppearance.titleTextAttributes = @{
         NSForegroundColorAttributeName: [UIColor labelColor],
         NSFontAttributeName: [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold]
     };
     self.navigationController.navigationBar.standardAppearance = navigationAppearance;
     self.navigationController.navigationBar.scrollEdgeAppearance = navigationAppearance;
+    self.navigationController.navigationBar.compactAppearance = navigationAppearance;
     self.navigationController.navigationBar.tintColor = [SCIUtils SCIColor_Primary];
-    self.view.backgroundColor = UIColor.systemGroupedBackgroundColor;
+    self.view.backgroundColor = SCISettingsBackground();
+    if (self.reduceMargin) {
+        self.navigationItem.title = @"CONTROL CENTER";
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+            initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(closeSettings:)];
+    }
 
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleInsetGrouped];
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.tableView.dataSource = self;
-    self.tableView.contentInset = UIEdgeInsetsMake(self.reduceMargin ? -30 : -10, 0, 0, 0);
+    self.tableView.contentInset = UIEdgeInsetsMake(8, 0, 24, 0);
     self.tableView.delegate = self;
-    self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
+    self.tableView.backgroundColor = SCISettingsBackground();
+    self.tableView.tintColor = [SCIUtils SCIColor_Primary];
+    self.tableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.06];
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = 76;
+    self.tableView.sectionHeaderTopPadding = 16;
 
     [self.view addSubview:self.tableView];
+    if (self.reduceMargin) [self buildDashboardHeader];
+}
+
+- (void)closeSettings:(id)sender {
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)buildDashboardHeader {
+    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 240)];
+    UIView *card = [UIView new];
+    card.translatesAutoresizingMaskIntoConstraints = NO;
+    card.backgroundColor = SCISettingsSurface();
+    card.layer.cornerRadius = 24;
+    card.layer.cornerCurve = kCACornerCurveContinuous;
+    card.layer.borderWidth = 1;
+    card.layer.borderColor = [UIColor colorWithRed:0.16 green:0.23 blue:0.36 alpha:1].CGColor;
+    [header addSubview:card];
+
+    UILabel *badge = SCISettingsLabel(@"  PS / INSTAGRAM", 11, UIFontWeightBold, [UIColor colorWithRed:0.50 green:0.69 blue:1 alpha:1]);
+    UILabel *title = SCISettingsLabel(@"Peki Scripter", 32, UIFontWeightBold, UIColor.whiteColor);
+    UILabel *subtitle = SCISettingsLabel(@"Your Instagram. Your rules.", 15, UIFontWeightRegular, UIColor.secondaryLabelColor);
+    UILabel *modules = SCISettingsLabel(@"PRIVACY   /   MEDIA   /   CONTROL", 10, UIFontWeightSemibold, UIColor.tertiaryLabelColor);
+    UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[badge, title, subtitle, modules]];
+    stack.axis = UILayoutConstraintAxisVertical;
+    stack.spacing = 12;
+    [stack setCustomSpacing:6 afterView:title];
+    [stack setCustomSpacing:22 afterView:subtitle];
+    stack.translatesAutoresizingMaskIntoConstraints = NO;
+    [card addSubview:stack];
+    [NSLayoutConstraint activateConstraints:@[
+        [card.leadingAnchor constraintEqualToAnchor:header.leadingAnchor constant:20],
+        [card.trailingAnchor constraintEqualToAnchor:header.trailingAnchor constant:-20],
+        [card.topAnchor constraintEqualToAnchor:header.topAnchor constant:8],
+        [card.bottomAnchor constraintEqualToAnchor:header.bottomAnchor constant:-12],
+        [stack.leadingAnchor constraintEqualToAnchor:card.leadingAnchor constant:24],
+        [stack.trailingAnchor constraintEqualToAnchor:card.trailingAnchor constant:-24],
+        [stack.topAnchor constraintEqualToAnchor:card.topAnchor constant:26],
+        [stack.bottomAnchor constraintEqualToAnchor:card.bottomAnchor constant:-26]
+    ]];
+    self.tableView.tableHeaderView = header;
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    UIView *header = self.tableView.tableHeaderView;
+    if (!header) return;
+    CGFloat width = CGRectGetWidth(self.tableView.bounds);
+    CGFloat height = [header systemLayoutSizeFittingSize:CGSizeMake(width, UILayoutFittingCompressedSize.height)
+        withHorizontalFittingPriority:UILayoutPriorityRequired verticalFittingPriority:UILayoutPriorityFittingSizeLevel].height;
+    if (fabs(header.frame.size.height - height) > 0.5 || header.frame.size.width != width) {
+        header.frame = CGRectMake(0, 0, width, height);
+        self.tableView.tableHeaderView = header;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -105,6 +186,20 @@ static char rowStaticRef[] = "row";
     
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     UIListContentConfiguration *cellContentConfig = cell.defaultContentConfiguration;
+    UIBackgroundConfiguration *background = [UIBackgroundConfiguration listGroupedCellConfiguration];
+    background.backgroundColor = SCISettingsSurface();
+    cell.backgroundConfiguration = background;
+    cell.tintColor = [SCIUtils SCIColor_Primary];
+    cellContentConfig.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(17, 18, 17, 18);
+    cellContentConfig.textProperties.font = [[UIFontMetrics defaultMetrics]
+        scaledFontForFont:[UIFont systemFontOfSize:15 weight:UIFontWeightSemibold]];
+    cellContentConfig.textProperties.color = UIColor.whiteColor;
+    cellContentConfig.secondaryTextProperties.font = [[UIFontMetrics defaultMetrics]
+        scaledFontForFont:[UIFont systemFontOfSize:12 weight:UIFontWeightRegular]];
+    cellContentConfig.secondaryTextProperties.color = UIColor.secondaryLabelColor;
+    cellContentConfig.textProperties.numberOfLines = 0;
+    cellContentConfig.secondaryTextProperties.numberOfLines = 0;
+    cellContentConfig.imageToTextPadding = 16;
     
     cellContentConfig.text = row.title;
     
@@ -117,7 +212,7 @@ static char rowStaticRef[] = "row";
     // Icon
     if (row.icon != nil) {
         cellContentConfig.image = [row.icon image];
-        cellContentConfig.imageProperties.tintColor = row.icon.color;
+        cellContentConfig.imageProperties.tintColor = [UIColor colorWithRed:0.50 green:0.69 blue:1 alpha:1];
     }
     
     // Image url
@@ -134,7 +229,7 @@ static char rowStaticRef[] = "row";
         }
             
         case SCITableCellLink: {
-            cellContentConfig.textProperties.color = [UIColor systemBlueColor];
+            cellContentConfig.textProperties.color = [UIColor colorWithRed:0.50 green:0.69 blue:1 alpha:1];
             cellContentConfig.textProperties.font = [UIFont systemFontOfSize:[UIFont preferredFontForTextStyle:UIFontTextStyleBody].pointSize
                                                                       weight:UIFontWeightMedium];
             
@@ -198,7 +293,8 @@ static char rowStaticRef[] = "row";
                                                            weight:UIFontWeightMedium];
             
             UIButtonConfiguration *config = menuButton.configuration ?: [UIButtonConfiguration plainButtonConfiguration];
-            menuButton.configuration.contentInsets = NSDirectionalEdgeInsetsMake(8, 8, 8, 8);
+            config.contentInsets = NSDirectionalEdgeInsetsMake(8, 12, 8, 12);
+            config.baseForegroundColor = [SCIUtils SCIColor_Primary];
             menuButton.configuration = config;
 
             [menuButton sizeToFit];
@@ -236,6 +332,13 @@ static char rowStaticRef[] = "row";
 }
 
 #pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    if (![view isKindOfClass:[UITableViewHeaderFooterView class]]) return;
+    UILabel *label = ((UITableViewHeaderFooterView *)view).textLabel;
+    label.textColor = [UIColor colorWithRed:0.46 green:0.53 blue:0.65 alpha:1];
+    label.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:[UIFont systemFontOfSize:11 weight:UIFontWeightBold]];
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     SCISetting *row = self.sections[indexPath.section][@"rows"][indexPath.row];
