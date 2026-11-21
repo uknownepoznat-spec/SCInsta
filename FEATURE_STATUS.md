@@ -4,6 +4,8 @@
 - **Saving** has separate enable switches, finger counts (1–4), and hold durations (0.25–10 seconds) for feed posts, stories, reels and profile pictures.
 - Existing recognizers update when preferences change; repeated view attachment does not install duplicate download gestures.
 - Old global finger/time preferences are used as initial per-media values.
+- New/unset saving gestures default to **2 fingers / 0.5 seconds**, including profile pictures. Explicit user choices are preserved. **Saving → Reset gestures to two fingers** resets all four media types after confirmation.
+- Defaults initialize from the known Instagram delegate, media gesture installation, or the explicitly opened tweak menu; the private delegate hook is no longer the only initialization path. Host-window layout does not register guest defaults.
 - **Open with → Share & save** opens the system share sheet; **Preview** uses Quick Look.
 - There is one story-saving switch, not an additional dummy "Story Downloader" switch.
 
@@ -15,6 +17,7 @@
 - Up to 500 snapshots (including pending copies), 16,000 characters each. Stored in Application Support with iOS file protection and excluded from backup.
 - The archive is **device-wide across accounts on this installation**. Turning capture off stops new copies; use Clear to erase existing copies. Capture defaults off for new installations.
 - If Instagram uses different model classes or selectors, these hooks may not see a message. **Debug → Copy compatibility report** reports method availability without message/account contents. Method presence is not proof of successful runtime behavior.
+- **Vencord-style retention/red marking inside the original chat is not implemented.** This was explicitly deferred pending the target Instagram's runtime report; the separate archive is not a substitute for that requested UI.
 
 ## Privacy and replay
 - Removed fake `IGUser.isOnline/isActive` overrides, which only changed the local display. Supported outbound presence hooks remain; also turn off Activity Status in Instagram itself.
@@ -24,12 +27,22 @@
 - All private Instagram hooks are version dependent. Already-sent receipts cannot be undone.
 
 ## Menu
-- Independent category cards, search across settings, Privacy/Gestures shortcuts, and a live story-gesture summary.
-- **Style studio** changes Midnight/Graphite/OLED surfaces and blue/ice/lime/monochrome accents immediately.
+- Compact identity header, category cards, search, Privacy/Gestures shortcuts, and a live story-gesture summary. No marketing slogans or oversized neon hero card.
+- **Appearance → Themes & custom palette** offers 16 palettes: Carbon, Midnight, Graphite, OLED black, Slate, Ocean, Forest, Moss, Espresso, Copper, Burgundy, Indigo, Dusk, Paper, Pearl and Sand.
+- **Custom** supports a native RGB picker and validated `#RRGGBB` entry for background, surface and accent. Body text automatically chooses black/white for each surface. Accent overrides are independent of preset surfaces.
 - Discord copies `pekiscripter`; TikTok opens `@peki_scripter`.
+
+## Instagram appearance / LiveContainer
+- **Appearance → Instagram · experimental** offers app-default/dark/light native appearance plus an optional theme accent.
+- This uses window-level UIKit overrides only on recognizable Instagram-owned roots, not global `UIAppearance` proxies. LC/LiveContainer roots, unrelated windows and guests presented on a host-owned root are skipped.
+- It does not recolor every SwiftUI component, explicitly colored Instagram control, story ring, image/video, or DM bubble. If Instagram overrides a control's tint/style, that part may not change.
+- Native accent shade adapts when needed for contrast on Instagram's light/dark UIKit surfaces. The custom-menu palette retains your chosen RGB values.
+- Defaults leave Instagram's appearance untouched. Disabling overrides restores the captured native values; changing the window root also restores the baseline.
+- In LiveContainer, update/re-sign the **guest IPA**, not a rootless `.deb`. Keep its existing data container when updating if you want preferences/local files preserved. Deleting or resetting guest data erases those files.
+- These changes are not yet device-verified in LiveContainer.
 
 ## Removed rather than misrepresented
 The old auto-reply, message scheduler, extra message encryption, HD profile-picture modifier and unseen-story counter had no implementation. Their switches and no-op hooks were removed. They are **not implemented** in this build. The fake scheduler that could swallow outgoing messages was also removed.
 
 ## Validation
-`pwsh -File tests/check-source.ps1` checks source structure and wiring, not runtime functionality. Build with Theos and run the device scenarios in `RELEASE_CHECKLIST.md` before claiming support for an Instagram version.
+`pwsh -File tests/check-source.ps1` checks source structure, wiring, palette data and body-text contrast, not UIKit/runtime functionality. Build with Theos and run the device scenarios in `RELEASE_CHECKLIST.md` before claiming support for an Instagram version.

@@ -39,3 +39,16 @@
 - [ ] Turn unlimited replay off; normal playback callbacks must still run.
 - [ ] Check read/view receipts from a second account; do not infer privacy from local UI alone.
 - [ ] If message capture fails, copy Debug → Compatibility report and record the reproduction steps.
+
+### Appearance / LiveContainer
+- [ ] New guest data: feed/stories/reels/profile saving defaults to two fingers and 0.5 seconds.
+- [ ] Existing explicitly configured gestures are preserved; Reset asks for confirmation and updates visible labels/recognizers.
+- [ ] Check default initialization from opening the tweak menu/media views when the private app-delegate hook is unavailable; host launcher windows must not initialize guest defaults.
+- [ ] Check all 16 palettes, including Paper/Pearl/Sand light surfaces, and reopen the app to verify persistence.
+- [ ] Custom palette: test the native picker and valid/invalid HEX entry; changing a color must not detach an active color picker.
+- [ ] Try mixed light/dark custom background/surface colors and confirm body text remains readable.
+- [ ] Test larger accessibility text sizes in the menu and theme editor.
+- [ ] Enable Instagram tint/native appearance in the guest; verify only supported inherited UIKit controls change.
+- [ ] Turn overrides off, then return to LiveContainer's launcher; its native tint/appearance must remain unchanged.
+- [ ] Test both scene-based and legacy guest window lifecycles; unrelated/keyboard windows must be skipped.
+- [ ] Update the guest without resetting its data container; confirm preferences survive.
