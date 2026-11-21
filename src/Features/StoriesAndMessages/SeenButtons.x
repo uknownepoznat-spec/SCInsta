@@ -7,11 +7,12 @@
 // - Enables unlimited views of DM visual messages
 %hook IGTallNavigationBarView
 - (void)setRightBarButtonItems:(NSArray <UIBarButtonItem *> *)items {
-    NSMutableArray *new_items = [items mutableCopy];
+    NSMutableArray *new_items = items ? [items mutableCopy] : [NSMutableArray new];
 
     // Messages seen
     if ([SCIUtils getBoolPref:@"remove_lastseen"]) {
         UIBarButtonItem *seenButton = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"checkmark.message"] style:UIBarButtonItemStylePlain target:self action:@selector(seenButtonHandler:)];
+        seenButton.accessibilityLabel = @"Allow read receipts for this session";
         [new_items addObject:seenButton];
 
         if (seenButtonEnabled) {
@@ -24,6 +25,7 @@
     // DM visual messages viewed
     if ([SCIUtils getBoolPref:@"unlimited_replay"]) {
         UIBarButtonItem *dmVisualMsgsViewedButton = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"photo.badge.checkmark"] style:UIBarButtonItemStylePlain target:self action:@selector(dmVisualMsgsViewedButtonHandler:)];
+        dmVisualMsgsViewedButton.accessibilityLabel = @"Allow disappearing media view receipts for this session";
         [new_items addObject:dmVisualMsgsViewedButton];
 
         if (dmVisualMsgsViewedButtonEnabled) {
@@ -77,19 +79,11 @@
 // DM stories viewed logic
 %hook IGDirectVisualMessageViewerEventHandler
 - (void)visualMessageViewerController:(id)arg1 didBeginPlaybackForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 {
-    if ([SCIUtils getBoolPref:@"unlimited_replay"]) {
-        // Check if dm stories should be marked as viewed
-        if (dmVisualMsgsViewedButtonEnabled) {
-            %orig;
-        }
-    }
+    if ([SCIUtils getBoolPref:@"unlimited_replay"] && !dmVisualMsgsViewedButtonEnabled) return;
+    %orig;
 }
 - (void)visualMessageViewerController:(id)arg1 didEndPlaybackForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 mediaCurrentTime:(CGFloat)arg4 forNavType:(NSInteger)arg5 {
-    if ([SCIUtils getBoolPref:@"unlimited_replay"]) {
-        // Check if dm stories should be marked as viewed
-        if (dmVisualMsgsViewedButtonEnabled) {
-            %orig;
-        }
-    }
+    if ([SCIUtils getBoolPref:@"unlimited_replay"] && !dmVisualMsgsViewedButtonEnabled) return;
+    %orig;
 }
 %end

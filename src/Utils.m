@@ -1,5 +1,7 @@
 #import "Utils.h"
 
+NSString * const SCISettingsDidChangeNotification = @"PekiScripterSettingsDidChange";
+
 // Story wrappers and the types inside URL lists vary between Instagram releases.
 static id SCIMediaValue(id object, NSString *key) {
     if (!object || object == [NSNull null]) return nil;
@@ -65,6 +67,42 @@ static NSURL *SCIExtractMediaURL(id object, BOOL video, NSUInteger depth) {
     return [[NSUserDefaults standardUserDefaults] stringForKey:key];
 }
 
++ (NSUInteger)downloadFingerCountForKind:(NSString *)kind {
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+    NSNumber *value = [defaults objectForKey:[NSString stringWithFormat:@"dw_%@_fingers", kind]];
+    if (!value) value = [kind isEqualToString:@"profile"] ? @1 : [defaults objectForKey:@"dw_finger_count"];
+    return MAX(1, MIN(4, value ? value.integerValue : 3));
+}
+
++ (NSTimeInterval)downloadHoldDurationForKind:(NSString *)kind {
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+    NSNumber *value = [defaults objectForKey:[NSString stringWithFormat:@"dw_%@_duration", kind]];
+    if (!value) value = [defaults objectForKey:@"dw_finger_duration"];
+    return MAX(0.25, MIN(10.0, value ? value.doubleValue : 0.5));
+}
+
++ (NSString *)compatibilityReport {
+    NSMutableString *report = [NSMutableString stringWithFormat:@"Peki Scripter compatibility\nInstagram: %@\niOS: %@\n",
+        [self IGVersionString], UIDevice.currentDevice.systemVersion];
+    NSDictionary *checks = @{
+        @"IGDirectMessage": @[@"text", @"setText:", @"messageId", @"messageID", @"itemId", @"setIsDeleted:"],
+        @"IGDirectTextMessage": @[@"text", @"setText:", @"messageId", @"setIsDeleted:"],
+        @"IGDirectThread": @[@"deleteMessage:"],
+        @"IGPresenceManager": @[@"setPresence:", @"markActivityForThread:"],
+        @"IGDirectThreadViewController": @[@"sendTypingIndicator:"]
+    };
+    for (NSString *name in [checks.allKeys sortedArrayUsingSelector:@selector(compare:)]) {
+        Class cls = NSClassFromString(name);
+        [report appendFormat:@"\n%@: %@\n", name, cls ? @"present" : @"missing"];
+        for (NSString *selector in checks[name]) {
+            [report appendFormat:@"  %@: %@\n", selector,
+                [cls instancesRespondToSelector:NSSelectorFromString(selector)] ? @"present" : @"missing"];
+        }
+    }
+    [report appendString:@"\nPresence does not prove runtime behavior. No message text or account data is included."];
+    return report;
+}
+
 + (void)cleanCache {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSMutableArray<NSError *> *deletionErrors = [NSMutableArray array];
@@ -111,6 +149,8 @@ static NSURL *SCIExtractMediaURL(id object, BOOL video, NSUInteger depth) {
     QuickLookDelegate *quickLookDelegate = [[QuickLookDelegate alloc] initWithPreviewItemURLs:items];
 
     previewController.dataSource = quickLookDelegate;
+    // QLPreviewController's dataSource is weak.
+    objc_setAssociatedObject(previewController, @selector(showQuickLookVC:), quickLookDelegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     [topMostController() presentViewController:previewController animated:true completion:nil];
 }
@@ -129,8 +169,11 @@ static NSURL *SCIExtractMediaURL(id object, BOOL video, NSUInteger depth) {
 
 // Colours
 + (UIColor *)SCIColor_Primary {
-    // Clean cobalt accent: consistent, professional, and intentionally not a gradient.
-    return [UIColor colorWithRed:37/255.0 green:99/255.0 blue:235/255.0 alpha:1];
+    NSString *accent = [self getStringPref:@"settings_accent"];
+    if ([accent isEqualToString:@"ice"]) return [UIColor colorWithRed:0.25 green:0.82 blue:0.92 alpha:1];
+    if ([accent isEqualToString:@"lime"]) return [UIColor colorWithRed:0.65 green:0.88 blue:0.30 alpha:1];
+    if ([accent isEqualToString:@"white"]) return [UIColor colorWithWhite:0.82 alpha:1];
+    return [UIColor colorWithRed:79/255.0 green:140/255.0 blue:255/255.0 alpha:1];
 };
 
 // Errors

@@ -1,6 +1,8 @@
-# SCInsta
-A feature-rich tweak for Instagram on iOS!\
-`Version v1.0.0` | `Tested on Instagram 414.0.0`
+# Peki Scripter
+A custom Instagram tweak for iOS, based on [SCInsta](https://github.com/SoCuul/SCInsta).\
+`Version v1.0.0` | Custom changes require testing on your Instagram/iOS version.
+
+See [custom build behavior and limitations](FEATURE_STATUS.md) for gesture customization, the local text archive, themes, and removed placeholder features. The upstream compatibility baseline was Instagram 414.0.0; that is not a device-test result for these custom changes.
 
 ---
 

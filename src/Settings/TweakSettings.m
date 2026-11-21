@@ -1,4 +1,14 @@
 #import "TweakSettings.h"
+#import "SCIMessageArchiveViewController.h"
+
+static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choices) {
+    NSMutableArray *children = [NSMutableArray new];
+    for (NSArray *choice in choices) {
+        [children addObject:[UICommand commandWithTitle:choice[0] image:nil
+            action:NSSelectorFromString(@"menuChanged:") propertyList:@{@"defaultsKey": key, @"value": choice[1]}]];
+    }
+    return [UIMenu menuWithChildren:children];
+}
 
 @implementation SCITweakSettings
 
@@ -16,8 +26,21 @@
 + (NSArray *)sections {
     return @[
         @{
-            @"header": @"YOUR MODULES",
+            @"header": @"PERSONAL WORKSPACE",
+            @"footer": @"Private Instagram hooks depend on the installed app version. A switch is not a guarantee of server-side privacy.",
             @"rows": @[
+                [SCISetting navigationCellWithTitle:@"Style studio" subtitle:@"Theme, accent and your setup"
+                    icon:[SCISymbol symbolWithName:@"slider.horizontal.3"]
+                    navSections:@[@{
+                        @"header": @"LOOK & FEEL",
+                        @"footer": @"Changes apply immediately to this menu. Instagram's own theme is not changed.",
+                        @"rows": @[
+                            [SCISetting menuCellWithTitle:@"Surface" subtitle:@"Choose your workspace"
+                                menu:SCIChoiceMenu(@"settings_theme", @[@[@"Midnight", @"midnight"], @[@"Graphite", @"graphite"], @[@"OLED black", @"oled"]])],
+                            [SCISetting menuCellWithTitle:@"Accent" subtitle:@"One solid color, no rainbow"
+                                menu:SCIChoiceMenu(@"settings_accent", @[@[@"Electric blue", @"blue"], @[@"Ice", @"ice"], @[@"Lime", @"lime"], @[@"Monochrome", @"white"]])]
+                        ]
+                    }]],
                  [SCISetting navigationCellWithTitle:@"General"
                                             subtitle:@"A cleaner, quieter Instagram"
                                                icon:[SCISymbol symbolWithName:@"gear"]
@@ -86,63 +109,40 @@
                                             ]
                                         }]
                 ],
-                 [SCISetting navigationCellWithTitle:@"Saving"
-                                            subtitle:@"Downloads and long-press controls"
-                                               icon:[SCISymbol symbolWithName:@"tray.and.arrow.down"]
-                                        navSections:@[@{
-                                            @"header": @"",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Download feed posts" subtitle:@"Long-press with finger(s) to download posts in the home tab" defaultsKey:@"dw_feed_posts"],
-                                                [SCISetting switchCellWithTitle:@"Download reels" subtitle:@"Long-press with finger(s) on a reel to download" defaultsKey:@"dw_reels"],
-                                                [SCISetting switchCellWithTitle:@"Download stories" subtitle:@"Long-press with finger(s) while viewing someone's story to download" defaultsKey:@"dw_story"],
-                                                [SCISetting switchCellWithTitle:@"Save profile picture" subtitle:@"On someone's profile, click their profile picture to enlarge it, then hold to download" defaultsKey:@"save_profile"]
-                                            ]
-                                        },
-                                        @{
-                                            @"header": @"Customize gestures",
-                                            @"rows": @[
-                                                [SCISetting stepperCellWithTitle:@"Finger count for long-press" subtitle:@"Downloads with %@ %@" defaultsKey:@"dw_finger_count" min:1 max:5 step:1 label:@"fingers" singularLabel:@"finger"],
-                                                [SCISetting stepperCellWithTitle:@"Long-press hold time" subtitle:@"Press finger(s) for %@ %@" defaultsKey:@"dw_finger_duration" min:0 max:10 step:0.25 label:@"sec" singularLabel:@"sec"]
-                                            ]
-                                        }]
+                  [SCISetting navigationCellWithTitle:@"Saving"
+                                             subtitle:@"Separate gestures for posts, stories and reels"
+                                                icon:[SCISymbol symbolWithName:@"tray.and.arrow.down"]
+                                         navSections:[self downloadSections]
                 ],
                  [SCISetting navigationCellWithTitle:@"Stories and messages"
                                             subtitle:@"Privacy, stories and conversations"
                                                icon:[SCISymbol symbolWithName:@"rectangle.portrait.on.rectangle.portrait.angled"]
                                         navSections:@[@{
-                                            @"header": @"Privacy & Ghost Mode",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Ghost Mode" subtitle:@"Become invisible to other users - no online status, last seen, or activity indicators" defaultsKey:@"ghost_mode"],
-                                                [SCISetting switchCellWithTitle:@"Hide typing indicator" subtitle:@"Others won't see when you're typing a message" defaultsKey:@"hide_typing_indicator"],
-                                                [SCISetting switchCellWithTitle:@"Story Ghost Mode" subtitle:@"View stories without appearing in viewers list" defaultsKey:@"story_ghost_mode"],
-                                                [SCISetting switchCellWithTitle:@"Anti-Delete" subtitle:@"Prevent others from deleting messages you've sent" defaultsKey:@"anti_delete"]
+                                             @"header": @"PRIVACY",
+                                             @"footer": @"For reliable activity hiding, also turn off Activity Status in Instagram. Read/view receipts already sent cannot be undone. Reopen a chat after changing its toolbar options.",
+                                             @"rows": @[
+                                                 [SCISetting switchCellWithTitle:@"Block activity updates" subtitle:@"Stops supported outgoing presence updates; does not change Instagram's server settings" defaultsKey:@"ghost_mode"],
+                                                 [SCISetting switchCellWithTitle:@"Hide typing indicator" subtitle:@"Others won't see when you're typing a message" defaultsKey:@"hide_typing_indicator"],
+                                                 [SCISetting switchCellWithTitle:@"Hide story views" subtitle:@"Blocks supported story-view receipts; restart after changing" defaultsKey:@"no_seen_receipt" requiresRestart:YES],
+                                                 [SCISetting switchCellWithTitle:@"Hide message seen" subtitle:@"Read receipts stay off unless you enable the checkmark-message button for this session" defaultsKey:@"remove_lastseen"]
                                             ]
                                         },
                                         @{
-                                            @"header": @"Media & Downloads",
+                                            @"header": @"LOCAL MESSAGE COPIES",
+                                            @"footer": @"Keeps text observed after enabling, including your own unsend attempts. Copies live in this device's archive, not the original chat. Old deleted messages and attachments cannot be recovered. Turning this off stops capture; Clear removes stored copies. The archive is shared across accounts on this installation.",
                                             @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Story Downloader" subtitle:@"Story saving uses Saving → Download stories and your configured long-press gesture" defaultsKey:@"story_downloader"],
-                                                [SCISetting switchCellWithTitle:@"HD Profile Pictures" subtitle:@"View and download profile pictures in full HD quality" defaultsKey:@"hd_profile_pictures"],
-                                                [SCISetting switchCellWithTitle:@"Unseen Stories Counter" subtitle:@"Show count of unseen stories on the home screen" defaultsKey:@"unseen_stories_counter"]
+                                                [SCISetting switchCellWithTitle:@"Retain deleted text locally" subtitle:@"Caches visible text on this device while enabled" defaultsKey:@"keep_deleted_message"],
+                                                [SCISetting controllerCellWithTitle:@"Open local archive" subtitle:@"Read, copy or erase retained text"
+                                                    icon:[SCISymbol symbolWithName:@"archivebox"]
+                                                    factory:^UIViewController *(void) { return [SCIMessageArchiveViewController new]; }]
                                             ]
                                         },
                                         @{
-                                            @"header": @"Messages & Automation",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Message Encryption" subtitle:@"Add an extra layer of encryption to your messages" defaultsKey:@"message_encryption"],
-                                                [SCISetting switchCellWithTitle:@"Enable Auto Reply" subtitle:@"Automatically respond to incoming messages" defaultsKey:@"enable_auto_reply"],
-                                                [SCISetting switchCellWithTitle:@"Message Schedule" subtitle:@"Schedule messages to be sent at specific times" defaultsKey:@"message_schedule"]
-                                            ]
-                                        },
-                                        @{
-                                            @"header": @"Original Features",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Keep deleted messages" subtitle:@"Saves deleted messages in chat conversations" defaultsKey:@"keep_deleted_message"],
-                                                [SCISetting switchCellWithTitle:@"Disable screenshot detection" subtitle:@"Removes the screenshot-prevention features for visual messages in DMs" defaultsKey:@"remove_screenshot_alert"],
-                                                [SCISetting switchCellWithTitle:@"Unlimited replay of direct stories" subtitle:@"Replays direct messages normal/once stories unlimited times (toggle with image check icon)" defaultsKey:@"unlimited_replay"],
-                                                [SCISetting switchCellWithTitle:@"Disable sending read receipts" subtitle:@"Removes the seen text for others when you view a message (toggle with message check icon)" defaultsKey:@"remove_lastseen"],
-                                                [SCISetting switchCellWithTitle:@"Disable story seen receipt" subtitle:@"Hides the notification for others when you view their story" defaultsKey:@"no_seen_receipt"],
-                                                [SCISetting switchCellWithTitle:@"Disable view-once limitations" subtitle:@"Makes view-once messages behave like normal visual messages (loopable/pauseable)" defaultsKey:@"disable_view_once_limitations"]
+                                             @"header": @"DISAPPEARING MEDIA",
+                                             @"rows": @[
+                                                 [SCISetting switchCellWithTitle:@"Disable screenshot detection" subtitle:@"Removes the screenshot-prevention features for visual messages in DMs" defaultsKey:@"remove_screenshot_alert"],
+                                                 [SCISetting switchCellWithTitle:@"Unlimited replay of direct stories" subtitle:@"Replays direct messages normal/once stories unlimited times (toggle with image check icon)" defaultsKey:@"unlimited_replay"],
+                                                 [SCISetting switchCellWithTitle:@"Disable view-once limitations" subtitle:@"Makes view-once messages behave like normal visual messages (loopable/pauseable)" defaultsKey:@"disable_view_once_limitations"]
                                             ]
                                         }]
                 ],
@@ -196,23 +196,8 @@
         @{
             @"header": @"",
             @"rows": @[
-                // [SCISetting navigationCellWithTitle:@"Experimental"
-                //                            subtitle:@""
-                //                                icon:[SCISymbol symbolWithName:@"testtube.2"]
-                //                         navSections:@[@{
-                //                             @"header": @"Warning",
-                //                             @"footer": @"These features are unstable and cause the Instagram app to crash unexpectedly.\n\nUse at your own risk!"
-                //                         },
-                //                         @{
-                //                             @"header": @"",
-                //                             @"rows": @[
-
-                //                             ]
-                //                         }
-                //                         ]
-                // ],
-                [SCISetting navigationCellWithTitle:@"Debug"
-                                           subtitle:@""
+                 [SCISetting navigationCellWithTitle:@"Debug"
+                                            subtitle:@"Compatibility report and developer tools"
                                                icon:[SCISymbol symbolWithName:@"ladybug"]
                                         navSections:@[@{
                                             @"header": @"FLEX",
@@ -225,6 +210,12 @@
                                          @{
                                              @"header": @"Peki Scripter",
                                              @"rows": @[
+                                                 [SCISetting buttonCellWithTitle:@"Copy compatibility report"
+                                                     subtitle:@"Instagram/iOS versions and available hook methods; no message contents"
+                                                     icon:[SCISymbol symbolWithName:@"doc.on.doc"]
+                                                     action:^{
+                                                         UIPasteboard.generalPasteboard.string = [SCIUtils compatibilityReport];
+                                                     }],
                                                  [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the Peki Scripter settings when the app launches" defaultsKey:@"tweak_settings_app_launch"],
                                                  [SCISetting buttonCellWithTitle:@"Reset onboarding completion state"
                                                                            subtitle:@""
@@ -238,32 +229,6 @@
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
                                             ]
-                                        },
-                                        @{
-                                            @"header": @"_ Example",
-                                            @"rows": @[
-                                                [SCISetting staticCellWithTitle:@"Static Cell" subtitle:@"" icon:[SCISymbol symbolWithName:@"tablecells"]],
-                                                [SCISetting switchCellWithTitle:@"Switch Cell" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell"],
-                                                [SCISetting switchCellWithTitle:@"Switch Cell (Restart)" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell_restart" requiresRestart:YES],
-                                                [SCISetting stepperCellWithTitle:@"Stepper cell" subtitle:@"I have %@%@" defaultsKey:@"test_stepper_cell" min:-10 max:1000 step:5.5 label:@"$" singularLabel:@"$"],
-                                                [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using icon" icon:[SCISymbol symbolWithName:@"link" color:[UIColor systemTealColor] size:20.0] url:@"https://google.com"],
-                                                [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using image" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://google.com"],
-                                                [SCISetting buttonCellWithTitle:@"Button Cell"
-                                                                           subtitle:@""
-                                                                               icon:[SCISymbol symbolWithName:@"oval.inset.filled"]
-                                                                             action:^(void) { [SCIUtils showConfirmation:^(void){}]; }
-                                                ],
-                                                [SCISetting menuCellWithTitle:@"Menu Cell" subtitle:@"Change the value on the right" menu:[self menus][@"test"]],
-                                                [SCISetting navigationCellWithTitle:@"Navigation Cell"
-                                                                           subtitle:@""
-                                                                               icon:[SCISymbol symbolWithName:@"rectangle.stack"]
-                                                                        navSections:@[@{
-                                                                            @"header": @"",
-                                                                            @"rows": @[]
-                                                                        }]
-                                                ]
-                                            ],
-                                            @"footer": @"_ Example"
                                         }
                                         ]
                 ]
@@ -297,6 +262,39 @@
 
 + (NSString *)title {
     return @"Peki Scripter Settings";
+}
+
++ (NSArray *)downloadSections {
+    NSMutableArray *sections = [NSMutableArray new];
+    [sections addObject:@{
+        @"header": @"AFTER DOWNLOAD",
+        @"footer": @"Share sheet offers Save Image / Save Video or Save to Files. Existing gestures update immediately without an app restart.",
+        @"rows": @[[SCISetting menuCellWithTitle:@"Open with" subtitle:@"What happens after a download"
+            menu:SCIChoiceMenu(@"download_destination", @[@[@"Share & save", @"share"], @[@"Preview", @"preview"]])]]
+    }];
+    NSArray *groups = @[
+        @[@"feed", @"FEED POSTS", @"dw_feed_posts"],
+        @[@"stories", @"STORIES", @"dw_story"],
+        @[@"reels", @"REELS", @"dw_reels"],
+        @[@"profile", @"PROFILE PICTURES", @"save_profile"]
+    ];
+    for (NSArray *group in groups) {
+        NSString *kind = group[0];
+        [sections addObject:@{
+            @"header": group[1],
+            @"footer": [kind isEqualToString:@"profile"]
+                ? @"Hold on the profile image to save the available source image."
+                : @"Hold on the media with this many fingers for the chosen duration.",
+            @"rows": @[
+                [SCISetting switchCellWithTitle:@"Enable saving" subtitle:@"Allow the hold gesture on this media type" defaultsKey:group[2]],
+                [SCISetting stepperCellWithTitle:@"Fingers" subtitle:@"Hold with %@ %@" defaultsKey:[NSString stringWithFormat:@"dw_%@_fingers", kind]
+                    min:1 max:4 step:1 label:@"fingers" singularLabel:@"finger"],
+                [SCISetting stepperCellWithTitle:@"Hold duration" subtitle:@"Press for %@ %@" defaultsKey:[NSString stringWithFormat:@"dw_%@_duration", kind]
+                    min:0.25 max:10 step:0.25 label:@"seconds" singularLabel:@"second"]
+            ]
+        }];
+    }
+    return sections;
 }
 
 
@@ -435,41 +433,6 @@
                                 ]
                             ]
             ]
-        ]],
-
-        @"test": [UIMenu menuWithChildren:@[
-            [UIMenu menuWithTitle:@""
-                            image:nil
-                        identifier:nil
-                            options:UIMenuOptionsDisplayInline
-                            children:@[
-                                [UICommand commandWithTitle:@"ABC"
-                                                        image:nil
-                                                        action:@selector(menuChanged:)
-                                                propertyList:@{
-                                                    @"defaultsKey": @"test_menu_cell",
-                                                    @"value": @"abc"
-                                                }
-                                ],
-                                [UICommand commandWithTitle:@"123"
-                                                        image:nil
-                                                        action:@selector(menuChanged:)
-                                                propertyList:@{
-                                                    @"defaultsKey": @"test_menu_cell",
-                                                    @"value": @"123"
-                                                }
-                                ]
-                            ]
-            ],
-            [UICommand commandWithTitle:@"Requires restart"
-                                  image:nil
-                                 action:@selector(menuChanged:)
-                           propertyList:@{
-                               @"defaultsKey": @"test_menu_cell",
-                               @"value": @"requires_restart",
-                               @"requiresRestart": @YES
-                           }
-            ],
         ]]
     };
 }

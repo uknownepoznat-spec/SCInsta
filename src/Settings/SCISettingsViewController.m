@@ -3,10 +3,16 @@
 static char rowStaticRef[] = "row";
 
 static UIColor *SCISettingsBackground(void) {
+    NSString *theme = [SCIUtils getStringPref:@"settings_theme"];
+    if ([theme isEqualToString:@"oled"]) return UIColor.blackColor;
+    if ([theme isEqualToString:@"graphite"]) return [UIColor colorWithWhite:0.09 alpha:1];
     return [UIColor colorWithRed:0.035 green:0.047 blue:0.071 alpha:1];
 }
 
 static UIColor *SCISettingsSurface(void) {
+    NSString *theme = [SCIUtils getStringPref:@"settings_theme"];
+    if ([theme isEqualToString:@"oled"]) return [UIColor colorWithWhite:0.045 alpha:1];
+    if ([theme isEqualToString:@"graphite"]) return [UIColor colorWithWhite:0.14 alpha:1];
     return [UIColor colorWithRed:0.067 green:0.082 blue:0.114 alpha:1];
 }
 
@@ -20,11 +26,28 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     return label;
 }
 
-@interface SCISettingsViewController () <UITableViewDataSource, UITableViewDelegate>
+static UIImage *SCICategoryIcon(SCISymbol *symbol) {
+    UIImage *image = [symbol image];
+    if (!image || image.size.width <= 0 || image.size.height <= 0) return image;
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(38, 38)];
+    return [[renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+        UIColor *accent = [SCIUtils SCIColor_Primary];
+        [[accent colorWithAlphaComponent:0.12] setFill];
+        [[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 38, 38) cornerRadius:11] fill];
+        CGFloat scale = MIN(19 / image.size.width, 19 / image.size.height);
+        CGSize size = CGSizeMake(image.size.width * scale, image.size.height * scale);
+        [[image imageWithTintColor:accent renderingMode:UIImageRenderingModeAlwaysOriginal]
+            drawInRect:CGRectMake((38 - size.width) / 2, (38 - size.height) / 2, size.width, size.height)];
+    }] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+}
+
+@interface SCISettingsViewController () <UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating>
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, copy) NSArray *sections;
 @property (nonatomic) BOOL reduceMargin;
+@property (nonatomic, copy) NSArray *allSections;
+@property (nonatomic, strong) UIView *dashboardHeader;
 
 @end
 
@@ -52,7 +75,24 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
             
         }];
         
+        if (reduceMargin && mutableSections.count) {
+            // Each category gets its own card rather than one long stock list.
+            NSDictionary *modules = mutableSections.firstObject;
+            NSMutableArray *cards = [NSMutableArray new];
+            NSArray *rows = modules[@"rows"];
+            for (NSUInteger index = 0; index < rows.count; index++) {
+                [cards addObject:@{
+                    @"header": index == 0 ? (modules[@"header"] ?: @"") : @"",
+                    @"footer": index == rows.count - 1 ? (modules[@"footer"] ?: @"") : @"",
+                    @"rows": @[rows[index]]
+                }];
+            }
+            [mutableSections removeObjectAtIndex:0];
+            [cards addObjectsFromArray:mutableSections];
+            mutableSections = cards;
+        }
         self.sections = [mutableSections copy];
+        self.allSections = self.sections;
     }
     
     
@@ -70,7 +110,37 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     self.navigationController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     self.navigationController.navigationBar.prefersLargeTitles = NO;
     
-    // Minimal, premium settings styling: one solid accent and no rainbow gradients.
+    [self applyAppearance];
+    if (self.reduceMargin) {
+        self.navigationItem.title = @"PEKI / SCRIPTER";
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+            initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(closeSettings:)];
+        UISearchController *search = [[UISearchController alloc] initWithSearchResultsController:nil];
+        search.searchResultsUpdater = self;
+        search.obscuresBackgroundDuringPresentation = NO;
+        search.searchBar.placeholder = @"Find a tweak or gesture";
+        self.navigationItem.searchController = search;
+        self.navigationItem.hidesSearchBarWhenScrolling = NO;
+        self.definesPresentationContext = YES;
+    }
+
+    self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleInsetGrouped];
+    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.tableView.dataSource = self;
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 24, 0);
+    self.tableView.delegate = self;
+    self.tableView.backgroundColor = SCISettingsBackground();
+    self.tableView.tintColor = [SCIUtils SCIColor_Primary];
+    self.tableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.06];
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = 76;
+    self.tableView.sectionHeaderTopPadding = 8;
+    self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    [self.view addSubview:self.tableView];
+    if (self.reduceMargin) [self buildDashboardHeader];
+}
+
+- (void)applyAppearance {
     UINavigationBarAppearance *navigationAppearance = [UINavigationBarAppearance new];
     [navigationAppearance configureWithOpaqueBackground];
     navigationAppearance.backgroundColor = SCISettingsBackground();
@@ -84,26 +154,16 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     self.navigationController.navigationBar.compactAppearance = navigationAppearance;
     self.navigationController.navigationBar.tintColor = [SCIUtils SCIColor_Primary];
     self.view.backgroundColor = SCISettingsBackground();
-    if (self.reduceMargin) {
-        self.navigationItem.title = @"CONTROL CENTER";
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-            initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(closeSettings:)];
-    }
-
-    self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleInsetGrouped];
-    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.tableView.dataSource = self;
-    self.tableView.contentInset = UIEdgeInsetsMake(8, 0, 24, 0);
-    self.tableView.delegate = self;
     self.tableView.backgroundColor = SCISettingsBackground();
     self.tableView.tintColor = [SCIUtils SCIColor_Primary];
-    self.tableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.06];
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 76;
-    self.tableView.sectionHeaderTopPadding = 16;
+    self.navigationItem.searchController.searchBar.tintColor = [SCIUtils SCIColor_Primary];
+}
 
-    [self.view addSubview:self.tableView];
-    if (self.reduceMargin) [self buildDashboardHeader];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self applyAppearance];
+    [self.tableView reloadData];
+    if (self.reduceMargin && !self.navigationItem.searchController.searchBar.text.length) [self buildDashboardHeader];
 }
 
 - (void)closeSettings:(id)sender {
@@ -118,18 +178,30 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     card.layer.cornerRadius = 24;
     card.layer.cornerCurve = kCACornerCurveContinuous;
     card.layer.borderWidth = 1;
-    card.layer.borderColor = [UIColor colorWithRed:0.16 green:0.23 blue:0.36 alpha:1].CGColor;
+    card.layer.borderColor = [[SCIUtils SCIColor_Primary] colorWithAlphaComponent:0.25].CGColor;
     [header addSubview:card];
 
-    UILabel *badge = SCISettingsLabel(@"  PS / INSTAGRAM", 11, UIFontWeightBold, [UIColor colorWithRed:0.50 green:0.69 blue:1 alpha:1]);
-    UILabel *title = SCISettingsLabel(@"Peki Scripter", 32, UIFontWeightBold, UIColor.whiteColor);
-    UILabel *subtitle = SCISettingsLabel(@"Your Instagram. Your rules.", 15, UIFontWeightRegular, UIColor.secondaryLabelColor);
-    UILabel *modules = SCISettingsLabel(@"PRIVACY   /   MEDIA   /   CONTROL", 10, UIFontWeightSemibold, UIColor.tertiaryLabelColor);
-    UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[badge, title, subtitle, modules]];
+    UILabel *badge = SCISettingsLabel(@"PERSONAL EDITION / 02", 10, UIFontWeightBold, [SCIUtils SCIColor_Primary]);
+    UILabel *title = SCISettingsLabel(@"Peki Scripter", 30, UIFontWeightBold, UIColor.whiteColor);
+    UILabel *subtitle = SCISettingsLabel([NSString stringWithFormat:@"Instagram %@   ·   %@", [SCIUtils IGVersionString] ?: @"—", SCIVersionString],
+        12, UIFontWeightMedium, UIColor.secondaryLabelColor);
+    NSString *gestureText = [NSString stringWithFormat:@"STORY GESTURE\n%lu %@ · %g s",
+        (unsigned long)[SCIUtils downloadFingerCountForKind:@"stories"],
+        [SCIUtils downloadFingerCountForKind:@"stories"] == 1 ? @"finger" : @"fingers",
+        [SCIUtils downloadHoldDurationForKind:@"stories"]];
+    if (![SCIUtils getBoolPref:@"dw_story"]) gestureText = @"STORY SAVING\nDisabled";
+    UILabel *modules = SCISettingsLabel(gestureText, 12, UIFontWeightMedium, UIColor.secondaryLabelColor);
+    modules.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:[UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightMedium]];
+    UIButton *privacy = [self shortcutWithTitle:@"Privacy" symbol:@"eye.slash" action:@selector(openPrivacy:)];
+    UIButton *gestures = [self shortcutWithTitle:@"Gestures" symbol:@"hand.tap" action:@selector(openGestures:)];
+    UIStackView *shortcuts = [[UIStackView alloc] initWithArrangedSubviews:@[privacy, gestures]];
+    shortcuts.spacing = 10;
+    shortcuts.distribution = UIStackViewDistributionFillEqually;
+    UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[badge, title, subtitle, modules, shortcuts]];
     stack.axis = UILayoutConstraintAxisVertical;
     stack.spacing = 12;
     [stack setCustomSpacing:6 afterView:title];
-    [stack setCustomSpacing:22 afterView:subtitle];
+    [stack setCustomSpacing:18 afterView:subtitle];
     stack.translatesAutoresizingMaskIntoConstraints = NO;
     [card addSubview:stack];
     [NSLayoutConstraint activateConstraints:@[
@@ -142,7 +214,79 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
         [stack.topAnchor constraintEqualToAnchor:card.topAnchor constant:26],
         [stack.bottomAnchor constraintEqualToAnchor:card.bottomAnchor constant:-26]
     ]];
+    self.dashboardHeader = header;
     self.tableView.tableHeaderView = header;
+}
+
+- (UIButton *)shortcutWithTitle:(NSString *)title symbol:(NSString *)symbol action:(SEL)action {
+    UIButtonConfiguration *configuration = [UIButtonConfiguration tintedButtonConfiguration];
+    configuration.title = title;
+    configuration.image = [UIImage systemImageNamed:symbol];
+    configuration.imagePadding = 8;
+    configuration.contentInsets = NSDirectionalEdgeInsetsMake(12, 10, 12, 10);
+    configuration.baseForegroundColor = [SCIUtils SCIColor_Primary];
+    configuration.cornerStyle = UIButtonConfigurationCornerStyleMedium;
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    button.configuration = configuration;
+    [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+    return button;
+}
+
+- (void)openModuleNamed:(NSString *)title {
+    for (NSDictionary *section in self.allSections) {
+        for (SCISetting *row in section[@"rows"]) {
+            if (row.type == SCITableCellNavigation && [row.title isEqualToString:title]) {
+                SCISettingsViewController *controller = [[SCISettingsViewController alloc]
+                    initWithTitle:row.title sections:row.navSections reduceMargin:NO];
+                [self.navigationController pushViewController:controller animated:YES];
+                return;
+            }
+        }
+    }
+}
+- (void)openPrivacy:(id)sender { [self openModuleNamed:@"Stories and messages"]; }
+- (void)openGestures:(id)sender { [self openModuleNamed:@"Saving"]; }
+
+- (void)collectMatches:(NSArray *)sections query:(NSString *)query path:(NSString *)path into:(NSMutableArray *)results {
+    for (NSDictionary *section in sections) {
+        NSMutableArray *matches = [NSMutableArray new];
+        for (SCISetting *row in section[@"rows"]) {
+            if (row.type == SCITableCellNavigation) {
+                if ([row.title localizedCaseInsensitiveContainsString:query]) {
+                    [matches addObject:row];
+                } else {
+                    [self collectMatches:row.navSections query:query path:row.title into:results];
+                }
+            } else if ([row.title localizedCaseInsensitiveContainsString:query]
+                || [row.subtitle localizedCaseInsensitiveContainsString:query]) {
+                [matches addObject:row];
+            }
+        }
+        if (matches.count) {
+            [results addObject:@{@"header": path.length ? path : (section[@"header"] ?: @""), @"rows": matches}];
+        }
+    }
+}
+
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
+    NSString *query = [searchController.searchBar.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (query.length) {
+        NSMutableArray *matches = [NSMutableArray new];
+        [self collectMatches:self.allSections query:query path:@"" into:matches];
+        self.sections = matches;
+        self.tableView.tableHeaderView = nil;
+    } else {
+        self.sections = self.allSections;
+        [self buildDashboardHeader];
+    }
+    if (query.length && !self.sections.count) {
+        UILabel *empty = SCISettingsLabel(@"No matching settings", 15, UIFontWeightMedium, UIColor.secondaryLabelColor);
+        empty.textAlignment = NSTextAlignmentCenter;
+        self.tableView.backgroundView = empty;
+    } else {
+        self.tableView.backgroundView = nil;
+    }
+    [self.tableView reloadData];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -158,24 +302,9 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"]) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Peki Scripter Settings Info"
-                                                                       message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open Peki Scripter settings."
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        
-        [alert addAction:[UIAlertAction actionWithTitle:@"I understand!"
-                                                  style:UIAlertActionStyleDefault
-                                                handler:nil]];
-        
-        UIViewController *presenter = self.presentingViewController;
-        [presenter presentViewController:alert animated:YES completion:nil];
-        
-        // Done with first-time setup for this version
-        [[NSUserDefaults standardUserDefaults] setValue:SCIVersionString forKey:@"SCInstaFirstRun"];
-    }
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.reduceMargin) [NSUserDefaults.standardUserDefaults setObject:SCIVersionString forKey:@"SCInstaFirstRun"];
 }
 
 #pragma mark - UITableViewDataSource
@@ -188,6 +317,11 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     UIListContentConfiguration *cellContentConfig = cell.defaultContentConfiguration;
     UIBackgroundConfiguration *background = [UIBackgroundConfiguration listGroupedCellConfiguration];
     background.backgroundColor = SCISettingsSurface();
+    if (self.reduceMargin) {
+        background.cornerRadius = 18;
+        background.strokeWidth = 0.5;
+        background.strokeColor = [UIColor colorWithWhite:1 alpha:0.08];
+    }
     cell.backgroundConfiguration = background;
     cell.tintColor = [SCIUtils SCIColor_Primary];
     cellContentConfig.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(17, 18, 17, 18);
@@ -211,8 +345,8 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     
     // Icon
     if (row.icon != nil) {
-        cellContentConfig.image = [row.icon image];
-        cellContentConfig.imageProperties.tintColor = [UIColor colorWithRed:0.50 green:0.69 blue:1 alpha:1];
+        cellContentConfig.image = self.reduceMargin ? SCICategoryIcon(row.icon) : [row.icon image];
+        cellContentConfig.imageProperties.tintColor = [SCIUtils SCIColor_Primary];
     }
     
     // Image url
@@ -229,7 +363,7 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
         }
             
         case SCITableCellLink: {
-            cellContentConfig.textProperties.color = [UIColor colorWithRed:0.50 green:0.69 blue:1 alpha:1];
+            cellContentConfig.textProperties.color = [SCIUtils SCIColor_Primary];
             cellContentConfig.textProperties.font = [UIFont systemFontOfSize:[UIFont preferredFontForTextStyle:UIFontTextStyleBody].pointSize
                                                                       weight:UIFontWeightMedium];
             
@@ -308,6 +442,10 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
         }
+        case SCITableCellController: {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            break;
+        }
     }
     
     cell.contentConfiguration = cellContentConfig;
@@ -359,6 +497,13 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
             [self.navigationController pushViewController:vc animated:YES];
         }
     }
+    else if (row.type == SCITableCellController && row.controllerFactory) {
+        UIViewController *controller = row.controllerFactory();
+        if (controller) {
+            self.navigationItem.searchController.active = NO;
+            [self.navigationController pushViewController:controller animated:YES];
+        }
+    }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -368,6 +513,7 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
 - (void)switchChanged:(UISwitch *)sender {
     SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
     [[NSUserDefaults standardUserDefaults] setBool:sender.isOn forKey:row.defaultsKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SCISettingsDidChangeNotification object:nil];
     
     NSLog(@"Switch changed: %@", sender.isOn ? @"ON" : @"OFF");
     
@@ -379,6 +525,7 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
 - (void)stepperChanged:(UIStepper *)sender {
     SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
     [[NSUserDefaults standardUserDefaults] setDouble:sender.value forKey:row.defaultsKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SCISettingsDidChangeNotification object:nil];
     
     NSLog(@"Stepper changed: %f", sender.value);
     
@@ -389,12 +536,14 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     NSDictionary *properties = command.propertyList;
     
     [[NSUserDefaults standardUserDefaults] setValue:properties[@"value"] forKey:properties[@"defaultsKey"]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:SCISettingsDidChangeNotification object:nil];
+    if ([properties[@"defaultsKey"] hasPrefix:@"settings_"]) [self applyAppearance];
     
     NSLog(@"Menu changed: %@", command.propertyList[@"value"]);
     
-    [self reloadCellForView:command.sender animated:YES];
+    [self.tableView reloadData];
     
-    if (properties[@"requiresRestart"]) {
+    if ([properties[@"requiresRestart"] boolValue]) {
         [SCIUtils showRestartConfirmation];
     }
 }

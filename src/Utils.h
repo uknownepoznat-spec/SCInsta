@@ -9,6 +9,7 @@
 #import "InstagramHeaders.h"
 #import "QuickLook.h"
 
+extern NSString * const SCISettingsDidChangeNotification;
 #ifdef __cplusplus
 #define _Bool bool
 #endif
@@ -26,6 +27,9 @@
 + (BOOL)getBoolPref:(NSString *)key;
 + (double)getDoublePref:(NSString *)key;
 + (NSString *)getStringPref:(NSString *)key;
++ (NSUInteger)downloadFingerCountForKind:(NSString *)kind;
++ (NSTimeInterval)downloadHoldDurationForKind:(NSString *)kind;
++ (NSString *)compatibilityReport;
 
 + (void)cleanCache;
 

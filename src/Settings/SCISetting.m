@@ -183,6 +183,18 @@
 }
 
 
++ (instancetype)controllerCellWithTitle:(NSString *)title
+                              subtitle:(NSString *)subtitle
+                                  icon:(nullable SCISymbol *)icon
+                               factory:(UIViewController *(^)(void))factory {
+    SCISetting *setting = [[self alloc] initWithType:SCITableCellController];
+    setting.title = title;
+    setting.subtitle = subtitle;
+    setting.icon = icon;
+    setting.controllerFactory = factory;
+    return setting;
+}
+
 # pragma mark - Instance methods
 
 - (UIMenu *)menuForButton:(UIButton *)button {

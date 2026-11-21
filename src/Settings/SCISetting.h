@@ -12,6 +12,7 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
         SCITableCellButton,
         SCITableCellMenu,
         SCITableCellNavigation,
+        SCITableCellController,
 };
 
 ///
@@ -42,6 +43,7 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
 @property (nonatomic, strong) UIMenu *baseMenu;
 
 @property (nonatomic, strong) NSArray *navSections;
+@property (nonatomic, copy, nullable) UIViewController *(^controllerFactory)(void);
 
 + (instancetype)staticCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
@@ -89,6 +91,10 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
                                    icon:(nullable SCISymbol *)icon
                             navSections:(NSArray *)navSections;
 
++ (instancetype)controllerCellWithTitle:(NSString *)title
+                              subtitle:(NSString *)subtitle
+                                  icon:(nullable SCISymbol *)icon
+                               factory:(UIViewController *(^)(void))factory;
 
 # pragma mark - Instance methods
 

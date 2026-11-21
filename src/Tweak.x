@@ -29,7 +29,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"detailed_color_picker": @(YES),
         @"remove_screenshot_alert": @(YES),
         @"call_confirm": @(YES),
-        @"keep_deleted_message": @(YES),
+        @"keep_deleted_message": @(NO),
         @"dw_feed_posts": @(YES),
         @"dw_reels": @(YES),
         @"dw_story": @(YES),
@@ -44,15 +44,29 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"ghost_mode": @(NO),
         @"hide_typing_indicator": @(NO),
         @"story_ghost_mode": @(NO),
-        @"anti_delete": @(NO),
-        @"story_downloader": @(YES),
-        @"hd_profile_pictures": @(YES),
-        @"unseen_stories_counter": @(YES),
-        @"message_encryption": @(NO),
-        @"enable_auto_reply": @(NO),
-        @"message_schedule": @(NO)
+        @"settings_theme": @"midnight",
+        @"settings_accent": @"blue",
+        @"download_destination": @"share"
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
+    NSUserDefaults *preferences = NSUserDefaults.standardUserDefaults;
+    if (![preferences boolForKey:@"peki_settings_v2_migrated"]) {
+        if ([preferences boolForKey:@"story_ghost_mode"]) {
+            [preferences setBool:YES forKey:@"no_seen_receipt"];
+        }
+        [preferences setBool:NO forKey:@"story_ghost_mode"];
+        if ([preferences boolForKey:@"anti_delete"]) {
+            [preferences setBool:YES forKey:@"keep_deleted_message"];
+        }
+        [preferences setBool:YES forKey:@"peki_settings_v2_migrated"];
+    }
+    // Preserve the existing global gesture as the starting point for each kind.
+    NSMutableDictionary *gestureDefaults = [NSMutableDictionary new];
+    for (NSString *kind in @[@"feed", @"reels", @"stories", @"profile"]) {
+        gestureDefaults[[NSString stringWithFormat:@"dw_%@_fingers", kind]] = @([SCIUtils downloadFingerCountForKind:kind]);
+        gestureDefaults[[NSString stringWithFormat:@"dw_%@_duration", kind]] = @([SCIUtils downloadHoldDurationForKind:kind]);
+    }
+    [[NSUserDefaults standardUserDefaults] registerDefaults:gestureDefaults];
     
     // Override instagram defaults
     if ([SCIUtils getBoolPref:@"liquid_glass_buttons"]) {
@@ -710,134 +724,6 @@ static BOOL showingVerticalUFIConfirm = NO;
     else {
         return %orig;
     }
-}
-%end
-
-/////////////////////////////////////////////////////////////////////////////
-// Advanced Settings - Ghost Mode
-
-// Ghost Mode - Hide online status and activity
-%hook IGPresenceManager
-- (void)setPresence:(id)presence {
-    if ([SCIUtils getBoolPref:@"ghost_mode"]) {
-        NSLog(@"[Peki Scripter] Ghost Mode: Blocking presence update");
-        return;
-    }
-    %orig;
-}
-- (void)markActivityForThread:(id)thread {
-    if ([SCIUtils getBoolPref:@"ghost_mode"]) {
-        NSLog(@"[Peki Scripter] Ghost Mode: Blocking activity marking");
-        return;
-    }
-    %orig;
-}
-%end
-
-// Hide typing indicator
-%hook IGDirectThreadViewController
-- (void)sendTypingIndicator:(id)indicator {
-    if ([SCIUtils getBoolPref:@"hide_typing_indicator"]) {
-        NSLog(@"[Peki Scripter] Hide Typing: Blocking typing indicator");
-        return;
-    }
-    %orig;
-}
-%end
-
-// Story Ghost Mode - Hide from story viewers
-%hook IGStoryViewerData
-- (void)markStoryAsViewed:(id)story {
-    if ([SCIUtils getBoolPref:@"story_ghost_mode"]) {
-        NSLog(@"[Peki Scripter] Story Ghost Mode: Blocking story view marking");
-        return;
-    }
-    %orig;
-}
-%end
-
-// Anti-Delete - Prevent message deletion
-%hook IGDirectThread
-- (void)deleteMessage:(id)message {
-    if ([SCIUtils getBoolPref:@"anti_delete"]) {
-        NSLog(@"[Peki Scripter] Anti-Delete: Blocking message deletion");
-        return;
-    }
-    %orig;
-}
-%end
-
-// Story Downloader
-%hook IGStoryViewerViewController
-- (void)viewDidLoad {
-    %orig;
-    
-    if ([SCIUtils getBoolPref:@"story_downloader"]) {
-        NSLog(@"[Peki Scripter] Story Downloader: Story viewer loaded, download feature ready");
-        // Download functionality will be handled through gesture recognizers or existing UI
-    }
-}
-%end
-
-// HD Profile Pictures
-%hook IGProfilePictureImageView
-- (void)setProfilePictureWithURL:(id)url {
-    if ([SCIUtils getBoolPref:@"hd_profile_pictures"]) {
-        // Modify URL to request HD version
-        NSLog(@"[Peki Scripter] HD Profile Pictures: Modifying URL for HD quality");
-        // Add URL modification logic here
-    }
-    %orig;
-}
-%end
-
-// Unseen Stories Counter
-%hook IGHomeTabBarViewController
-- (void)viewWillAppear:(BOOL)animated {
-    %orig;
-    
-    if ([SCIUtils getBoolPref:@"unseen_stories_counter"]) {
-        // Add unseen stories counter to home screen
-        NSLog(@"[Peki Scripter] Unseen Stories Counter: Adding counter to home screen");
-        // Add counter implementation here
-    }
-}
-%end
-
-// Message Encryption (placeholder)
-%hook IGDirectMessageComposer
-- (void)sendMessage:(id)message {
-    if ([SCIUtils getBoolPref:@"message_encryption"]) {
-        NSLog(@"[Peki Scripter] Message Encryption: Encrypting message");
-        // Add encryption logic here
-    }
-    %orig;
-}
-%end
-
-// Auto Reply functionality
-%hook IGDirectThreadViewController
-- (void)messageReceived:(id)message {
-    %orig;
-    
-    if ([SCIUtils getBoolPref:@"enable_auto_reply"]) {
-        NSLog(@"[Peki Scripter] Auto Reply: Sending auto reply");
-        // Add auto reply logic here with delay to seem natural
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            // Send auto reply message with hardcoded text: "I'm currently away, will reply soon!"
-        });
-    }
-}
-%end
-
-// Message Schedule (placeholder)
-%hook IGDirectMessageComposer
-- (void)scheduleMessage:(id)message forDate:(id)date {
-    if ([SCIUtils getBoolPref:@"message_schedule"]) {
-        NSLog(@"[Peki Scripter] Message Schedule: Scheduling message");
-        // Add scheduling logic here
-    }
-    %orig;
 }
 %end
 
