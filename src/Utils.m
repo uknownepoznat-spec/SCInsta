@@ -1,4 +1,5 @@
 #import "Utils.h"
+#import "Appearance/SCITheme.h"
 
 NSString * const SCISettingsDidChangeNotification = @"PekiScripterSettingsDidChange";
 
@@ -51,6 +52,44 @@ static NSURL *SCIExtractMediaURL(id object, BOOL video, NSUInteger depth) {
 
 @implementation SCIUtils
 
++ (void)registerGuestDefaults {
+    // Call only from Instagram lifecycle/media code or the explicitly opened
+    // tweak menu, never from an arbitrary host-window layout.
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        NSUserDefaults *preferences = NSUserDefaults.standardUserDefaults;
+        [preferences registerDefaults:@{
+            @"hide_ads": @YES, @"copy_description": @YES, @"detailed_color_picker": @YES,
+            @"remove_screenshot_alert": @YES, @"call_confirm": @YES, @"keep_deleted_message": @NO,
+            @"dw_feed_posts": @YES, @"dw_reels": @YES, @"dw_story": @YES, @"save_profile": @YES,
+            @"dw_finger_count": @(2), @"dw_finger_duration": @(0.5),
+            @"reels_tap_control": @"default", @"nav_icon_ordering": @"default", @"swipe_nav_tabs": @"default",
+            @"enable_notes_customization": @YES, @"custom_note_themes": @YES,
+            @"ghost_mode": @NO, @"hide_typing_indicator": @NO, @"story_ghost_mode": @NO,
+            @"settings_theme": @"carbon", @"settings_accent": @"theme",
+            @"settings_custom_background": @"0D0F12", @"settings_custom_surface": @"171A1F",
+            @"settings_custom_accent": @"A8BACD", @"instagram_appearance": @"system",
+            @"instagram_theme_accent": @NO, @"download_destination": @"share"
+        }];
+        if (![preferences boolForKey:@"peki_settings_v2_migrated"]) {
+            if ([preferences boolForKey:@"story_ghost_mode"]) [preferences setBool:YES forKey:@"no_seen_receipt"];
+            [preferences setBool:NO forKey:@"story_ghost_mode"];
+            if ([preferences boolForKey:@"anti_delete"]) [preferences setBool:YES forKey:@"keep_deleted_message"];
+            [preferences setBool:YES forKey:@"peki_settings_v2_migrated"];
+        }
+        // Explicit saved values outrank registration defaults. Don't re-seed
+        // from old per-kind registration values in a long-lived host process.
+        NSNumber *fingers = @(MAX(1, MIN(4, [preferences integerForKey:@"dw_finger_count"])));
+        NSNumber *duration = @(MAX(0.25, MIN(10.0, [preferences doubleForKey:@"dw_finger_duration"])));
+        NSMutableDictionary *gestures = [NSMutableDictionary new];
+        for (NSString *kind in @[@"feed", @"reels", @"stories", @"profile"]) {
+            gestures[[NSString stringWithFormat:@"dw_%@_fingers", kind]] = fingers;
+            gestures[[NSString stringWithFormat:@"dw_%@_duration", kind]] = duration;
+        }
+        [preferences registerDefaults:gestures];
+    });
+}
+
 + (BOOL)getBoolPref:(NSString *)key {
     if (![key length] || [[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) return false;
 
@@ -70,8 +109,8 @@ static NSURL *SCIExtractMediaURL(id object, BOOL video, NSUInteger depth) {
 + (NSUInteger)downloadFingerCountForKind:(NSString *)kind {
     NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
     NSNumber *value = [defaults objectForKey:[NSString stringWithFormat:@"dw_%@_fingers", kind]];
-    if (!value) value = [kind isEqualToString:@"profile"] ? @1 : [defaults objectForKey:@"dw_finger_count"];
-    return MAX(1, MIN(4, value ? value.integerValue : 3));
+    if (!value) value = [defaults objectForKey:@"dw_finger_count"];
+    return MAX(1, MIN(4, value ? value.integerValue : 2));
 }
 
 + (NSTimeInterval)downloadHoldDurationForKind:(NSString *)kind {
@@ -84,6 +123,16 @@ static NSURL *SCIExtractMediaURL(id object, BOOL video, NSUInteger depth) {
 + (NSString *)compatibilityReport {
     NSMutableString *report = [NSMutableString stringWithFormat:@"Peki Scripter compatibility\nInstagram: %@\niOS: %@\n",
         [self IGVersionString], UIDevice.currentDevice.systemVersion];
+    [report appendFormat:@"Menu theme: %@\nNative appearance: %@\nInstagram accent enabled: %@\n",
+        SCITheme.name, [self getStringPref:@"instagram_appearance"],
+        [self getBoolPref:@"instagram_theme_accent"] ? @"yes" : @"no"];
+    NSMutableSet *roots = [NSMutableSet new];
+    for (UIWindow *window in UIApplication.sharedApplication.windows) {
+        if (window.windowLevel == UIWindowLevelNormal && window.rootViewController) {
+            [roots addObject:NSStringFromClass(window.rootViewController.class)];
+        }
+    }
+    [report appendFormat:@"Window root classes: %@\n", [[roots.allObjects sortedArrayUsingSelector:@selector(compare:)] componentsJoinedByString:@", "]];
     NSDictionary *checks = @{
         @"IGDirectMessage": @[@"text", @"setText:", @"messageId", @"messageID", @"itemId", @"setIsDeleted:"],
         @"IGDirectTextMessage": @[@"text", @"setText:", @"messageId", @"setIsDeleted:"],
@@ -169,11 +218,7 @@ static NSURL *SCIExtractMediaURL(id object, BOOL video, NSUInteger depth) {
 
 // Colours
 + (UIColor *)SCIColor_Primary {
-    NSString *accent = [self getStringPref:@"settings_accent"];
-    if ([accent isEqualToString:@"ice"]) return [UIColor colorWithRed:0.25 green:0.82 blue:0.92 alpha:1];
-    if ([accent isEqualToString:@"lime"]) return [UIColor colorWithRed:0.65 green:0.88 blue:0.30 alpha:1];
-    if ([accent isEqualToString:@"white"]) return [UIColor colorWithWhite:0.82 alpha:1];
-    return [UIColor colorWithRed:79/255.0 green:140/255.0 blue:255/255.0 alpha:1];
+    return SCITheme.nativeAccentColor;
 };
 
 // Errors

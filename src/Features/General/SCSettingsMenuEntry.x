@@ -1,4 +1,5 @@
 #import "../../Settings/SCISettingsViewController.h"
+#import "../../Appearance/SCITheme.h"
 #import <objc/runtime.h>
 
 static char SCISettingsGestureKey;
@@ -98,6 +99,7 @@ static char SCISettingsGestureKey;
 %hook UIWindow
 - (void)layoutSubviews {
     %orig;
+    [SCITheme applyToInstagramWindow:self];
     if (!self.rootViewController || self.windowLevel != UIWindowLevelNormal
         || objc_getAssociatedObject(self, &SCISettingsGestureKey)) return;
 

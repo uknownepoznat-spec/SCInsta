@@ -24,6 +24,7 @@ extern NSString * const SCISettingsDidChangeNotification;
 
 @interface SCIUtils : NSObject
 
++ (void)registerGuestDefaults;
 + (BOOL)getBoolPref:(NSString *)key;
 + (double)getDoublePref:(NSString *)key;
 + (NSString *)getStringPref:(NSString *)key;

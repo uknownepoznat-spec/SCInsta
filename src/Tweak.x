@@ -22,51 +22,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 // Tweak first-time setup
 %hook IGInstagramAppDelegate
 - (_Bool)application:(UIApplication *)application willFinishLaunchingWithOptions:(id)arg2 {
-    // Default Peki Scripter config
-    NSDictionary *sciDefaults = @{
-        @"hide_ads": @(YES),
-        @"copy_description": @(YES),
-        @"detailed_color_picker": @(YES),
-        @"remove_screenshot_alert": @(YES),
-        @"call_confirm": @(YES),
-        @"keep_deleted_message": @(NO),
-        @"dw_feed_posts": @(YES),
-        @"dw_reels": @(YES),
-        @"dw_story": @(YES),
-        @"save_profile": @(YES),
-        @"dw_finger_count": @(3),
-        @"dw_finger_duration": @(0.5),
-        @"reels_tap_control": @"default",
-        @"nav_icon_ordering": @"default",
-        @"swipe_nav_tabs": @"default",
-        @"enable_notes_customization": @(YES),
-        @"custom_note_themes": @(YES),
-        @"ghost_mode": @(NO),
-        @"hide_typing_indicator": @(NO),
-        @"story_ghost_mode": @(NO),
-        @"settings_theme": @"midnight",
-        @"settings_accent": @"blue",
-        @"download_destination": @"share"
-    };
-    [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
-    NSUserDefaults *preferences = NSUserDefaults.standardUserDefaults;
-    if (![preferences boolForKey:@"peki_settings_v2_migrated"]) {
-        if ([preferences boolForKey:@"story_ghost_mode"]) {
-            [preferences setBool:YES forKey:@"no_seen_receipt"];
-        }
-        [preferences setBool:NO forKey:@"story_ghost_mode"];
-        if ([preferences boolForKey:@"anti_delete"]) {
-            [preferences setBool:YES forKey:@"keep_deleted_message"];
-        }
-        [preferences setBool:YES forKey:@"peki_settings_v2_migrated"];
-    }
-    // Preserve the existing global gesture as the starting point for each kind.
-    NSMutableDictionary *gestureDefaults = [NSMutableDictionary new];
-    for (NSString *kind in @[@"feed", @"reels", @"stories", @"profile"]) {
-        gestureDefaults[[NSString stringWithFormat:@"dw_%@_fingers", kind]] = @([SCIUtils downloadFingerCountForKind:kind]);
-        gestureDefaults[[NSString stringWithFormat:@"dw_%@_duration", kind]] = @([SCIUtils downloadHoldDurationForKind:kind]);
-    }
-    [[NSUserDefaults standardUserDefaults] registerDefaults:gestureDefaults];
+    [SCIUtils registerGuestDefaults];
     
     // Override instagram defaults
     if ([SCIUtils getBoolPref:@"liquid_glass_buttons"]) {

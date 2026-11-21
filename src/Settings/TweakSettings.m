@@ -1,5 +1,6 @@
 #import "TweakSettings.h"
 #import "SCIMessageArchiveViewController.h"
+#import "SCIThemeEditorViewController.h"
 
 static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choices) {
     NSMutableArray *children = [NSMutableArray new];
@@ -24,25 +25,39 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
 /// `"footer`: The section footer (leave blank for no footer)
 
 + (NSArray *)sections {
+    [SCIUtils registerGuestDefaults];
     return @[
         @{
-            @"header": @"PERSONAL WORKSPACE",
+            @"header": @"Preferences",
             @"footer": @"Private Instagram hooks depend on the installed app version. A switch is not a guarantee of server-side privacy.",
             @"rows": @[
-                [SCISetting navigationCellWithTitle:@"Style studio" subtitle:@"Theme, accent and your setup"
+                [SCISetting navigationCellWithTitle:@"Appearance" subtitle:@"16 themes, custom colors and Instagram tint"
                     icon:[SCISymbol symbolWithName:@"slider.horizontal.3"]
                     navSections:@[@{
-                        @"header": @"LOOK & FEEL",
-                        @"footer": @"Changes apply immediately to this menu. Instagram's own theme is not changed.",
+                        @"header": @"Peki Scripter",
+                        @"footer": @"Menu themes apply immediately. Custom RGB colors are stored locally.",
                         @"rows": @[
-                            [SCISetting menuCellWithTitle:@"Surface" subtitle:@"Choose your workspace"
-                                menu:SCIChoiceMenu(@"settings_theme", @[@[@"Midnight", @"midnight"], @[@"Graphite", @"graphite"], @[@"OLED black", @"oled"]])],
-                            [SCISetting menuCellWithTitle:@"Accent" subtitle:@"One solid color, no rainbow"
-                                menu:SCIChoiceMenu(@"settings_accent", @[@[@"Electric blue", @"blue"], @[@"Ice", @"ice"], @[@"Lime", @"lime"], @[@"Monochrome", @"white"]])]
+                            [SCISetting controllerCellWithTitle:@"Themes & custom palette" subtitle:@"16 presets, color picker and HEX input"
+                                icon:[SCISymbol symbolWithName:@"paintpalette"]
+                                factory:^UIViewController *(void) { return [SCIThemeEditorViewController new]; }],
+                            [SCISetting menuCellWithTitle:@"Accent" subtitle:@"Use the palette's accent or choose an override"
+                                menu:SCIChoiceMenu(@"settings_accent", @[@[@"Theme default", @"theme"], @[@"Blue", @"blue"],
+                                    @[@"Ice", @"ice"], @[@"Mint", @"mint"], @[@"Lime", @"lime"], @[@"Amber", @"amber"],
+                                    @[@"Copper", @"copper"], @[@"Red", @"red"], @[@"Rose", @"rose"], @[@"Indigo", @"indigo"],
+                                    @[@"Monochrome", @"white"], @[@"Custom RGB", @"custom"]])]
+                        ]
+                    }, @{
+                        @"header": @"Instagram · experimental",
+                        @"footer": @"Only Instagram-owned windows are changed; LiveContainer's launcher is excluded. Native appearance and tint-inheriting UIKit controls are supported. Instagram can override them. This does not recolor every SwiftUI view, story ring or DM bubble.",
+                        @"rows": @[
+                            [SCISetting menuCellWithTitle:@"Native appearance" subtitle:@"Use Instagram's existing light/dark rendering"
+                                menu:SCIChoiceMenu(@"instagram_appearance", @[@[@"App default", @"system"], @[@"Dark", @"dark"], @[@"Light", @"light"]])],
+                            [SCISetting switchCellWithTitle:@"Use theme accent in Instagram" subtitle:@"Tint supported native controls using your selected accent"
+                                defaultsKey:@"instagram_theme_accent"]
                         ]
                     }]],
-                 [SCISetting navigationCellWithTitle:@"General"
-                                            subtitle:@"A cleaner, quieter Instagram"
+                  [SCISetting navigationCellWithTitle:@"General"
+                                             subtitle:@"Ads, search, notes and tools"
                                                icon:[SCISymbol symbolWithName:@"gear"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -75,8 +90,8 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
                                             ]
                                         }]
                 ],
-                 [SCISetting navigationCellWithTitle:@"Feed"
-                                            subtitle:@"Choose what deserves your attention"
+                  [SCISetting navigationCellWithTitle:@"Feed"
+                                             subtitle:@"Feed visibility and suggestions"
                                                icon:[SCISymbol symbolWithName:@"rectangle.stack"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -90,8 +105,8 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
                                             ]
                                         }]
                 ],
-                 [SCISetting navigationCellWithTitle:@"Reels"
-                                            subtitle:@"Playback, gestures and focus"
+                  [SCISetting navigationCellWithTitle:@"Reels"
+                                             subtitle:@"Playback and scrolling"
                                                icon:[SCISymbol symbolWithName:@"film.stack"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -110,12 +125,12 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
                                         }]
                 ],
                   [SCISetting navigationCellWithTitle:@"Saving"
-                                             subtitle:@"Separate gestures for posts, stories and reels"
+                                              subtitle:@"Finger count, hold duration and output"
                                                 icon:[SCISymbol symbolWithName:@"tray.and.arrow.down"]
                                          navSections:[self downloadSections]
                 ],
-                 [SCISetting navigationCellWithTitle:@"Stories and messages"
-                                            subtitle:@"Privacy, stories and conversations"
+                  [SCISetting navigationCellWithTitle:@"Stories and messages"
+                                             subtitle:@"Privacy, receipts and local copies"
                                                icon:[SCISymbol symbolWithName:@"rectangle.portrait.on.rectangle.portrait.angled"]
                                         navSections:@[@{
                                              @"header": @"PRIVACY",
@@ -146,8 +161,8 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
                                             ]
                                         }]
                 ],
-                 [SCISetting navigationCellWithTitle:@"Navigation"
-                                            subtitle:@"Make the app move your way"
+                  [SCISetting navigationCellWithTitle:@"Navigation"
+                                             subtitle:@"Tabs, order and swipe behavior"
                                                icon:[SCISymbol symbolWithName:@"hand.draw.fill"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -166,8 +181,8 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
                                             ]
                                         }]
                 ],
-                 [SCISetting navigationCellWithTitle:@"Confirm actions"
-                                            subtitle:@"Fewer accidental taps"
+                  [SCISetting navigationCellWithTitle:@"Confirm actions"
+                                             subtitle:@"Confirm before sending or interacting"
                                                icon:[SCISymbol symbolWithName:@"checkmark"]
                                         navSections:@[@{
                                             @"header": @"",
@@ -235,7 +250,7 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
             ]
         },
         @{
-            @"header": @"DEVELOPER",
+            @"header": @"Developer",
             @"footer": @"Tap Discord to copy the username. TikTok opens the developer profile.",
             @"rows": @[
                 [SCISetting staticCellWithTitle:@"Peki Scripter" subtitle:@"Developer & custom build" icon:[SCISymbol symbolWithName:@"chevron.left.forwardslash.chevron.right"]],
@@ -269,8 +284,21 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
     [sections addObject:@{
         @"header": @"AFTER DOWNLOAD",
         @"footer": @"Share sheet offers Save Image / Save Video or Save to Files. Existing gestures update immediately without an app restart.",
-        @"rows": @[[SCISetting menuCellWithTitle:@"Open with" subtitle:@"What happens after a download"
-            menu:SCIChoiceMenu(@"download_destination", @[@[@"Share & save", @"share"], @[@"Preview", @"preview"]])]]
+        @"rows": @[
+            [SCISetting menuCellWithTitle:@"Open with" subtitle:@"What happens after a download"
+                menu:SCIChoiceMenu(@"download_destination", @[@[@"Share & save", @"share"], @[@"Preview", @"preview"]])],
+            [SCISetting buttonCellWithTitle:@"Reset gestures to two fingers" subtitle:@"All media types · 2 fingers · 0.5 seconds"
+                icon:[SCISymbol symbolWithName:@"arrow.counterclockwise"]
+                action:^{
+                    [SCIUtils showConfirmation:^{
+                        for (NSString *kind in @[@"feed", @"stories", @"reels", @"profile"]) {
+                            [NSUserDefaults.standardUserDefaults setInteger:2 forKey:[NSString stringWithFormat:@"dw_%@_fingers", kind]];
+                            [NSUserDefaults.standardUserDefaults setDouble:0.5 forKey:[NSString stringWithFormat:@"dw_%@_duration", kind]];
+                        }
+                        [NSNotificationCenter.defaultCenter postNotificationName:SCISettingsDidChangeNotification object:nil];
+                    } title:@"Reset all saving gestures?"];
+                }]
+        ]
     }];
     NSArray *groups = @[
         @[@"feed", @"FEED POSTS", @"dw_feed_posts"],

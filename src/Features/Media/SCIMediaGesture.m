@@ -40,6 +40,7 @@
 @end
 
 void SCIInstallMediaDownloadGesture(UIView *view, NSString *kind, void (^download)(UIView *)) {
+    [SCIUtils registerGuestDefaults];
     static char key;
     SCIMediaGestureHandler *handler = objc_getAssociatedObject(view, &key);
     if (handler) {
