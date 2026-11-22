@@ -125,6 +125,10 @@ Assert-Source ($media.Contains('if (!SCILicenseManager.sharedManager.authorized)
 $nativeSource = ($files | ForEach-Object { [IO.File]::ReadAllText($_.FullName) }) -join "`n"
 Assert-Source (-not $nativeSource.Contains('@"X-App-Secret"')) 'KeyAux authentication belongs only on the Worker'
 Assert-Source (-not [regex]::IsMatch($nativeSource, 'as_[A-Za-z0-9]{24,}')) 'An app secret must never be committed in native source'
+$ipaWorkflow = Read-Source '.github/workflows/buildapp.yml'
+Assert-Source ($ipaWorkflow.Contains('SOURCE_IPA="main/packages/Peki Scripter-sideloaded.ipa"')) 'IPA upload must use the explicit patched output, not the most recently modified package'
+Assert-Source (-not $ipaWorkflow.Contains('$(ls -t')) 'IPA artifact selection must not depend on directory timestamps'
+Assert-Source ($ipaWorkflow.Contains('./tests/check-ipa.ps1 -Path')) 'The packaged IPA must be checked for the injected license gate before upload'
 Write-Output "PASS: $($files.Count) source delimiter checks and feature wiring contracts."
 Write-Output "PASS: $($palettes.Count) unique RGB palettes and body-text contrast data checks."
 Write-Output 'Runtime behavior still requires a Theos build and testing on the target Instagram/iOS version.'
