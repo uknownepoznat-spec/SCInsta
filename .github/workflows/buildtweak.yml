@@ -24,6 +24,24 @@ jobs:
                 path: main
                 submodules: recursive
 
+            - name: Check source contracts
+              shell: pwsh
+              working-directory: main
+              run: ./tests/check-source.ps1
+
+            - name: Setup Node for license protocol tests
+              uses: actions/setup-node@v4
+              with:
+                node-version: '24'
+
+            - name: Install license test dependencies
+              working-directory: main/server/keyaux-worker
+              run: npm ci --no-fund
+
+            - name: Test license Worker without live secrets
+              working-directory: main/server/keyaux-worker
+              run: node --test
+
             - name: Install Dependencies
               run: brew install ldid dpkg make
 

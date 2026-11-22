@@ -36,6 +36,29 @@ jobs:
                 path: main
                 submodules: recursive
 
+            - name: Check source contracts
+              shell: pwsh
+              working-directory: main
+              run: ./tests/check-source.ps1
+
+            - name: Test IPA packaging checks
+              shell: pwsh
+              working-directory: main
+              run: ./tests/check-ipa-contracts.ps1
+
+            - name: Setup Node for license protocol tests
+              uses: actions/setup-node@v4
+              with:
+                node-version: '24'
+
+            - name: Install license test dependencies
+              working-directory: main/server/keyaux-worker
+              run: npm ci --no-fund
+
+            - name: Test license Worker without live secrets
+              working-directory: main/server/keyaux-worker
+              run: node --test
+
             - name: Install Dependencies
               run: brew install ldid dpkg make
 
@@ -110,13 +133,21 @@ jobs:
 
             - name: Rename IPA to include version info
               run: |
-                cd main/packages
-                mv "$(ls -t | head -n1)" "SCInsta_sideloaded_v${SCINSTA_VERSION}.ipa"
+                set -euo pipefail
+                SOURCE_IPA="main/packages/Peki Scripter-sideloaded.ipa"
+                TARGET_IPA="main/packages/SCInsta_sideloaded_v${SCINSTA_VERSION}.ipa"
+                test -s "$SOURCE_IPA"
+                mv -- "$SOURCE_IPA" "$TARGET_IPA"
+
+            - name: Verify injected license gate before upload
+              shell: pwsh
+              working-directory: main
+              run: ./tests/check-ipa.ps1 -Path "packages/SCInsta_sideloaded_v${{ steps.scinsta_version.outputs.version }}.ipa"
 
             - name: Pass package name to upload action
               id: package_name
               run: |
-                echo "package=$(ls -t main/packages |  head -n1)" >> "$GITHUB_OUTPUT"
+                echo "package=SCInsta_sideloaded_v${SCINSTA_VERSION}.ipa" >> "$GITHUB_OUTPUT"
 
             - name: Upload Artifact
               if: ${{ inputs.upload_artifact }}
