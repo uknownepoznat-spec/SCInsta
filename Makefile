@@ -1,6 +1,7 @@
 TARGET := iphone:clang:16.2
 INSTALL_TARGET_PROCESSES = Instagram
 ARCHS = arm64
+LICENSE_REQUIRED ?= 1
 
 include $(THEOS)/makefiles/common.mk
 
@@ -10,6 +11,7 @@ $(TWEAK_NAME)_FILES = $(shell find src -type f \( -iname \*.x -o -iname \*.xm -o
 $(TWEAK_NAME)_FRAMEWORKS = UIKit Foundation CoreGraphics Photos CoreServices SystemConfiguration SafariServices Security QuartzCore
 $(TWEAK_NAME)_PRIVATE_FRAMEWORKS = Preferences
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc -Wno-unsupported-availability-guard -Wno-unused-value -Wno-deprecated-declarations -Wno-nullability-completeness -Wno-unused-function -Wno-incompatible-pointer-types
+$(TWEAK_NAME)_CFLAGS += -DSCI_LICENSE_REQUIRED=$(LICENSE_REQUIRED)
 $(TWEAK_NAME)_LOGOSFLAGS = --c warnings=none
 
 CCFLAGS += -std=c++11

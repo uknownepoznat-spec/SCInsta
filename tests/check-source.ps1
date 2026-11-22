@@ -42,6 +42,11 @@ $theme = Read-Source 'src/Appearance/SCITheme.m'
 $themeEditor = Read-Source 'src/Settings/SCIThemeEditorViewController.m'
 $utils = Read-Source 'src/Utils.m'
 $tweak = Read-Source 'src/Tweak.x'
+$licenseConfig = Read-Source 'src/License/SCILicenseConfig.h'
+$licenseManager = Read-Source 'src/License/SCILicenseManager.m'
+$licenseView = Read-Source 'src/License/SCILicenseViewController.m'
+$deviceKey = Read-Source 'src/License/SCILicenseDeviceKey.m'
+$gateHook = Read-Source 'src/Features/General/SCSettingsMenuEntry.x'
 
 foreach ($unsupported in @('message_encryption', 'enable_auto_reply', 'message_schedule',
     'hd_profile_pictures', 'unseen_stories_counter', 'story_downloader', 'anti_delete', 'test_menu_cell')) {
@@ -102,6 +107,24 @@ foreach ($palette in $palettes) {
         Assert-Source ($contrast -ge 4.5) "Unreadable body text in $($palette.Groups[1].Value)"
     }
 }
+Assert-Source ($licenseConfig.Contains('#define SCI_LICENSE_REQUIRED 1')) 'License checks must default on'
+Assert-Source ((Read-Source 'Makefile').Contains('LICENSE_REQUIRED ?= 1')) 'Production builds must not silently disable licensing'
+Assert-Source ((Read-Source 'src/License/SCILicenseConfig.m').Contains('containsString:@"YOUR-"')) 'An unset Worker URL must be rejected'
+Assert-Source ($deviceKey.Contains('kSecAttrTokenIDSecureEnclave')) 'Device identity must require the declared Secure Enclave key'
+Assert-Source ([regex]::Matches($deviceKey, 'kSecAttrAccessibleWhenUnlockedThisDeviceOnly').Count -ge 2) 'Device key and saved credential must be device-only'
+Assert-Source ($deviceKey.Contains('SecKeyCreateSignature')) 'Device code alone must not authorize access'
+Assert-Source ($licenseManager.Contains('validUntilUptime') -and $licenseManager.Contains('systemUptime')) 'Authorization must use an expiring monotonic in-memory lease'
+Assert-Source ($licenseManager.Contains('UIApplicationWillResignActiveNotification')) 'Foreground return must recheck access'
+Assert-Source ($licenseManager.Contains('completionHandler(nil)')) 'License credentials must not follow redirects'
+Assert-Source ($licenseManager.Contains('[source endEditing:YES]')) 'The underlying Instagram keyboard must lose focus before the access cover is shown'
+Assert-Source ($licenseManager.Contains('CFBooleanGetTypeID()')) 'A truthy string must not authorize the native client'
+Assert-Source ($licenseView.Contains('No access') -and $licenseView.Contains('Buy a key') -and $licenseView.Contains('Discord: %@')) 'The locked screen must show purchase guidance and a visible Discord contact'
+Assert-Source ($licenseManager.Contains('suspendedByHost') -and $licenseManager.Contains('isLiveContainerWindow:window')) 'The license cover must not take over the LC launcher or treat keyboard windows as a host transition'
+Assert-Source ($gateHook.Contains('[SCILicenseManager.sharedManager considerWindow:self]')) 'License cover is not connected to the guest window lifecycle'
+Assert-Source ($media.Contains('if (!SCILicenseManager.sharedManager.authorized) return;')) 'Media saving must respect the license gate'
+$nativeSource = ($files | ForEach-Object { [IO.File]::ReadAllText($_.FullName) }) -join "`n"
+Assert-Source (-not $nativeSource.Contains('@"X-App-Secret"')) 'KeyAux authentication belongs only on the Worker'
+Assert-Source (-not [regex]::IsMatch($nativeSource, 'as_[A-Za-z0-9]{24,}')) 'An app secret must never be committed in native source'
 Write-Output "PASS: $($files.Count) source delimiter checks and feature wiring contracts."
 Write-Output "PASS: $($palettes.Count) unique RGB palettes and body-text contrast data checks."
 Write-Output 'Runtime behavior still requires a Theos build and testing on the target Instagram/iOS version.'

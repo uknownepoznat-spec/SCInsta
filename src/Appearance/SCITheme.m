@@ -51,6 +51,21 @@ static BOOL SCIInstagramOwnsRoot(UIViewController *root) {
     return NO;
 }
 
+static BOOL SCILiveContainerOwnsRoot(UIViewController *root) {
+    if (!root) return NO;
+    NSString *name = NSStringFromClass(root.class);
+    if ([name hasPrefix:@"LC"] || [name containsString:@"LiveContainer"]) return YES;
+    if ([root isKindOfClass:UINavigationController.class]) {
+        return SCILiveContainerOwnsRoot(((UINavigationController *)root).viewControllers.firstObject);
+    }
+    if ([root isKindOfClass:UITabBarController.class]) {
+        for (UIViewController *controller in ((UITabBarController *)root).viewControllers) {
+            if (SCILiveContainerOwnsRoot(controller)) return YES;
+        }
+    }
+    return NO;
+}
+
 @implementation SCITheme
 + (NSArray<NSDictionary<NSString *,NSString *> *> *)presets {
     static NSArray *themes;
@@ -236,6 +251,14 @@ static BOOL SCIInstagramOwnsRoot(UIViewController *root) {
     window.overrideUserInterfaceStyle = [mode isEqualToString:@"dark"] ? UIUserInterfaceStyleDark
         : [mode isEqualToString:@"light"] ? UIUserInterfaceStyleLight : state.originalStyle;
     window.tintColor = tint ? [self nativeAccentColor] : state.originalTint;
+}
+
++ (BOOL)isInstagramWindow:(UIWindow *)window {
+    return window && window.windowLevel == UIWindowLevelNormal && SCIInstagramOwnsRoot(window.rootViewController);
+}
+
++ (BOOL)isLiveContainerWindow:(UIWindow *)window {
+    return window && window.windowLevel == UIWindowLevelNormal && SCILiveContainerOwnsRoot(window.rootViewController);
 }
 
 + (void)refreshInstagramWindows {

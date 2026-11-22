@@ -52,3 +52,18 @@
 - [ ] Turn overrides off, then return to LiveContainer's launcher; its native tint/appearance must remain unchanged.
 - [ ] Test both scene-based and legacy guest window lifecycles; unrelated/keyboard windows must be skipped.
 - [ ] Update the guest without resetting its data container; confirm preferences survive.
+
+### KeyAux / Cloudflare access gate
+- [ ] Rotate the exposed app secret; store the replacement only as a Worker secret.
+- [x] Deploy a fresh D1/Worker as documented in `server/keyaux-worker/README.md`; set the public URL in native config.
+- [x] Run source/palette checks and `node --test` in `server/keyaux-worker`.
+- [x] Deploy the redirect repair and pass live configuration, proof/replay and nonexistent-license smoke checks.
+- [ ] Build with `LICENSE_REQUIRED=1`; an unset URL/secret or an unavailable network must not unlock.
+- [ ] On the target signed LiveContainer, confirm Secure Enclave/Keychain works, then pre-bind a one-activation test key to the displayed device code.
+- [ ] Verify valid login, invalid key, expiry, ban, wrong-device use, foreground return, and periodic online checks against the real provider.
+- [ ] Confirm repeated checks do not consume another activation.
+- [ ] Test a current story/modal, rotation, multitasking, app switching, keyboard and text-selection/Paste UI while locked.
+- [ ] Returning to LC's launcher must hide the guest cover and must not cause an authentication request for the host.
+- [ ] A generic keyboard/text-selection window must not be treated as a host transition or expose the guest.
+- [ ] Check keychain restoration across guest updates, then explicit reset/reapproval on a signing/access-group change.
+- [ ] Confirm purchase/help uses a real configured Discord link, and diagnostics contain no license keys, app secrets or Instagram contents.

@@ -4,6 +4,8 @@ A custom Instagram tweak for iOS, based on [SCInsta](https://github.com/SoCuul/S
 
 See [custom build behavior and limitations](FEATURE_STATUS.md) for gesture customization, the local text archive, themes, and removed placeholder features. The upstream compatibility baseline was Instagram 414.0.0; that is not a device-test result for these custom changes.
 
+**License gate:** production builds require the Cloudflare → KeyAux bridge. The Worker/D1 deployment and public native URL are set up; follow [license setup and deployment status](server/keyaux-worker/README.md) for the rotated-secret and acceptance-test requirements before distributing an IPA. An unconfigured backend stays locked. No app secret belongs in the IPA or GitHub.
+
 ---
 
 > [!NOTE]

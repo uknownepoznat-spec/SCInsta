@@ -3,6 +3,7 @@
 #import "Tweak.h"
 #import "Utils.h"
 #import "Settings/SCISettingsViewController.h"
+#import "License/SCILicenseManager.h"
 
 ///////////////////////////////////////////////////////////
 
@@ -41,6 +42,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     double openDelay = [SCIUtils getBoolPref:@"tweak_settings_app_launch"] ? 0.0 : 5.0;
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(openDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (!SCILicenseManager.sharedManager.authorized) return;
         if (
             ![[[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] isEqualToString:SCIVersionString]
             || [SCIUtils getBoolPref:@"tweak_settings_app_launch"]
@@ -60,7 +62,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     NSLog(@"[Peki Scripter] Cleaning cache...");
     [SCIUtils cleanCache];
 
-    if ([SCIUtils getBoolPref:@"flex_app_launch"]) {
+    if (SCILicenseManager.sharedManager.authorized && [SCIUtils getBoolPref:@"flex_app_launch"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
 
@@ -70,7 +72,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 - (void)applicationDidBecomeActive:(id)arg1 {
     %orig;
     
-    if ([SCIUtils getBoolPref:@"flex_app_start"]) {
+    if (SCILicenseManager.sharedManager.authorized && [SCIUtils getBoolPref:@"flex_app_start"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
 }
@@ -699,7 +701,7 @@ static BOOL showingVerticalUFIConfirm = NO;
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
 
-    if ([SCIUtils getBoolPref:@"flex_instagram"]) {
+    if (SCILicenseManager.sharedManager.authorized && [SCIUtils getBoolPref:@"flex_instagram"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
 }

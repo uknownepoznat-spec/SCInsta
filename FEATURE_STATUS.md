@@ -9,6 +9,17 @@
 - **Open with → Share & save** opens the system share sheet; **Preview** uses Quick Look.
 - There is one story-saving switch, not an additional dummy "Story Downloader" switch.
 
+## License access
+- Production builds default to an online KeyAux license check through the Cloudflare Worker in `server/keyaux-worker/`. The Worker and dedicated D1 database were deployed on 2026-11-21, and the public URL is set in `src/License/SCILicenseConfig.m`. See the server README for secret-setup and acceptance-test status.
+- App secrets stay in Worker secrets. The exposed conversation secret is not used. App/Owner IDs and version are public configuration.
+- The access screen covers recognized Instagram-owned guest windows. Initial settings presentation and media saving also check authorization. It is not an Instagram-account login.
+- Device code is a SHA-256 P-256 public-key fingerprint. The native client requires a Secure Enclave key; unsupported Keychain/signing setups fail closed and expose a metadata-only diagnostic report.
+- Worker challenges are short-lived, one-use and signature-checked. KeyAux verifies the current activation before attempting a new activation.
+- Authorization exists only as an active-app, monotonic lease of at most 300 seconds. Offline/expired/revoked/invalid requests do not grant access. Foreground return requires rechecking.
+- Keychain/access-group/container changes can change or lose the device key. This is not a permanent IMEI/serial identifier, remote hardware attestation, or unbreakable anti-repack DRM.
+- **License & device** shows access state/code and allows forgetting the local saved license without deleting the device key or resetting a server activation.
+- The redirect repair was deployed on 2026-11-22. All 21 local tests pass, including a real workerd/local-D1 integration test with a mocked provider. Live configuration, signed-proof/replay handling and nonexistent-license denial also pass. A valid-license login and native LiveContainer behavior still require a rebuilt guest IPA and on-device acceptance tests.
+
 ## Deleted text
 - Enable **Stories and messages → Retain deleted text locally** before opening the chat.
 - Text observed through supported message getters/setters is cached locally. Supported deletion events mark those snapshots as retained. Own unsend attempts also snapshot the supplied message when available.

@@ -2,8 +2,10 @@
 #import "../../Utils.h"
 #import "../../Downloader/Download.h"
 #import "SCIMediaGesture.h"
+#import "../../License/SCILicenseManager.h"
 
 static void SCIDownloadMedia(NSURL *url, BOOL video) {
+    if (!SCILicenseManager.sharedManager.authorized) return;
     if (!url) {
         [SCIUtils showErrorHUDWithDescription:@"This media format is not supported by this Instagram version."];
         return;

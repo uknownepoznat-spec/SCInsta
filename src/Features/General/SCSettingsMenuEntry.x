@@ -1,5 +1,6 @@
 #import "../../Settings/SCISettingsViewController.h"
 #import "../../Appearance/SCITheme.h"
+#import "../../License/SCILicenseManager.h"
 #import <objc/runtime.h>
 
 static char SCISettingsGestureKey;
@@ -78,6 +79,7 @@ static char SCISettingsGestureKey;
 
 - (void)openSettings:(UILongPressGestureRecognizer *)gesture {
     if (gesture.state != UIGestureRecognizerStateBegan) return;
+    if (!SCILicenseManager.sharedManager.authorized) return;
     UIWindow *window = (UIWindow *)gesture.view;
     UIViewController *presenter = window.rootViewController;
     while (presenter.presentedViewController) {
@@ -99,6 +101,7 @@ static char SCISettingsGestureKey;
 %hook UIWindow
 - (void)layoutSubviews {
     %orig;
+    [SCILicenseManager.sharedManager considerWindow:self];
     [SCITheme applyToInstagramWindow:self];
     if (!self.rootViewController || self.windowLevel != UIWindowLevelNormal
         || objc_getAssociatedObject(self, &SCISettingsGestureKey)) return;

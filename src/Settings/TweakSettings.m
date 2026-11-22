@@ -1,6 +1,7 @@
 #import "TweakSettings.h"
 #import "SCIMessageArchiveViewController.h"
 #import "SCIThemeEditorViewController.h"
+#import "../License/SCILicenseViewController.h"
 
 static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choices) {
     NSMutableArray *children = [NSMutableArray new];
@@ -31,6 +32,9 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
             @"header": @"Preferences",
             @"footer": @"Private Instagram hooks depend on the installed app version. A switch is not a guarantee of server-side privacy.",
             @"rows": @[
+                [SCISetting controllerCellWithTitle:@"License & device" subtitle:@"Access status, device code and saved license"
+                    icon:[SCISymbol symbolWithName:@"key"]
+                    factory:^UIViewController *(void) { return [SCILicenseViewController new]; }],
                 [SCISetting navigationCellWithTitle:@"Appearance" subtitle:@"16 themes, custom colors and Instagram tint"
                     icon:[SCISymbol symbolWithName:@"slider.horizontal.3"]
                     navSections:@[@{
