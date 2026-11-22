@@ -107,6 +107,13 @@ foreach ($palette in $palettes) {
         Assert-Source ($contrast -ge 4.5) "Unreadable body text in $($palette.Groups[1].Value)"
     }
 }
+$defaultPalette = $palettes | Where-Object { $_.Groups[1].Value -eq 'carbon' } | Select-Object -First 1
+$accentLuminance = Get-PaletteLuminance $defaultPalette.Groups[5].Value
+foreach ($component in @(3, 4)) {
+    $surfaceLuminance = Get-PaletteLuminance $defaultPalette.Groups[$component].Value
+    $contrast = ([Math]::Max($accentLuminance, $surfaceLuminance) + 0.05) / ([Math]::Min($accentLuminance, $surfaceLuminance) + 0.05)
+    Assert-Source ($contrast -ge 4.5) 'V2 red controls must remain readable on the default menu surfaces'
+}
 Assert-Source ($licenseConfig.Contains('#define SCI_LICENSE_REQUIRED 1')) 'License checks must default on'
 Assert-Source ((Read-Source 'Makefile').Contains('LICENSE_REQUIRED ?= 1')) 'Production builds must not silently disable licensing'
 Assert-Source ((Read-Source 'src/License/SCILicenseConfig.m').Contains('containsString:@"YOUR-"')) 'An unset Worker URL must be rejected'
@@ -127,7 +134,15 @@ foreach ($removed in @('No access', 'Buy a key', 'Device code', 'Copy device cod
     Assert-Source (-not $licenseView.Contains($removed)) "Removed license-screen clutter returned: $removed"
 }
 Assert-Source ($licenseView.Contains('manager.errorMessage') -and -not $licenseView.Contains('manager.message')) 'The minimal form must show short errors, not diagnostic paragraphs'
-Assert-Source ($licenseView.Contains('SCILicenseCameraMark') -and $licenseView.Contains('SCILicenseRed()')) 'The minimal black/red screen must have a vector camera mark'
+Assert-Source ($licenseView.Contains('SCIBrandMarkView') -and $licenseView.Contains('SCILicenseRed()')) 'The minimal black/red screen must have a vector camera mark'
+Assert-Source ($controller.Contains('SCIBrandMarkView')) 'Login and hidden menu must share the camera mark'
+Assert-Source ($controller.Contains('self.navigationItem.title = [SCITweakSettings title]') -and $settings.Contains('return @"Peki Scripter V2";')) 'The hidden menu must use Peki Scripter V2 branding'
+foreach ($removedShortcut in @('shortcutWithTitle:', 'openPrivacy:', 'openGestures:', 'Story saving')) {
+    Assert-Source (-not $controller.Contains($removedShortcut)) "Removed dashboard shortcut or summary returned: $removedShortcut"
+}
+Assert-Source ($settings.Contains('navigationCellWithTitle:@"Saving"') -and $settings.Contains('navigationCellWithTitle:@"Stories and messages"')) 'Removing dashboard shortcuts must not remove the gesture/privacy settings pages'
+Assert-Source ($theme.Contains('@[@"carbon", @"Peki V2", @"08070A", @"151119", @"F04D65"]')) 'The default palette must match the V2 black/red design without changing preference IDs'
+Assert-Source ($settings.Contains('url:SCILicenseConfig.supportURL.absoluteString')) 'The menu Discord contact must open the same purchase server as login'
 Assert-Source ($licenseView.Contains('keyboardLayoutGuide') -and $licenseView.Contains('scrollRectToVisible:')) 'The license field must remain reachable with the keyboard open'
 Assert-Source (-not $licenseView.Contains('SCITheme.')) 'The license screen must retain its requested black/red styling independently of menu themes'
 Assert-Source ((Read-Source 'src/License/SCILicenseConfig.m').Contains('https://discord.gg/qTB3G7gCAp')) 'The purchase contact must use the requested Discord server'

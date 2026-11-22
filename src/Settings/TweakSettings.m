@@ -2,6 +2,7 @@
 #import "SCIMessageArchiveViewController.h"
 #import "SCIThemeEditorViewController.h"
 #import "../License/SCILicenseViewController.h"
+#import "../License/SCILicenseConfig.h"
 
 static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choices) {
     NSMutableArray *children = [NSMutableArray new];
@@ -30,7 +31,7 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
     return @[
         @{
             @"header": @"Preferences",
-            @"footer": @"Private Instagram hooks depend on the installed app version. A switch is not a guarantee of server-side privacy.",
+            @"footer": @"",
             @"rows": @[
                 [SCISetting controllerCellWithTitle:@"License" subtitle:@"Access and support"
                     icon:[SCISymbol symbolWithName:@"key"]
@@ -38,7 +39,7 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
                 [SCISetting navigationCellWithTitle:@"Appearance" subtitle:@"16 themes, custom colors and Instagram tint"
                     icon:[SCISymbol symbolWithName:@"slider.horizontal.3"]
                     navSections:@[@{
-                        @"header": @"Peki Scripter",
+                        @"header": @"Peki Scripter V2",
                         @"footer": @"Menu themes apply immediately. Custom RGB colors are stored locally.",
                         @"rows": @[
                             [SCISetting controllerCellWithTitle:@"Themes & custom palette" subtitle:@"16 presets, color picker and HEX input"
@@ -254,17 +255,14 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
             ]
         },
         @{
-            @"header": @"Developer",
-            @"footer": @"Tap Discord to copy the username. TikTok opens the developer profile.",
+            @"header": @"Contact",
+            @"footer": @"",
             @"rows": @[
-                [SCISetting staticCellWithTitle:@"Peki Scripter" subtitle:@"Developer & custom build" icon:[SCISymbol symbolWithName:@"chevron.left.forwardslash.chevron.right"]],
-                [SCISetting buttonCellWithTitle:@"Discord" subtitle:@"pekiscripter · Tap to copy"
+                [SCISetting linkCellWithTitle:@"Instagram" subtitle:@"@pekifn"
+                    icon:[SCISymbol symbolWithName:@"camera"] url:@"https://www.instagram.com/pekifn/"],
+                [SCISetting linkCellWithTitle:@"Discord" subtitle:@"pekiscripter"
                     icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right"]
-                    action:^{
-                        [UIPasteboard generalPasteboard].string = @"pekiscripter";
-                        UINotificationFeedbackGenerator *feedback = [UINotificationFeedbackGenerator new];
-                        [feedback notificationOccurred:UINotificationFeedbackTypeSuccess];
-                    }],
+                    url:SCILicenseConfig.supportURL.absoluteString],
                 [SCISetting linkCellWithTitle:@"TikTok" subtitle:@"@peki_scripter"
                     icon:[SCISymbol symbolWithName:@"play.rectangle"] url:@"https://www.tiktok.com/@peki_scripter"]
             ]
@@ -280,7 +278,7 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
 ///
 
 + (NSString *)title {
-    return @"Peki Scripter Settings";
+    return @"Peki Scripter V2";
 }
 
 + (NSArray *)downloadSections {

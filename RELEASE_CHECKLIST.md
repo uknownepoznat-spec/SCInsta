@@ -22,7 +22,9 @@
 - [ ] An expired/unsupported story should show an error instead of crashing.
 - [ ] Verify feed/reel downloads still work after the shared URL/downloader changes.
 - [ ] Open settings via the profile menu; check dashboard sizing on iPhone/iPad and larger text sizes.
-- [ ] Check nested settings, switches, menu buttons, Done, Discord copy and TikTok link.
+- [ ] Check nested settings, switches, menu buttons, Done, the Discord server link and TikTok link.
+- [ ] Confirm the menu title is Peki Scripter V2, its default palette is black/red and its camera mark matches login; Privacy/Gestures shortcut buttons and story-summary clutter are absent.
+- [ ] Confirm Saving and Stories and messages still contain their original gesture/privacy controls and remain searchable.
 - [ ] If a crash persists, record Instagram/iOS versions and export the matching Instagram .ips crash log.
 
 ### Customization and archive regression checks (on device)

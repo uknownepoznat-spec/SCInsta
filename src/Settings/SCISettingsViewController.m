@@ -1,5 +1,6 @@
 #import "SCISettingsViewController.h"
 #import "../Appearance/SCITheme.h"
+#import "../Appearance/SCIBrandMarkView.h"
 
 static char rowStaticRef[] = "row";
 
@@ -107,13 +108,14 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
     
     [self applyAppearance];
     if (self.reduceMargin) {
-        self.navigationItem.title = @"Settings";
+        self.navigationItem.title = [SCITweakSettings title];
+        self.navigationItem.backButtonDisplayMode = UINavigationItemBackButtonDisplayModeMinimal;
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
             initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(closeSettings:)];
         UISearchController *search = [[UISearchController alloc] initWithSearchResultsController:nil];
         search.searchResultsUpdater = self;
         search.obscuresBackgroundDuringPresentation = NO;
-        search.searchBar.placeholder = @"Find a tweak or gesture";
+        search.searchBar.placeholder = @"Search";
         self.navigationItem.searchController = search;
         self.navigationItem.hidesSearchBarWhenScrolling = NO;
         self.definesPresentationContext = YES;
@@ -185,78 +187,41 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
 }
 
 - (void)buildDashboardHeader {
-    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 176)];
-    UILabel *mark = SCISettingsLabel(@"PS", 15, UIFontWeightBold, SCITheme.accentColor);
+    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 76)];
+    SCIBrandMarkView *mark = [SCIBrandMarkView new];
     mark.translatesAutoresizingMaskIntoConstraints = NO;
-    mark.textAlignment = NSTextAlignmentCenter;
-    mark.backgroundColor = [SCITheme.accentColor colorWithAlphaComponent:0.08];
-    mark.layer.cornerRadius = 12;
-    mark.layer.masksToBounds = YES;
+    mark.tintColor = SCITheme.accentColor;
     [mark.widthAnchor constraintEqualToConstant:44].active = YES;
     [mark.heightAnchor constraintEqualToConstant:44].active = YES;
-    UILabel *title = SCISettingsLabel(@"Peki Scripter", 24, UIFontWeightSemibold, SCITheme.textColor);
-    UILabel *subtitle = SCISettingsLabel([NSString stringWithFormat:@"Instagram %@   ·   %@", [SCIUtils IGVersionString] ?: @"—", SCIVersionString],
-        12, UIFontWeightRegular, SCITheme.secondaryTextColor);
-    UIStackView *brand = [[UIStackView alloc] initWithArrangedSubviews:@[title, subtitle]];
-    brand.axis = UILayoutConstraintAxisVertical;
-    brand.spacing = 4;
-    UIStackView *identity = [[UIStackView alloc] initWithArrangedSubviews:@[mark, brand]];
-    identity.spacing = 14;
+    UIButton *handle = [UIButton buttonWithType:UIButtonTypeSystem];
+    [handle setTitle:@"@pekifn" forState:UIControlStateNormal];
+    [handle setTitleColor:SCITheme.textColor forState:UIControlStateNormal];
+    handle.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    handle.titleLabel.font = [[UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline]
+        scaledFontForFont:[UIFont systemFontOfSize:17 weight:UIFontWeightMedium]];
+    handle.titleLabel.adjustsFontForContentSizeCategory = YES;
+    handle.titleLabel.numberOfLines = 0;
+    [handle.heightAnchor constraintGreaterThanOrEqualToConstant:44].active = YES;
+    [handle addTarget:self action:@selector(openInstagramProfile:) forControlEvents:UIControlEventTouchUpInside];
+    UIStackView *identity = [[UIStackView alloc] initWithArrangedSubviews:@[mark, handle]];
+    identity.spacing = 12;
     identity.alignment = UIStackViewAlignmentCenter;
-    NSString *gestureText = [NSString stringWithFormat:@"Story saving · %lu %@ · %g s",
-        (unsigned long)[SCIUtils downloadFingerCountForKind:@"stories"],
-        [SCIUtils downloadFingerCountForKind:@"stories"] == 1 ? @"finger" : @"fingers",
-        [SCIUtils downloadHoldDurationForKind:@"stories"]];
-    if (![SCIUtils getBoolPref:@"dw_story"]) gestureText = @"Story saving is turned off";
-    UILabel *modules = SCISettingsLabel(gestureText, 12, UIFontWeightRegular, SCITheme.secondaryTextColor);
-    UIButton *privacy = [self shortcutWithTitle:@"Privacy" symbol:@"eye.slash" action:@selector(openPrivacy:)];
-    UIButton *gestures = [self shortcutWithTitle:@"Gestures" symbol:@"hand.tap" action:@selector(openGestures:)];
-    UIStackView *shortcuts = [[UIStackView alloc] initWithArrangedSubviews:@[privacy, gestures]];
-    shortcuts.spacing = 10;
-    shortcuts.distribution = UIStackViewDistributionFillEqually;
-    UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[identity, shortcuts, modules]];
-    stack.axis = UILayoutConstraintAxisVertical;
-    stack.spacing = 14;
-    stack.translatesAutoresizingMaskIntoConstraints = NO;
-    [header addSubview:stack];
+    identity.translatesAutoresizingMaskIntoConstraints = NO;
+    [header addSubview:identity];
     [NSLayoutConstraint activateConstraints:@[
-        [stack.leadingAnchor constraintEqualToAnchor:header.leadingAnchor constant:20],
-        [stack.trailingAnchor constraintEqualToAnchor:header.trailingAnchor constant:-20],
-        [stack.topAnchor constraintEqualToAnchor:header.topAnchor constant:16],
-        [stack.bottomAnchor constraintEqualToAnchor:header.bottomAnchor constant:-12]
+        [identity.leadingAnchor constraintEqualToAnchor:header.leadingAnchor constant:24],
+        [identity.trailingAnchor constraintEqualToAnchor:header.trailingAnchor constant:-24],
+        [identity.topAnchor constraintEqualToAnchor:header.topAnchor constant:12],
+        [identity.bottomAnchor constraintEqualToAnchor:header.bottomAnchor constant:-20]
     ]];
     self.dashboardHeader = header;
     self.tableView.tableHeaderView = header;
 }
 
-- (UIButton *)shortcutWithTitle:(NSString *)title symbol:(NSString *)symbol action:(SEL)action {
-    UIButtonConfiguration *configuration = [UIButtonConfiguration tintedButtonConfiguration];
-    configuration.title = title;
-    configuration.image = [UIImage systemImageNamed:symbol];
-    configuration.imagePadding = 8;
-    configuration.contentInsets = NSDirectionalEdgeInsetsMake(10, 12, 10, 12);
-    configuration.baseForegroundColor = SCITheme.accentColor;
-    configuration.cornerStyle = UIButtonConfigurationCornerStyleMedium;
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    button.configuration = configuration;
-    [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
-    return button;
+- (void)openInstagramProfile:(id)sender {
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:@"https://www.instagram.com/pekifn/"]
+        options:@{} completionHandler:nil];
 }
-
-- (void)openModuleNamed:(NSString *)title {
-    for (NSDictionary *section in self.allSections) {
-        for (SCISetting *row in section[@"rows"]) {
-            if (row.type == SCITableCellNavigation && [row.title isEqualToString:title]) {
-                SCISettingsViewController *controller = [[SCISettingsViewController alloc]
-                    initWithTitle:row.title sections:row.navSections reduceMargin:NO];
-                [self.navigationController pushViewController:controller animated:YES];
-                return;
-            }
-        }
-    }
-}
-- (void)openPrivacy:(id)sender { [self openModuleNamed:@"Stories and messages"]; }
-- (void)openGestures:(id)sender { [self openModuleNamed:@"Saving"]; }
 
 - (void)collectMatches:(NSArray *)sections query:(NSString *)query path:(NSString *)path into:(NSMutableArray *)results {
     for (NSDictionary *section in sections) {

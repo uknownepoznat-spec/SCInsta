@@ -1,4 +1,4 @@
-# Peki Scripter
+# Peki Scripter V2
 A custom Instagram tweak for iOS, based on [SCInsta](https://github.com/SoCuul/SCInsta).\
 `Version v1.0.0` | Custom changes require testing on your Instagram/iOS version.
 
@@ -107,6 +107,10 @@ See [custom build behavior and limitations](FEATURE_STATUS.md) for gesture custo
 | <img src="https://i.imgur.com/uPMcugZ.png"> | <img src="https://i.imgur.com/ctIiL7i.png"> |
 
 # Building from source
+The **Build and Package SCInsta** workflow uploads only the explicitly patched output and checks that Instagram loads the `SCInsta` library containing the license gate and deployed Worker URL. Upload the updated `.github/workflows/` and `tests/` together with `src/`; updating only the native source leaves the older artifact-selection workflow in place. Do not install the original `com.burbn.instagram.ipa` input as the finished custom build.
+
+To validate an IPA locally, run `pwsh -File tests/check-ipa.ps1 -Path "path/to/output.ipa"`. This is a packaging check, not an iPhone runtime test.
+
 ### Prerequisites
 - XCode + Command-Line Developer Tools
 - [Homebrew](https://brew.sh/#install)

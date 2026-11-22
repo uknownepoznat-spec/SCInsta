@@ -40,10 +40,11 @@
 - All private Instagram hooks are version dependent. Already-sent receipts cannot be undone.
 
 ## Menu
-- Compact identity header, category cards, search, Privacy/Gestures shortcuts, and a live story-gesture summary. No marketing slogans or oversized neon hero card.
-- **Appearance → Themes & custom palette** offers 16 palettes: Carbon, Midnight, Graphite, OLED black, Slate, Ocean, Forest, Moss, Espresso, Copper, Burgundy, Indigo, Dusk, Paper, Pearl and Sand.
+- **Peki Scripter V2** title, shared vector camera mark, `@pekifn`, search and compact category cards. The extra Privacy/Gestures shortcuts and story-summary strip are removed; their actual settings remain under Saving and Stories and messages.
+- The default palette is **Peki V2**: near-black background, subtle purple-black surfaces and red accents matching the license screen. Its stored preference ID remains `carbon`, so the old default adopts the updated colors without overwriting explicit theme/accent choices.
+- **Appearance → Themes & custom palette** still offers 16 palettes: Peki V2, Midnight, Graphite, OLED black, Slate, Ocean, Forest, Moss, Espresso, Copper, Burgundy, Indigo, Dusk, Paper, Pearl and Sand.
 - **Custom** supports a native RGB picker and validated `#RRGGBB` entry for background, surface and accent. Body text automatically chooses black/white for each surface. Accent overrides are independent of preset surfaces.
-- Discord copies `pekiscripter`; TikTok opens `@peki_scripter`.
+- The menu Contact section opens Instagram `@pekifn`, the purchase Discord server `https://discord.gg/qTB3G7gCAp`, and TikTok `@peki_scripter`.
 
 ## Instagram appearance / LiveContainer
 - **Appearance → Instagram · experimental** offers app-default/dark/light native appearance plus an optional theme accent.
