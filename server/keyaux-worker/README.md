@@ -14,6 +14,7 @@ KeyAux's own dashboard manages licenses, activations, HWID bindings and bans; th
 - Live checks: `/v1/config` returns the expected app/version; real D1 challenges, invalid-signature rejection and one-use consumption passed.
 - The initial provider-denial check exposed a Workers runtime incompatibility: `redirect: "error"` is unsupported. The local repair uses `manual` and explicitly rejects every 3xx response, without forwarding credentials.
 - **2026-11-22:** the redirect repair is deployed as version `d44822d8-71ef-49d2-82e9-7cda4138a85a`. All 21 local tests pass, including a real workerd/local-D1 regression.
+- The purchase invite update is deployed as version `9b208771-620b-4b8f-aa65-85ecedab908f`; public configuration now supplies `https://discord.gg/qTB3G7gCAp`.
 - Live smoke checks pass against that deployment: expected public configuration, real D1 challenges, tampered-signature rejection, one-use consumption, signed nonexistent-license denial and replay rejection. These checks do **not** establish a successful valid-license login or prove that the entered secret was rotated.
 - The public URL is configured in the native source.
 - No plan upgrade, domain purchase, DNS change, or KeyAux license creation has been performed. An iPhone/native build and valid-license acceptance test are still required.
@@ -52,7 +53,7 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 
 Never put either secret in source control. `.dev.vars.example` is a placeholder template for local testing, not real configuration.
 
-Set `DISCORD_URL` in `wrangler.toml` to your real `https://discord.gg/...` invite or `https://discord.com/users/<numeric-id>` profile link. A username alone is not a direct profile URL. Without a configured link, the app offers to copy `pekiscripter` and open Discord.
+`DISCORD_URL` in `wrangler.toml` is set to `https://discord.gg/qTB3G7gCAp`. The minimal native screen also opens this exact invite through `SCILicenseConfig.supportURL`, so purchasing does not depend on successfully fetching the Worker configuration.
 
 ```sh
 npm test
@@ -73,16 +74,15 @@ For the owner's local development only, an explicit `make LICENSE_REQUIRED=0` re
 
 ## 3. Approve a phone and issue a license
 
-1. Launch the rebuilt guest IPA in LiveContainer. Its access screen displays a **Device code**.
-2. Confirm that Secure Enclave key creation works on that actual LiveContainer/signing setup. If it fails, the app shows an error code and a metadata-only compatibility-report button. It does **not** silently fall back to a fake IMEI or a software UUID.
-3. Copy the Device code. It is a SHA-256 public-key fingerprint, **not the phone's serial/IMEI/UDID**.
-4. In KeyAux → Licenses, generate a test key. Set a suitable duration, **Max Activations = 1**, and keep HWID locking enabled.
+1. In KeyAux → Licenses, generate a test key. Set a suitable duration, **Max Activations = 1**, and keep HWID locking enabled.
    Leave **Allowed IPs** and **Allowed Domains** empty for this integration: KeyAux sees the Worker's outbound IP, not a direct request from the phone. Do not rely on per-phone IP binding through this proxy.
-5. To approve that specific code rather than the first person holding the license, fill the license's **HWID Lock** field with the copied Device code.
-6. Enter the generated **license key** in the app. Never enter your Instagram password.
-7. Test subsequent launches, expiry, bans and wrong-device activation before distributing.
+2. Launch the rebuilt guest IPA in LiveContainer. The **Peki Scripter V2** screen shows `Enter your licence` and `Activate`.
+3. Enter the generated **license key** and activate. With a fresh, unbound one-activation license, the first successful device becomes bound by KeyAux; issue the key only to its intended recipient.
+4. Secure Enclave key creation must work in the exact LiveContainer/signing setup. If it fails, the screen shows a short error; it does **not** fall back to a fake IMEI or software UUID.
+5. Manage the resulting activation/HWID in KeyAux. The fingerprint is not a serial/IMEI/UDID and is no longer printed on the login screen.
+6. Test subsequent launches, expiry, bans and wrong-device activation before distributing.
 
-`Forget saved license` removes only the locally saved license credential. It does not remove the device's private key, reset a KeyAux binding, or free an activation.
+The minimal login screen intentionally has no device-code, retry-saved, forget or diagnostics controls. Saved licenses still restore automatically through ThisDeviceOnly Keychain storage; this UI simplification does not reset the device key or a server activation. `V2` is UI branding, not a change to the KeyAux app version.
 
 ## Protocol and security boundaries
 

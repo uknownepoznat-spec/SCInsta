@@ -14,4 +14,5 @@
 + (NSString *)appID { return @"mvxsb1isyfo10q2lo1auzklj"; }
 + (NSString *)clientVersion { return @"1.0"; }
 + (NSString *)supportUsername { return @"pekiscripter"; }
++ (NSURL *)supportURL { return [NSURL URLWithString:@"https://discord.gg/qTB3G7gCAp"]; }
 @end

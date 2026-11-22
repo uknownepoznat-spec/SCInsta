@@ -18,6 +18,7 @@ NSString * const SCILicenseStateDidChangeNotification = @"PekiScripterLicenseSta
 @interface SCILicenseManager ()
 @property (nonatomic, readwrite) BOOL busy;
 @property (nonatomic, copy, readwrite) NSString *message;
+@property (nonatomic, copy, readwrite) NSString *errorMessage;
 @property (nonatomic, strong, readwrite) NSURL *supportURL;
 @property (nonatomic, strong) SCILicenseDeviceKey *deviceKey;
 @property (nonatomic, strong) NSURLSession *session;
@@ -49,6 +50,7 @@ static BOOL SCILicenseTrue(id value) {
 - (instancetype)init {
     if ((self = [super init])) {
         _records = [NSMutableArray new];
+        _supportURL = SCILicenseConfig.supportURL;
         _message = SCILicenseConfig.required ? @"Preparing license access…" : @"Licensing is disabled in this development build.";
         NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.ephemeralSessionConfiguration;
         configuration.timeoutIntervalForRequest = 20;
@@ -204,6 +206,7 @@ static BOOL SCILicenseTrue(id value) {
     self.busy = self.loadingDevice;
     self.triedSavedLicense = NO;
     self.message = @"Access will be checked online when you return.";
+    self.errorMessage = nil;
     [self notify];
 }
 
@@ -213,6 +216,7 @@ static BOOL SCILicenseTrue(id value) {
     self.loadingDevice = YES;
     self.busy = YES;
     self.message = @"Preparing the device's security key…";
+    self.errorMessage = nil;
     [self notify];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         NSError *error = nil;
@@ -221,6 +225,8 @@ static BOOL SCILicenseTrue(id value) {
             self.loadingDevice = NO;
             self.deviceKey = device;
             self.busy = NO;
+            self.errorMessage = !device ? @"Device access unavailable."
+                : !SCILicenseConfig.baseURL ? @"Service unavailable." : nil;
             self.message = device ? (SCILicenseConfig.baseURL ? @"Enter your license key to continue."
                 : @"License server not configured. The developer must set the Worker URL and deploy the server.")
                 : [NSString stringWithFormat:@"%@ (code %ld)", error.localizedDescription
@@ -251,6 +257,7 @@ static BOOL SCILicenseTrue(id value) {
     if (!self.currentLicense.length && ![self.deviceKey storedLicense].length) {
         self.message = SCILicenseConfig.baseURL ? @"No saved license. Enter a key to activate access."
             : @"The developer must configure and deploy the license server first.";
+        self.errorMessage = SCILicenseConfig.baseURL ? nil : @"Service unavailable.";
         [self notify];
     }
 }
@@ -261,6 +268,7 @@ static BOOL SCILicenseTrue(id value) {
     self.busy = NO;
     self.triedSavedLicense = YES;
     self.message = @"Saved license forgotten. Enter a key to activate access.";
+    self.errorMessage = nil;
     [self notify];
 }
 
@@ -273,7 +281,7 @@ static BOOL SCILicenseTrue(id value) {
 }
 - (void)readSupportURL:(id)value {
     if (![value isKindOfClass:NSString.class]) return;
-    self.supportURL = nil;
+    self.supportURL = SCILicenseConfig.supportURL;
     NSURL *url = [NSURL URLWithString:value];
     if (![url.scheme isEqualToString:@"https"] || url.user || url.password || url.port || url.query || url.fragment) return;
     BOOL invite = [url.host isEqualToString:@"discord.gg"] && url.path.length > 1;
@@ -321,6 +329,17 @@ static BOOL SCILicenseTrue(id value) {
     if (error) self.message = @"Cannot reach the license server. Internet access is required; please retry.";
     else if ([message isKindOfClass:NSString.class] && message.length <= 300) self.message = message;
     else self.message = @"The license server returned an unsupported response. Contact the developer.";
+    NSDictionary *shortErrors = @{
+        @"license_denied": @"Invalid licence.",
+        @"rate_limited": @"Too many attempts. Try again shortly.",
+        @"version_mismatch": @"Update the app to continue.",
+        @"challenge_expired": @"Please try again.",
+        @"bad_proof": @"Please try again."
+    };
+    id code = body[@"error"];
+    NSString *shortMessage = [code isKindOfClass:NSString.class] ? shortErrors[code] : nil;
+    self.errorMessage = error ? @"Connection failed. Try again."
+        : (shortMessage ?: @"Service unavailable. Try again.");
     [self readSupportURL:body[@"discord_url"]];
     [self notify];
 }
@@ -331,6 +350,8 @@ static BOOL SCILicenseTrue(id value) {
         || [key rangeOfCharacterFromSet:NSCharacterSet.controlCharacterSet].location != NSNotFound) {
         self.message = !SCILicenseConfig.baseURL ? @"License server not configured. Contact the developer."
             : !self.deviceKey ? @"Device key unavailable. Retry or contact the developer." : @"Enter a valid license key.";
+        self.errorMessage = !SCILicenseConfig.baseURL ? @"Service unavailable."
+            : !self.deviceKey ? @"Device access unavailable." : @"Enter your licence.";
         [self notify];
         return;
     }
@@ -338,6 +359,7 @@ static BOOL SCILicenseTrue(id value) {
     NSUInteger attempt = self.attempt;
     self.busy = YES;
     self.message = @"Checking license online…";
+    self.errorMessage = nil;
     [self notify];
     NSString *digest = [SCILicenseDeviceKey sha256String:key];
     SCILicenseDeviceKey *device = self.deviceKey;
@@ -362,6 +384,7 @@ static BOOL SCILicenseTrue(id value) {
         if (!signature) {
             self.busy = NO;
             self.message = signError.localizedDescription ?: @"Device signature failed.";
+            self.errorMessage = @"Device access unavailable. Try again.";
             [self notify];
             return;
         }
@@ -379,6 +402,7 @@ static BOOL SCILicenseTrue(id value) {
                 return;
             }
             self.busy = NO;
+            self.errorMessage = nil;
             self.currentLicense = key;
             BOOL stored = [device storeLicense:key];
             self.validUntilUptime = NSProcessInfo.processInfo.systemUptime + [seconds doubleValue];

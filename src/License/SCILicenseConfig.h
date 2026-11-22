@@ -10,4 +10,5 @@
 + (NSString *)appID;
 + (NSString *)clientVersion;
 + (NSString *)supportUsername;
++ (NSURL *)supportURL;
 @end

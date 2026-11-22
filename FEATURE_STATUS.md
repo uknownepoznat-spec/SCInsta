@@ -13,11 +13,13 @@
 - Production builds default to an online KeyAux license check through the Cloudflare Worker in `server/keyaux-worker/`. The Worker and dedicated D1 database were deployed on 2026-11-21, and the public URL is set in `src/License/SCILicenseConfig.m`. See the server README for secret-setup and acceptance-test status.
 - App secrets stay in Worker secrets. The exposed conversation secret is not used. App/Owner IDs and version are public configuration.
 - The access screen covers recognized Instagram-owned guest windows. Initial settings presentation and media saving also check authorization. It is not an Instagram-account login.
-- Device code is a SHA-256 P-256 public-key fingerprint. The native client requires a Secure Enclave key; unsupported Keychain/signing setups fail closed and expose a metadata-only diagnostic report.
+- Device binding uses a SHA-256 P-256 public-key fingerprint internally. The native client requires a Secure Enclave key; unsupported Keychain/signing setups fail closed with a short error. Device IDs and diagnostic controls are not displayed on the license screen.
 - Worker challenges are short-lived, one-use and signature-checked. KeyAux verifies the current activation before attempting a new activation.
 - Authorization exists only as an active-app, monotonic lease of at most 300 seconds. Offline/expired/revoked/invalid requests do not grant access. Foreground return requires rechecking.
 - Keychain/access-group/container changes can change or lose the device key. This is not a permanent IMEI/serial identifier, remote hardware attestation, or unbreakable anti-repack DRM.
-- **License & device** shows access state/code and allows forgetting the local saved license without deleting the device key or resetting a server activation.
+- The **Peki Scripter V2** access screen has a fixed near-black/red palette with a subtle purple field, a vector camera mark, `Enter your licence` and `Activate`. It shows only short errors when needed; device-code, retry, forget and diagnostic widgets are removed from this screen.
+- `@pekifn` opens Instagram, `Discord: pekiscripter` opens `https://discord.gg/qTB3G7gCAp`, and `TikTok: peki_scripter` opens TikTok. The Discord invite is compiled into the client as a fallback, independent of Worker configuration.
+- `V2` is display branding; the KeyAux protocol/application version remains `1.0`. Device proof, Keychain credentials and online authorization are unchanged.
 - The redirect repair was deployed on 2026-11-22. All 21 local tests pass, including a real workerd/local-D1 integration test with a mocked provider. Live configuration, signed-proof/replay handling and nonexistent-license denial also pass. A valid-license login and native LiveContainer behavior still require a rebuilt guest IPA and on-device acceptance tests.
 
 ## Deleted text

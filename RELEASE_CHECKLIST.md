@@ -59,11 +59,13 @@
 - [x] Run source/palette checks and `node --test` in `server/keyaux-worker`.
 - [x] Deploy the redirect repair and pass live configuration, proof/replay and nonexistent-license smoke checks.
 - [ ] Build with `LICENSE_REQUIRED=1`; an unset URL/secret or an unavailable network must not unlock.
-- [ ] On the target signed LiveContainer, confirm Secure Enclave/Keychain works, then pre-bind a one-activation test key to the displayed device code.
+- [ ] On the target signed LiveContainer, confirm Secure Enclave/Keychain works and a fresh one-activation test key binds to that device on its first successful activation.
+- [ ] Check the minimal Peki Scripter V2 screen: black/red styling, camera mark, Enter your licence, Activate and the requested social handles; no device ID or diagnostic widgets.
+- [ ] With the keyboard visible and larger accessibility text enabled, verify the licence field, action and short errors remain reachable.
 - [ ] Verify valid login, invalid key, expiry, ban, wrong-device use, foreground return, and periodic online checks against the real provider.
 - [ ] Confirm repeated checks do not consume another activation.
 - [ ] Test a current story/modal, rotation, multitasking, app switching, keyboard and text-selection/Paste UI while locked.
 - [ ] Returning to LC's launcher must hide the guest cover and must not cause an authentication request for the host.
 - [ ] A generic keyboard/text-selection window must not be treated as a host transition or expose the guest.
 - [ ] Check keychain restoration across guest updates, then explicit reset/reapproval on a signing/access-group change.
-- [ ] Confirm purchase/help uses a real configured Discord link, and diagnostics contain no license keys, app secrets or Instagram contents.
+- [ ] Confirm Discord opens `https://discord.gg/qTB3G7gCAp`, Instagram opens `@pekifn`, and TikTok opens `@peki_scripter`.

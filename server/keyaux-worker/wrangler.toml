@@ -14,7 +14,7 @@ KEYAUX_APP_ID = "mvxsb1isyfo10q2lo1auzklj"
 KEYAUX_OWNER_ID = "gk6p4wwwhxqt9jxrl46y1gjt"
 APP_VERSION = "1.0"
 # Optional: a real Discord invite or numeric Discord user-profile URL.
-DISCORD_URL = ""
+DISCORD_URL = "https://discord.gg/qTB3G7gCAp"
 DISCORD_USERNAME = "pekiscripter"
 
 # Secrets, set with `wrangler secret put`, NEVER in this file:

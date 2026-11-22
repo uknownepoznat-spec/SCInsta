@@ -31,7 +31,7 @@ function New-MachOFixture([bool]$Library, [bool]$Linked, [bool]$Encrypted, [bool
     $writer.Write($commandBytes)
     if ($Library -and $Current) {
         $writer.Write([Text.Encoding]::ASCII.GetBytes(
-            "SCILicenseManager`0SCILicenseViewController`0PekiScripterLicenseStateDidChange`0peki-keyaux-bridge.uknownepoznat.workers.dev`0"))
+            "SCILicenseManager`0SCILicenseViewController`0PekiScripterLicenseStateDidChange`0peki-keyaux-bridge.uknownepoznat.workers.dev`0Peki Scripter V2`0https://discord.gg/qTB3G7gCAp`0"))
     }
     $writer.Flush()
     $result = $binary.ToArray()

@@ -118,7 +118,20 @@ Assert-Source ($licenseManager.Contains('UIApplicationWillResignActiveNotificati
 Assert-Source ($licenseManager.Contains('completionHandler(nil)')) 'License credentials must not follow redirects'
 Assert-Source ($licenseManager.Contains('[source endEditing:YES]')) 'The underlying Instagram keyboard must lose focus before the access cover is shown'
 Assert-Source ($licenseManager.Contains('CFBooleanGetTypeID()')) 'A truthy string must not authorize the native client'
-Assert-Source ($licenseView.Contains('No access') -and $licenseView.Contains('Buy a key') -and $licenseView.Contains('Discord: %@')) 'The locked screen must show purchase guidance and a visible Discord contact'
+foreach ($text in @('Peki Scripter V2', '@pekifn', 'Discord: pekiscripter', 'TikTok: peki_scripter', 'Enter your licence')) {
+    Assert-Source ($licenseView.Contains($text)) "Missing minimal license-screen identity or control: $text"
+}
+Assert-Source ($licenseView.Contains('configuration.title = @"Activate"')) 'The license screen must have a single primary Activate action'
+foreach ($removed in @('No access', 'Buy a key', 'Device code', 'Copy device code', 'Retry saved license',
+    'Forget saved license', 'Copy compatibility report', 'Never enter your Instagram password', 'Device code is a public-key')) {
+    Assert-Source (-not $licenseView.Contains($removed)) "Removed license-screen clutter returned: $removed"
+}
+Assert-Source ($licenseView.Contains('manager.errorMessage') -and -not $licenseView.Contains('manager.message')) 'The minimal form must show short errors, not diagnostic paragraphs'
+Assert-Source ($licenseView.Contains('SCILicenseCameraMark') -and $licenseView.Contains('SCILicenseRed()')) 'The minimal black/red screen must have a vector camera mark'
+Assert-Source ($licenseView.Contains('keyboardLayoutGuide') -and $licenseView.Contains('scrollRectToVisible:')) 'The license field must remain reachable with the keyboard open'
+Assert-Source (-not $licenseView.Contains('SCITheme.')) 'The license screen must retain its requested black/red styling independently of menu themes'
+Assert-Source ((Read-Source 'src/License/SCILicenseConfig.m').Contains('https://discord.gg/qTB3G7gCAp')) 'The purchase contact must use the requested Discord server'
+Assert-Source ($licenseView.Contains('openURL:SCILicenseConfig.supportURL')) 'The Discord control must open the configured purchase invite'
 Assert-Source ($licenseManager.Contains('suspendedByHost') -and $licenseManager.Contains('isLiveContainerWindow:window')) 'The license cover must not take over the LC launcher or treat keyboard windows as a host transition'
 Assert-Source ($gateHook.Contains('[SCILicenseManager.sharedManager considerWindow:self]')) 'License cover is not connected to the guest window lifecycle'
 Assert-Source ($media.Contains('if (!SCILicenseManager.sharedManager.authorized) return;')) 'Media saving must respect the license gate'

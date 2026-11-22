@@ -126,7 +126,8 @@ try {
     $bytes = Read-EntryRange $tweak 0 ([int]$tweak.Length)
     $text = [Text.Encoding]::ASCII.GetString($bytes)
     foreach ($marker in @('SCILicenseManager', 'SCILicenseViewController',
-        'PekiScripterLicenseStateDidChange', 'peki-keyaux-bridge.uknownepoznat.workers.dev')) {
+        'PekiScripterLicenseStateDidChange', 'peki-keyaux-bridge.uknownepoznat.workers.dev',
+        'Peki Scripter V2', 'https://discord.gg/qTB3G7gCAp')) {
         if (-not $text.Contains($marker)) { throw ('IPA_STALE_TWEAK: required license marker missing: ' + $marker) }
     }
     Write-Output 'PASS: IPA contains and links SCInsta with the license gate and configured Worker URL.'
