@@ -42,6 +42,11 @@ $theme = Read-Source 'src/Appearance/SCITheme.m'
 $themeEditor = Read-Source 'src/Settings/SCIThemeEditorViewController.m'
 $utils = Read-Source 'src/Utils.m'
 $tweak = Read-Source 'src/Tweak.x'
+$betaNag = Read-Source 'src/Features/General/SCBetaUpdateNag.x'
+Assert-Source ($betaNag.Contains('%hook IGTestFlightUpdateNagController')) 'Beta reminder suppression must target only the observed TestFlight controller'
+Assert-Source ($betaNag.Contains('initWithAnalyticsLogger:(id)logger initWithLauncherSet:(id)launcherSet userDefaults:(id)defaults')) 'Beta reminder hook must match the inspected initializer'
+Assert-Source ($betaNag.Contains('return nil;') -and -not $betaNag.Contains('%orig')) 'Beta reminder initialization must not register its prompt'
+Assert-Source (-not $betaNag.Contains('%hook UIViewController') -and -not $betaNag.Contains('%hook NSBundle')) 'Beta suppression must not intercept general presentation or bundle metadata'
 $licenseConfig = Read-Source 'src/License/SCILicenseConfig.h'
 $licenseManager = Read-Source 'src/License/SCILicenseManager.m'
 $licenseView = Read-Source 'src/License/SCILicenseViewController.m'
@@ -136,7 +141,7 @@ Assert-Source ($licenseManager.Contains('UIApplicationWillResignActiveNotificati
 Assert-Source ($licenseManager.Contains('completionHandler(nil)')) 'License credentials must not follow redirects'
 Assert-Source ($licenseManager.Contains('[source endEditing:YES]')) 'The underlying Instagram keyboard must lose focus before the access cover is shown'
 Assert-Source ($licenseManager.Contains('CFBooleanGetTypeID()')) 'A truthy string must not authorize the native client'
-foreach ($text in @('Peki Scripter V2', '@pekifn', 'Join Discord', 'TikTok: @pekiscripter', 'Enter your licence')) {
+foreach ($text in @('Peki Scripter V2', '@pekifn', 'Join Discord', 'TikTok: @peki_scripter', 'Enter your licence')) {
     Assert-Source ($licenseView.Contains($text)) "Missing minimal license-screen identity or control: $text"
 }
 Assert-Source ($licenseView.Contains('configuration.title = @"Activate"')) 'The license screen must have a single primary Activate action'
@@ -159,7 +164,7 @@ $instagramContact = $settings.IndexOf('linkCellWithTitle:@"Instagram"')
 $discordContact = $settings.IndexOf('linkCellWithTitle:@"Discord"')
 $tiktokContact = $settings.IndexOf('linkCellWithTitle:@"TikTok"')
 Assert-Source ($instagramContact -ge 0 -and $discordContact -gt $instagramContact -and $tiktokContact -gt $discordContact) 'Contact order must be Instagram, Discord, TikTok'
-Assert-Source ($settings.Contains('linkCellWithTitle:@"TikTok" subtitle:@"@pekiscripter"') -and $settings.Contains('https://www.tiktok.com/@pekiscripter')) 'The TikTok handle and URL must match the requested account'
+Assert-Source ($settings.Contains('linkCellWithTitle:@"TikTok" subtitle:@"@peki_scripter"') -and $settings.Contains('https://www.tiktok.com/@peki_scripter')) 'The TikTok handle and URL must match the requested account'
 Assert-Source ($controller.Contains('self.navigationItem.title = [SCITweakSettings title]') -and $settings.Contains('return @"Peki Scripter V2";')) 'The hidden menu must use Peki Scripter V2 branding'
 foreach ($removedShortcut in @('shortcutWithTitle:', 'openPrivacy:', 'openGestures:', 'Story saving')) {
     Assert-Source (-not $controller.Contains($removedShortcut)) "Removed dashboard shortcut or summary returned: $removedShortcut"

@@ -228,8 +228,8 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
                 [SCISetting linkCellWithTitle:@"Discord" subtitle:@"pekiscripter"
                     icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right"]
                     url:SCILicenseConfig.supportURL.absoluteString],
-                [SCISetting linkCellWithTitle:@"TikTok" subtitle:@"@pekiscripter"
-                    icon:[SCISymbol symbolWithName:@"play.rectangle"] url:@"https://www.tiktok.com/@pekiscripter"]
+                [SCISetting linkCellWithTitle:@"TikTok" subtitle:@"@peki_scripter"
+                    icon:[SCISymbol symbolWithName:@"play.rectangle"] url:@"https://www.tiktok.com/@peki_scripter"]
             ]
         }
     ];

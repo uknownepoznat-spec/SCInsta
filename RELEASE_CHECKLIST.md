@@ -73,4 +73,9 @@
 - [ ] Returning to LC's launcher must hide the guest cover and must not cause an authentication request for the host.
 - [ ] A generic keyboard/text-selection window must not be treated as a host transition or expose the guest.
 - [ ] Check keychain restoration across guest updates, then explicit reset/reapproval on a signing/access-group change.
-- [ ] Confirm Join Discord and the Contact Discord row open `https://discord.gg/qTB3G7gCAp`; Instagram opens `@pekifn` and TikTok opens `@pekiscripter`.
+- [ ] Confirm Join Discord and the Contact Discord row open `https://discord.gg/qTB3G7gCAp`; Instagram opens `@pekifn` and TikTok opens `@peki_scripter`.
+# Beta reminder device checks
+
+- [ ] Build the updated IPA and confirm cold launch reaches Instagram without the "It's time to update Instagram beta" screen.
+- [ ] Confirm background/foreground and account switching work without a crash or a blank screen; the scoped reminder initializer now returns nil.
+- [ ] Confirm the licence gate still requires activation and unrelated Instagram alerts still work. This change is not tested on-device and does not replace an expired or server-blocked Instagram build.

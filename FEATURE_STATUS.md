@@ -18,7 +18,7 @@
 - Authorization exists only as an active-app, monotonic lease of at most 300 seconds. Offline/expired/revoked/invalid requests do not grant access. Foreground return requires rechecking.
 - Keychain/access-group/container changes can change or lose the device key. This is not a permanent IMEI/serial identifier, remote hardware attestation, or unbreakable anti-repack DRM.
 - The **Peki Scripter V2** access screen has a fixed black/white palette, dark fields/buttons, a monochrome camera mark, `Enter your licence` and `Activate`. It shows only short errors when needed; device-code, retry, forget and diagnostic widgets are removed from this screen.
-- Login keeps `@pekifn` and `TikTok: @pekiscripter`. Its separate **Join Discord** button opens `https://discord.gg/qTB3G7gCAp`. The invite is compiled into the client, independent of Worker configuration.
+- Login keeps `@pekifn` and `TikTok: @peki_scripter`. Its separate **Join Discord** button opens `https://discord.gg/qTB3G7gCAp`. The invite is compiled into the client, independent of Worker configuration.
 - `V2` is display branding; the KeyAux protocol/application version remains `1.0`. Device proof, Keychain credentials and online authorization are unchanged.
 - The redirect repair was deployed on 2026-11-22. All 21 local tests pass, including a real workerd/local-D1 integration test with a mocked provider. Live configuration, signed-proof/replay handling and nonexistent-license denial also pass. A valid-license login and native LiveContainer behavior still require a rebuilt guest IPA and on-device acceptance tests.
 
@@ -48,7 +48,7 @@
 - **Custom** supports a native RGB picker and validated `#RRGGBB` entry for background, surface and accent. Body text automatically chooses black/white for each surface. Accent overrides are independent of preset surfaces.
 - Preferences starts with **Stories and messages → Saving → General**, followed by Feed, Reels, Navigation, Confirm actions, Appearance and Support. The Debug page is removed; stored preferences and licence checks are not reset.
 - **Preferences → Support → Join Discord** opens the purchase server, not the licence form.
-- Contact rows are **Instagram `@pekifn` → Discord `pekiscripter` → TikTok `@pekiscripter`**, in that order. Both Discord actions open the configured server.
+- Contact rows are **Instagram `@pekifn` → Discord `pekiscripter` → TikTok `@peki_scripter`**, in that order. Both Discord actions open the configured server.
 
 ## Instagram appearance / LiveContainer
 - **Appearance → Instagram** offers app-default/dark/light native appearance plus an optional theme accent; this integration remains version-dependent.
@@ -64,3 +64,8 @@ The old auto-reply, message scheduler, extra message encryption, HD profile-pict
 
 ## Validation
 `pwsh -File tests/check-source.ps1` checks source structure, wiring, palette data and body-text contrast, not UIKit/runtime functionality. Build with Theos and run the device scenarios in `RELEASE_CHECKLIST.md` before claiming support for an Instagram version.
+# Beta update reminder
+
+- Added a narrowly scoped hook for `IGTestFlightUpdateNagController`'s initializer, identified in Instagram 418.1.0 / 890980569. It declines creation of the dedicated TestFlight reminder controller.
+- This is not an Instagram update or a fix for server-enforced minimum versions. Other alerts, bundle metadata and licensing remain unchanged.
+- Source checks do not verify caller handling of a nil controller. A Theos build and on-device cold launch/foreground testing are required; newer Instagram versions can use different classes.
