@@ -62,6 +62,15 @@ Assert-Source ([regex]::IsMatch($gestureHeader, '(?s)#ifdef\s+__cplusplus\s+exte
 Assert-Source ([regex]::Matches($controller, 'postNotificationName:SCISettingsDidChangeNotification').Count -eq 3) 'Not all preference controls notify gesture consumers'
 Assert-Source ($controller.Contains('[properties[@"requiresRestart"] boolValue]')) 'Menu restart flag uses object truthiness'
 Assert-Source ($controller.Contains('updateSearchResultsForSearchController:')) 'Search UI has no implementation'
+Assert-Source (-not $controller.Contains('SCICategoryIcon') -and -not $controller.Contains('NSMutableArray *cards')) 'Settings must use plain symbols and grouped rows, not decorative category cards'
+Assert-Source ($controller.Contains('cellContentConfig.image = [row.icon image]')) 'Plain setting icons must remain connected'
+foreach ($verboseCopy in @('16 themes, custom colors and Instagram tint', '16 presets, color picker and HEX input',
+    'Menu themes apply immediately. Custom RGB colors are stored locally.', 'Shows an alert when you click')) {
+    Assert-Source (-not $settings.Contains($verboseCopy)) "Removed repetitive UI copy returned: $verboseCopy"
+}
+Assert-Source (-not $themeEditor.Contains('buildPreview') -and -not $themeEditor.Contains('No gradients or downloaded theme files')) 'The theme picker must not restore its promotional preview or footer'
+Assert-Source ($settings.Contains('Old messages and attachments cannot be recovered') -and $settings.Contains('shared across accounts')) 'Shorter archive copy must retain recovery limits and shared-device scope'
+Assert-Source ($settings.Contains('Restart required.') -and $settings.Contains('requiresRestart:YES')) 'Copy cleanup must preserve restart guidance and behavior'
 Assert-Source ($hooks.Contains('%init;')) 'Logos deletion factory hooks are not initialized'
 Assert-Source (-not [regex]::IsMatch($hooks, '(?:messageID|arg1)\s*=\s*(?:NULL|nil)')) 'Unexpected NULL deletion logic'
 Assert-Source (-not $hooks.Contains('%orig(nil)')) 'Deletion IDs must not be replaced'
@@ -112,8 +121,10 @@ $accentLuminance = Get-PaletteLuminance $defaultPalette.Groups[5].Value
 foreach ($component in @(3, 4)) {
     $surfaceLuminance = Get-PaletteLuminance $defaultPalette.Groups[$component].Value
     $contrast = ([Math]::Max($accentLuminance, $surfaceLuminance) + 0.05) / ([Math]::Min($accentLuminance, $surfaceLuminance) + 0.05)
-    Assert-Source ($contrast -ge 4.5) 'V2 red controls must remain readable on the default menu surfaces'
+    Assert-Source ($contrast -ge 4.5) 'V2 violet controls must remain readable on the default menu surfaces'
 }
+$actionLuminance = Get-PaletteLuminance '6154CC'
+Assert-Source ((1.05 / ($actionLuminance + 0.05)) -ge 4.5) 'The violet Activate action must retain readable white text'
 Assert-Source ($licenseConfig.Contains('#define SCI_LICENSE_REQUIRED 1')) 'License checks must default on'
 Assert-Source ((Read-Source 'Makefile').Contains('LICENSE_REQUIRED ?= 1')) 'Production builds must not silently disable licensing'
 Assert-Source ((Read-Source 'src/License/SCILicenseConfig.m').Contains('containsString:@"YOUR-"')) 'An unset Worker URL must be rejected'
@@ -125,7 +136,7 @@ Assert-Source ($licenseManager.Contains('UIApplicationWillResignActiveNotificati
 Assert-Source ($licenseManager.Contains('completionHandler(nil)')) 'License credentials must not follow redirects'
 Assert-Source ($licenseManager.Contains('[source endEditing:YES]')) 'The underlying Instagram keyboard must lose focus before the access cover is shown'
 Assert-Source ($licenseManager.Contains('CFBooleanGetTypeID()')) 'A truthy string must not authorize the native client'
-foreach ($text in @('Peki Scripter V2', '@pekifn', 'Discord: pekiscripter', 'TikTok: peki_scripter', 'Enter your licence')) {
+foreach ($text in @('Peki Scripter V2', '@pekifn', 'Join Discord', 'TikTok: peki_scripter', 'Enter your licence')) {
     Assert-Source ($licenseView.Contains($text)) "Missing minimal license-screen identity or control: $text"
 }
 Assert-Source ($licenseView.Contains('configuration.title = @"Activate"')) 'The license screen must have a single primary Activate action'
@@ -134,17 +145,23 @@ foreach ($removed in @('No access', 'Buy a key', 'Device code', 'Copy device cod
     Assert-Source (-not $licenseView.Contains($removed)) "Removed license-screen clutter returned: $removed"
 }
 Assert-Source ($licenseView.Contains('manager.errorMessage') -and -not $licenseView.Contains('manager.message')) 'The minimal form must show short errors, not diagnostic paragraphs'
-Assert-Source ($licenseView.Contains('SCIBrandMarkView') -and $licenseView.Contains('SCILicenseRed()')) 'The minimal black/red screen must have a vector camera mark'
-Assert-Source ($controller.Contains('SCIBrandMarkView')) 'Login and hidden menu must share the camera mark'
+Assert-Source ($licenseView.Contains('SCIBrandMarkView') -and $licenseView.Contains('SCILicenseAccentColor()')) 'The license screen must retain its violet camera mark'
+foreach ($removedIdentity in @('SCIBrandMarkView', '@pekifn', 'buildDashboardHeader', 'tableHeaderView')) {
+    Assert-Source (-not $controller.Contains($removedIdentity)) "Removed hidden-menu identity header returned: $removedIdentity"
+}
+Assert-Source (-not $settings.Contains('@pekifn')) 'The hidden menu must not show the Instagram handle through another row'
 Assert-Source ($controller.Contains('self.navigationItem.title = [SCITweakSettings title]') -and $settings.Contains('return @"Peki Scripter V2";')) 'The hidden menu must use Peki Scripter V2 branding'
 foreach ($removedShortcut in @('shortcutWithTitle:', 'openPrivacy:', 'openGestures:', 'Story saving')) {
     Assert-Source (-not $controller.Contains($removedShortcut)) "Removed dashboard shortcut or summary returned: $removedShortcut"
 }
 Assert-Source ($settings.Contains('navigationCellWithTitle:@"Saving"') -and $settings.Contains('navigationCellWithTitle:@"Stories and messages"')) 'Removing dashboard shortcuts must not remove the gesture/privacy settings pages'
-Assert-Source ($theme.Contains('@[@"carbon", @"Peki V2", @"08070A", @"151119", @"F04D65"]')) 'The default palette must match the V2 black/red design without changing preference IDs'
+Assert-Source ($theme.Contains('@[@"carbon", @"Peki V2", @"090D1A", @"131A2D", @"A89CFF"]')) 'The default palette must be midnight navy/violet without changing preference IDs'
+Assert-Source ($settings.Contains('navigationCellWithTitle:@"Support"') -and $settings.Contains('linkCellWithTitle:@"Join Discord"')) 'Preferences must contain Support with the Join Discord action'
+Assert-Source (-not $settings.Contains('controllerCellWithTitle:@"License"') -and -not $settings.Contains('[SCILicenseViewController new]')) 'The Support entry must not reopen the licensing form'
 Assert-Source ($settings.Contains('url:SCILicenseConfig.supportURL.absoluteString')) 'The menu Discord contact must open the same purchase server as login'
 Assert-Source ($licenseView.Contains('keyboardLayoutGuide') -and $licenseView.Contains('scrollRectToVisible:')) 'The license field must remain reachable with the keyboard open'
-Assert-Source (-not $licenseView.Contains('SCITheme.')) 'The license screen must retain its requested black/red styling independently of menu themes'
+Assert-Source (-not $licenseView.Contains('SCITheme.') -and -not $licenseView.Contains('SCILicenseRed')) 'The license screen must retain its navy/violet styling independently of menu themes'
+Assert-Source ($licenseView.Contains('discordStyle.title = @"Join Discord"') -and $licenseView.Contains('discord.configuration = discordStyle')) 'The initial screen must expose Join Discord as a button'
 Assert-Source ((Read-Source 'src/License/SCILicenseConfig.m').Contains('https://discord.gg/qTB3G7gCAp')) 'The purchase contact must use the requested Discord server'
 Assert-Source ($licenseView.Contains('openURL:SCILicenseConfig.supportURL')) 'The Discord control must open the configured purchase invite'
 Assert-Source ($licenseManager.Contains('suspendedByHost') -and $licenseManager.Contains('isLiveContainerWindow:window')) 'The license cover must not take over the LC launcher or treat keyboard windows as a host transition'
