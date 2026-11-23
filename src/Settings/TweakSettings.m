@@ -27,7 +27,7 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
 
 + (NSArray *)sections {
     [SCIUtils registerGuestDefaults];
-    return @[
+    NSArray *sections = @[
         @{
             @"header": @"Preferences",
             @"footer": @"",
@@ -220,55 +220,38 @@ static UIMenu *SCIChoiceMenu(NSString *key, NSArray<NSArray<NSString *> *> *choi
             ]
         },
         @{
-            @"header": @"",
-            @"rows": @[
-                 [SCISetting navigationCellWithTitle:@"Debug"
-                                            subtitle:@""
-                                               icon:[SCISymbol symbolWithName:@"ladybug"]
-                                        navSections:@[@{
-                                            @"header": @"FLEX",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"FLEX gesture" subtitle:@"Hold five fingers." defaultsKey:@"flex_instagram"],
-                                                [SCISetting switchCellWithTitle:@"Open FLEX on app launch" subtitle:@"" defaultsKey:@"flex_app_launch"],
-                                                [SCISetting switchCellWithTitle:@"Open FLEX on app focus" subtitle:@"" defaultsKey:@"flex_app_start"]
-                                            ]
-                                        },
-                                         @{
-                                             @"header": @"App",
-                                             @"rows": @[
-                                                 [SCISetting buttonCellWithTitle:@"Copy compatibility report"
-                                                     subtitle:@"App version and hook status."
-                                                     icon:[SCISymbol symbolWithName:@"doc.on.doc"]
-                                                     action:^{
-                                                         UIPasteboard.generalPasteboard.string = [SCIUtils compatibilityReport];
-                                                     }],
-                                                 [SCISetting switchCellWithTitle:@"Open settings on launch" subtitle:@"" defaultsKey:@"tweak_settings_app_launch"],
-                                                 [SCISetting buttonCellWithTitle:@"Reset first launch"
-                                                                           subtitle:@""
-                                                                               icon:nil
-                                                                              action:^(void) { [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SCInstaFirstRun"]; [SCIUtils showRestartConfirmation];}
-                                                 ],
-                                             ]
-                                         },
-                                         @{
-                                             @"header": @"Instagram",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Keep settings after crashes. May cause startup loops." defaultsKey:@"disable_safe_mode"]
-                                            ]
-                                        }
-                                        ]
-                ]
-            ]
-        },
-        @{
             @"header": @"Contact",
             @"footer": @"",
             @"rows": @[
-                [SCISetting linkCellWithTitle:@"TikTok" subtitle:@"@peki_scripter"
-                    icon:[SCISymbol symbolWithName:@"play.rectangle"] url:@"https://www.tiktok.com/@peki_scripter"]
+                [SCISetting linkCellWithTitle:@"Instagram" subtitle:@"@pekifn"
+                    icon:[SCISymbol symbolWithName:@"camera"] url:@"https://www.instagram.com/pekifn/"],
+                [SCISetting linkCellWithTitle:@"Discord" subtitle:@"pekiscripter"
+                    icon:[SCISymbol symbolWithName:@"bubble.left.and.bubble.right"]
+                    url:SCILicenseConfig.supportURL.absoluteString],
+                [SCISetting linkCellWithTitle:@"TikTok" subtitle:@"@pekiscripter"
+                    icon:[SCISymbol symbolWithName:@"play.rectangle"] url:@"https://www.tiktok.com/@pekiscripter"]
             ]
         }
     ];
+    NSArray *categoryOrder = @[
+        @"Stories and messages", @"Saving", @"General", @"Feed", @"Reels",
+        @"Navigation", @"Confirm actions", @"Appearance", @"Support"
+    ];
+    NSDictionary *preferences = sections.firstObject;
+    NSArray *rows = preferences[@"rows"];
+    NSMutableArray *orderedRows = [NSMutableArray new];
+    for (NSString *title in categoryOrder) {
+        for (SCISetting *row in rows) {
+            if ([row.title isEqualToString:title] && ![orderedRows containsObject:row]) [orderedRows addObject:row];
+        }
+    }
+    // Keep any later-added category rather than silently dropping it.
+    for (SCISetting *row in rows) if (![orderedRows containsObject:row]) [orderedRows addObject:row];
+    NSMutableDictionary *orderedPreferences = [preferences mutableCopy];
+    orderedPreferences[@"rows"] = [orderedRows copy];
+    NSMutableArray *orderedSections = [sections mutableCopy];
+    orderedSections[0] = orderedPreferences;
+    return [orderedSections copy];
 }
 
 

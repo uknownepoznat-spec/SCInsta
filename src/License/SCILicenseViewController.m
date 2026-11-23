@@ -140,7 +140,7 @@ static UIColor *SCILicenseAccentColor(void) {
     discord.titleLabel.adjustsFontForContentSizeCategory = YES;
     [discord.heightAnchor constraintGreaterThanOrEqualToConstant:50].active = YES;
     [discord addTarget:self action:@selector(discord:) forControlEvents:UIControlEventTouchUpInside];
-    UIButton *tiktok = [self link:@"TikTok: peki_scripter" action:@selector(tiktok:) accent:NO];
+    UIButton *tiktok = [self link:@"TikTok: @pekiscripter" action:@selector(tiktok:) accent:NO];
     UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[
         markContainer, title, instagram, formGap, self.keyField, self.loginButton,
         self.statusLabel, contactGap, discord, tiktok
@@ -219,7 +219,7 @@ static UIColor *SCILicenseAccentColor(void) {
     [UIApplication.sharedApplication openURL:SCILicenseConfig.supportURL options:@{} completionHandler:nil];
 }
 - (void)tiktok:(id)sender {
-    [UIApplication.sharedApplication openURL:[NSURL URLWithString:@"https://www.tiktok.com/@peki_scripter"]
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:@"https://www.tiktok.com/@pekiscripter"]
         options:@{} completionHandler:nil];
 }
 @end
