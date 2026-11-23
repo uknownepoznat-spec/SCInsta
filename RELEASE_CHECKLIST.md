@@ -23,8 +23,10 @@
 - [ ] Verify feed/reel downloads still work after the shared URL/downloader changes.
 - [ ] Open settings via the profile menu; check dashboard sizing on iPhone/iPad and larger text sizes.
 - [ ] Check nested settings, switches, menu buttons, Done, the Discord server link and TikTok link.
-- [ ] Confirm the menu title is Peki Scripter V2, its default palette is black/red and its camera mark matches login; Privacy/Gestures shortcut buttons and story-summary clutter are absent.
+- [ ] Confirm the menu title is Peki Scripter V2, its default palette is navy/violet and there is no Instagram logo/handle header or blank header spacing; Privacy/Gestures shortcuts and story-summary clutter are absent.
+- [ ] Confirm Preferences → Support shows Join Discord rather than reopening the licence form, and both it and the initial screen's Join Discord button open the configured server.
 - [ ] Confirm Saving and Stories and messages still contain their original gesture/privacy controls and remain searchable.
+- [ ] Check standard grouped rows and plain symbols; no decorative category tiles or theme-preview card. Ensure useful hints, restart confirmations, HEX validation and local-archive scope/limits remain clear.
 - [ ] If a crash persists, record Instagram/iOS versions and export the matching Instagram .ips crash log.
 
 ### Customization and archive regression checks (on device)
@@ -62,7 +64,7 @@
 - [x] Deploy the redirect repair and pass live configuration, proof/replay and nonexistent-license smoke checks.
 - [ ] Build with `LICENSE_REQUIRED=1`; an unset URL/secret or an unavailable network must not unlock.
 - [ ] On the target signed LiveContainer, confirm Secure Enclave/Keychain works and a fresh one-activation test key binds to that device on its first successful activation.
-- [ ] Check the minimal Peki Scripter V2 screen: black/red styling, camera mark, Enter your licence, Activate and the requested social handles; no device ID or diagnostic widgets.
+- [ ] Check the minimal Peki Scripter V2 screen: navy/violet styling, camera mark, Enter your licence, Activate and Join Discord; no device ID or diagnostic widgets.
 - [ ] With the keyboard visible and larger accessibility text enabled, verify the licence field, action and short errors remain reachable.
 - [ ] Verify valid login, invalid key, expiry, ban, wrong-device use, foreground return, and periodic online checks against the real provider.
 - [ ] Confirm repeated checks do not consume another activation.
@@ -70,4 +72,4 @@
 - [ ] Returning to LC's launcher must hide the guest cover and must not cause an authentication request for the host.
 - [ ] A generic keyboard/text-selection window must not be treated as a host transition or expose the guest.
 - [ ] Check keychain restoration across guest updates, then explicit reset/reapproval on a signing/access-group change.
-- [ ] Confirm Discord opens `https://discord.gg/qTB3G7gCAp`, Instagram opens `@pekifn`, and TikTok opens `@peki_scripter`.
+- [ ] Confirm both Join Discord actions open `https://discord.gg/qTB3G7gCAp`; login's Instagram link still opens `@pekifn` and TikTok opens `@peki_scripter`.

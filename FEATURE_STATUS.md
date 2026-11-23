@@ -17,8 +17,8 @@
 - Worker challenges are short-lived, one-use and signature-checked. KeyAux verifies the current activation before attempting a new activation.
 - Authorization exists only as an active-app, monotonic lease of at most 300 seconds. Offline/expired/revoked/invalid requests do not grant access. Foreground return requires rechecking.
 - Keychain/access-group/container changes can change or lose the device key. This is not a permanent IMEI/serial identifier, remote hardware attestation, or unbreakable anti-repack DRM.
-- The **Peki Scripter V2** access screen has a fixed near-black/red palette with a subtle purple field, a vector camera mark, `Enter your licence` and `Activate`. It shows only short errors when needed; device-code, retry, forget and diagnostic widgets are removed from this screen.
-- `@pekifn` opens Instagram, `Discord: pekiscripter` opens `https://discord.gg/qTB3G7gCAp`, and `TikTok: peki_scripter` opens TikTok. The Discord invite is compiled into the client as a fallback, independent of Worker configuration.
+- The **Peki Scripter V2** access screen has a fixed midnight-navy/violet palette, a vector camera mark, `Enter your licence` and `Activate`. It shows only short errors when needed; device-code, retry, forget and diagnostic widgets are removed from this screen.
+- Login keeps `@pekifn` and `TikTok: peki_scripter`. Its separate **Join Discord** button opens `https://discord.gg/qTB3G7gCAp`. The invite is compiled into the client, independent of Worker configuration.
 - `V2` is display branding; the KeyAux protocol/application version remains `1.0`. Device proof, Keychain credentials and online authorization are unchanged.
 - The redirect repair was deployed on 2026-11-22. All 21 local tests pass, including a real workerd/local-D1 integration test with a mocked provider. Live configuration, signed-proof/replay handling and nonexistent-license denial also pass. A valid-license login and native LiveContainer behavior still require a rebuilt guest IPA and on-device acceptance tests.
 
@@ -40,14 +40,15 @@
 - All private Instagram hooks are version dependent. Already-sent receipts cannot be undone.
 
 ## Menu
-- **Peki Scripter V2** title, shared vector camera mark, `@pekifn`, search and compact category cards. The extra Privacy/Gestures shortcuts and story-summary strip are removed; their actual settings remain under Saving and Stories and messages.
-- The default palette is **Peki V2**: near-black background, subtle purple-black surfaces and red accents matching the license screen. Its stored preference ID remains `carbon`, so the old default adopts the updated colors without overwriting explicit theme/accent choices.
-- **Appearance → Themes & custom palette** still offers 16 palettes: Peki V2, Midnight, Graphite, OLED black, Slate, Ocean, Forest, Moss, Espresso, Copper, Burgundy, Indigo, Dusk, Paper, Pearl and Sand.
+- **Peki Scripter V2** title, search, plain icons and standard grouped settings. Decorative category cards, repeated descriptions, promotional theme footers and the large theme-preview card are removed. Short usage hints, restart notices and local-archive limits remain.
+- The hidden menu has no Instagram logo/handle header, extra Privacy/Gestures shortcuts or story-summary strip; actual controls remain under Saving and Stories and messages.
+- The default palette is **Peki V2**: midnight-navy background, dark blue surfaces and soft violet accents matching the license screen. Its stored preference ID remains `carbon`, so the old default adopts the updated colors without overwriting explicit theme/accent choices.
+- **Appearance → Theme** still offers 16 palettes: Peki V2, Midnight, Graphite, OLED black, Slate, Ocean, Forest, Moss, Espresso, Copper, Burgundy, Indigo, Dusk, Paper, Pearl and Sand.
 - **Custom** supports a native RGB picker and validated `#RRGGBB` entry for background, surface and accent. Body text automatically chooses black/white for each surface. Accent overrides are independent of preset surfaces.
-- The menu Contact section opens Instagram `@pekifn`, the purchase Discord server `https://discord.gg/qTB3G7gCAp`, and TikTok `@peki_scripter`.
+- **Preferences → Support → Join Discord** opens the purchase server, not the licence form. The menu's Instagram contact row is removed; TikTok stays in Contact.
 
 ## Instagram appearance / LiveContainer
-- **Appearance → Instagram · experimental** offers app-default/dark/light native appearance plus an optional theme accent.
+- **Appearance → Instagram** offers app-default/dark/light native appearance plus an optional theme accent; this integration remains version-dependent.
 - This uses window-level UIKit overrides only on recognizable Instagram-owned roots, not global `UIAppearance` proxies. LC/LiveContainer roots, unrelated windows and guests presented on a host-owned root are skipped.
 - It does not recolor every SwiftUI component, explicitly colored Instagram control, story ring, image/video, or DM bubble. If Instagram overrides a control's tint/style, that part may not change.
 - Native accent shade adapts when needed for contrast on Instagram's light/dark UIKit surfaces. The custom-menu palette retains your chosen RGB values.
