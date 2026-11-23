@@ -54,54 +54,15 @@
     }
 }
 
-- (void)buildPreview {
-    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width, 184)];
+- (void)buildModeHeader {
+    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width, 56)];
     self.mode.translatesAutoresizingMaskIntoConstraints = NO;
     [header addSubview:self.mode];
-    UIView *preview = [UIView new];
-    preview.translatesAutoresizingMaskIntoConstraints = NO;
-    preview.backgroundColor = SCITheme.surfaceColor;
-    preview.layer.cornerRadius = 14;
-    preview.layer.borderWidth = 0.5;
-    preview.layer.borderColor = SCITheme.borderColor.CGColor;
-    [header addSubview:preview];
-    UILabel *title = [UILabel new];
-    title.text = SCITheme.name;
-    title.textColor = SCITheme.cellTextColor;
-    title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    title.adjustsFontForContentSizeCategory = YES;
-    UILabel *detail = [UILabel new];
-    detail.text = @"Background · surface · accent";
-    detail.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    detail.adjustsFontForContentSizeCategory = YES;
-    detail.textColor = SCITheme.cellSecondaryTextColor;
-    detail.numberOfLines = 0;
-    UIStackView *labels = [[UIStackView alloc] initWithArrangedSubviews:@[title, detail]];
-    labels.axis = UILayoutConstraintAxisVertical;
-    labels.spacing = 6;
-    labels.translatesAutoresizingMaskIntoConstraints = NO;
-    [preview addSubview:labels];
-    UIView *accent = [UIView new];
-    accent.translatesAutoresizingMaskIntoConstraints = NO;
-    accent.backgroundColor = SCITheme.accentColor;
-    accent.layer.cornerRadius = 5;
-    [preview addSubview:accent];
     [NSLayoutConstraint activateConstraints:@[
         [self.mode.leadingAnchor constraintEqualToAnchor:header.leadingAnchor constant:20],
         [self.mode.trailingAnchor constraintEqualToAnchor:header.trailingAnchor constant:-20],
         [self.mode.topAnchor constraintEqualToAnchor:header.topAnchor constant:12],
-        [preview.leadingAnchor constraintEqualToAnchor:header.leadingAnchor constant:20],
-        [preview.trailingAnchor constraintEqualToAnchor:header.trailingAnchor constant:-20],
-        [preview.topAnchor constraintEqualToAnchor:self.mode.bottomAnchor constant:16],
-        [preview.bottomAnchor constraintEqualToAnchor:header.bottomAnchor constant:-12],
-        [labels.leadingAnchor constraintEqualToAnchor:preview.leadingAnchor constant:18],
-        [labels.trailingAnchor constraintEqualToAnchor:accent.leadingAnchor constant:-16],
-        [labels.topAnchor constraintEqualToAnchor:preview.topAnchor constant:18],
-        [labels.bottomAnchor constraintEqualToAnchor:preview.bottomAnchor constant:-18],
-        [accent.trailingAnchor constraintEqualToAnchor:preview.trailingAnchor constant:-18],
-        [accent.centerYAnchor constraintEqualToAnchor:preview.centerYAnchor],
-        [accent.widthAnchor constraintEqualToConstant:10],
-        [accent.heightAnchor constraintEqualToConstant:38]
+        [self.mode.bottomAnchor constraintEqualToAnchor:header.bottomAnchor constant:-12]
     ]];
     self.tableView.tableHeaderView = header;
 }
@@ -121,7 +82,7 @@
 
 - (void)refresh:(BOOL)reload {
     [self applyAppearance];
-    [self buildPreview];
+    [self buildModeHeader];
     if (reload) [self.tableView reloadData];
 }
 
@@ -136,12 +97,11 @@
     return self.mode.selectedSegmentIndex == 0 ? SCITheme.presets.count : (section == 0 ? 3 : 2);
 }
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return self.mode.selectedSegmentIndex == 0 ? @"16 solid-color palettes" : (section == 0 ? @"Custom colors" : @"Apply");
+    return self.mode.selectedSegmentIndex == 0 ? nil : (section == 0 ? @"Colors" : nil);
 }
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-    if (self.mode.selectedSegmentIndex == 0) return @"Selecting a preset applies its surface and accent immediately. No gradients or downloaded theme files.";
-    return section == 0 ? @"Tap a swatch for the color picker, or tap its row to enter #RRGGBB. Text switches between light and dark to match each surface."
-        : @"These colors style Peki Scripter. To also tint supported Instagram controls, enable Use theme accent in Instagram in Appearance.";
+    if (self.mode.selectedSegmentIndex == 0) return nil;
+    return section == 0 ? @"Tap a color to edit its HEX value." : nil;
 }
 
 - (NSArray<NSArray<NSString *> *> *)customFields {
@@ -163,7 +123,6 @@
     if (self.mode.selectedSegmentIndex == 0) {
         NSDictionary *preset = SCITheme.presets[indexPath.row];
         content.text = preset[@"name"];
-        content.secondaryText = [NSString stringWithFormat:@"#%@ · #%@", preset[@"background"], preset[@"accent"]];
         UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(32, 32)];
         content.image = [[renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
             [[SCITheme colorFromHex:preset[@"surface"] fallback:UIColor.grayColor] setFill];
@@ -187,8 +146,7 @@
         [well sizeToFit];
         cell.accessoryView = well;
     } else {
-        content.text = indexPath.row == 0 ? @"Use custom theme" : @"Reset custom colors";
-        content.secondaryText = indexPath.row == 0 ? @"Apply the three colors above" : @"Restore Carbon's palette";
+        content.text = indexPath.row == 0 ? @"Use custom colors" : @"Reset colors";
         if (indexPath.row == 1) content.textProperties.color = UIColor.systemRedColor;
     }
     cell.contentConfiguration = content;
@@ -221,7 +179,7 @@
 }
 
 - (void)editHex:(NSArray *)field {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:field[0] message:@"Enter a six-digit RGB color."
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:field[0] message:@"HEX color (#RRGGBB)."
         preferredStyle:UIAlertControllerStyleAlert];
     [alert addTextFieldWithConfigurationHandler:^(UITextField *input) {
         input.text = [@"#" stringByAppendingString:[SCIUtils getStringPref:field[1]]];
@@ -255,7 +213,7 @@
         [self publish:YES];
     } else {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Reset custom colors?"
-            message:@"Your three custom RGB colors will be replaced with Carbon's palette."
+            message:@"Replace custom colors with Peki V2?"
             preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"Reset" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             NSDictionary *preset = SCITheme.presets.firstObject;

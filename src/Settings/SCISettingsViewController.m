@@ -1,6 +1,5 @@
 #import "SCISettingsViewController.h"
 #import "../Appearance/SCITheme.h"
-#import "../Appearance/SCIBrandMarkView.h"
 
 static char rowStaticRef[] = "row";
 
@@ -22,28 +21,12 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     return label;
 }
 
-static UIImage *SCICategoryIcon(SCISymbol *symbol) {
-    UIImage *image = [symbol image];
-    if (!image || image.size.width <= 0 || image.size.height <= 0) return image;
-    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(32, 32)];
-    return [[renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
-        UIColor *accent = SCITheme.accentColor;
-        [[accent colorWithAlphaComponent:0.08] setFill];
-        [[UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 32, 32) cornerRadius:9] fill];
-        CGFloat scale = MIN(17 / image.size.width, 17 / image.size.height);
-        CGSize size = CGSizeMake(image.size.width * scale, image.size.height * scale);
-        [[image imageWithTintColor:accent renderingMode:UIImageRenderingModeAlwaysOriginal]
-            drawInRect:CGRectMake((32 - size.width) / 2, (32 - size.height) / 2, size.width, size.height)];
-    }] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-}
-
 @interface SCISettingsViewController () <UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating>
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, copy) NSArray *sections;
 @property (nonatomic) BOOL reduceMargin;
 @property (nonatomic, copy) NSArray *allSections;
-@property (nonatomic, strong) UIView *dashboardHeader;
 
 @end
 
@@ -71,22 +54,6 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
             
         }];
         
-        if (reduceMargin && mutableSections.count) {
-            // Each category gets its own card rather than one long stock list.
-            NSDictionary *modules = mutableSections.firstObject;
-            NSMutableArray *cards = [NSMutableArray new];
-            NSArray *rows = modules[@"rows"];
-            for (NSUInteger index = 0; index < rows.count; index++) {
-                [cards addObject:@{
-                    @"header": index == 0 ? (modules[@"header"] ?: @"") : @"",
-                    @"footer": index == rows.count - 1 ? (modules[@"footer"] ?: @"") : @"",
-                    @"rows": @[rows[index]]
-                }];
-            }
-            [mutableSections removeObjectAtIndex:0];
-            [cards addObjectsFromArray:mutableSections];
-            mutableSections = cards;
-        }
         self.sections = [mutableSections copy];
         self.allSections = self.sections;
     }
@@ -130,13 +97,12 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
     self.tableView.tintColor = SCITheme.accentColor;
     self.tableView.separatorColor = SCITheme.borderColor;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 76;
+    self.tableView.estimatedRowHeight = 52;
     self.tableView.sectionHeaderTopPadding = 8;
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     [self.view addSubview:self.tableView];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(settingsUpdated:)
         name:SCISettingsDidChangeNotification object:nil];
-    if (self.reduceMargin) [self buildDashboardHeader];
 }
 
 - (void)applyAppearance {
@@ -168,7 +134,6 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
     }
     [self applyAppearance];
     [self.tableView reloadData];
-    if (self.reduceMargin && !self.navigationItem.searchController.searchBar.text.length) [self buildDashboardHeader];
 }
 
 - (void)dealloc {
@@ -179,48 +144,10 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
     [super viewWillAppear:animated];
     [self applyAppearance];
     [self.tableView reloadData];
-    if (self.reduceMargin && !self.navigationItem.searchController.searchBar.text.length) [self buildDashboardHeader];
 }
 
 - (void)closeSettings:(id)sender {
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)buildDashboardHeader {
-    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 76)];
-    SCIBrandMarkView *mark = [SCIBrandMarkView new];
-    mark.translatesAutoresizingMaskIntoConstraints = NO;
-    mark.tintColor = SCITheme.accentColor;
-    [mark.widthAnchor constraintEqualToConstant:44].active = YES;
-    [mark.heightAnchor constraintEqualToConstant:44].active = YES;
-    UIButton *handle = [UIButton buttonWithType:UIButtonTypeSystem];
-    [handle setTitle:@"@pekifn" forState:UIControlStateNormal];
-    [handle setTitleColor:SCITheme.textColor forState:UIControlStateNormal];
-    handle.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    handle.titleLabel.font = [[UIFontMetrics metricsForTextStyle:UIFontTextStyleSubheadline]
-        scaledFontForFont:[UIFont systemFontOfSize:17 weight:UIFontWeightMedium]];
-    handle.titleLabel.adjustsFontForContentSizeCategory = YES;
-    handle.titleLabel.numberOfLines = 0;
-    [handle.heightAnchor constraintGreaterThanOrEqualToConstant:44].active = YES;
-    [handle addTarget:self action:@selector(openInstagramProfile:) forControlEvents:UIControlEventTouchUpInside];
-    UIStackView *identity = [[UIStackView alloc] initWithArrangedSubviews:@[mark, handle]];
-    identity.spacing = 12;
-    identity.alignment = UIStackViewAlignmentCenter;
-    identity.translatesAutoresizingMaskIntoConstraints = NO;
-    [header addSubview:identity];
-    [NSLayoutConstraint activateConstraints:@[
-        [identity.leadingAnchor constraintEqualToAnchor:header.leadingAnchor constant:24],
-        [identity.trailingAnchor constraintEqualToAnchor:header.trailingAnchor constant:-24],
-        [identity.topAnchor constraintEqualToAnchor:header.topAnchor constant:12],
-        [identity.bottomAnchor constraintEqualToAnchor:header.bottomAnchor constant:-20]
-    ]];
-    self.dashboardHeader = header;
-    self.tableView.tableHeaderView = header;
-}
-
-- (void)openInstagramProfile:(id)sender {
-    [UIApplication.sharedApplication openURL:[NSURL URLWithString:@"https://www.instagram.com/pekifn/"]
-        options:@{} completionHandler:nil];
 }
 
 - (void)collectMatches:(NSArray *)sections query:(NSString *)query path:(NSString *)path into:(NSMutableArray *)results {
@@ -250,10 +177,8 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
         NSMutableArray *matches = [NSMutableArray new];
         [self collectMatches:self.allSections query:query path:@"" into:matches];
         self.sections = matches;
-        self.tableView.tableHeaderView = nil;
     } else {
         self.sections = self.allSections;
-        [self buildDashboardHeader];
     }
     if (query.length && !self.sections.count) {
         UILabel *empty = SCISettingsLabel(@"No matching settings", 15, UIFontWeightMedium, SCITheme.secondaryTextColor);
@@ -263,19 +188,6 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
         self.tableView.backgroundView = nil;
     }
     [self.tableView reloadData];
-}
-
-- (void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    UIView *header = self.tableView.tableHeaderView;
-    if (!header) return;
-    CGFloat width = CGRectGetWidth(self.tableView.bounds);
-    CGFloat height = [header systemLayoutSizeFittingSize:CGSizeMake(width, UILayoutFittingCompressedSize.height)
-        withHorizontalFittingPriority:UILayoutPriorityRequired verticalFittingPriority:UILayoutPriorityFittingSizeLevel].height;
-    if (fabs(header.frame.size.height - height) > 0.5 || header.frame.size.width != width) {
-        header.frame = CGRectMake(0, 0, width, height);
-        self.tableView.tableHeaderView = header;
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -293,16 +205,11 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
     UIListContentConfiguration *cellContentConfig = cell.defaultContentConfiguration;
     UIBackgroundConfiguration *background = [UIBackgroundConfiguration listGroupedCellConfiguration];
     background.backgroundColor = SCISettingsSurface();
-    if (self.reduceMargin) {
-        background.cornerRadius = 12;
-        background.strokeWidth = 0.5;
-        background.strokeColor = SCITheme.borderColor;
-    }
     cell.backgroundConfiguration = background;
     cell.tintColor = SCITheme.accentColor;
-    cellContentConfig.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(14, 16, 14, 16);
+    cellContentConfig.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(12, 16, 12, 16);
     cellContentConfig.textProperties.font = [[UIFontMetrics defaultMetrics]
-        scaledFontForFont:[UIFont systemFontOfSize:15 weight:UIFontWeightSemibold]];
+        scaledFontForFont:[UIFont systemFontOfSize:16 weight:UIFontWeightRegular]];
     cellContentConfig.textProperties.color = SCITheme.cellTextColor;
     cellContentConfig.secondaryTextProperties.font = [[UIFontMetrics defaultMetrics]
         scaledFontForFont:[UIFont systemFontOfSize:12 weight:UIFontWeightRegular]];
@@ -321,8 +228,9 @@ static UIImage *SCICategoryIcon(SCISymbol *symbol) {
     
     // Icon
     if (row.icon != nil) {
-        cellContentConfig.image = self.reduceMargin ? SCICategoryIcon(row.icon) : [row.icon image];
+        cellContentConfig.image = [row.icon image];
         cellContentConfig.imageProperties.tintColor = SCITheme.accentColor;
+        cellContentConfig.imageProperties.maximumSize = CGSizeMake(22, 22);
     }
     
     // Image url

@@ -5,7 +5,7 @@
     if ((self = [super initWithFrame:frame])) {
         self.backgroundColor = UIColor.clearColor;
         self.contentMode = UIViewContentModeRedraw;
-        self.tintColor = [UIColor colorWithRed:0.85 green:0.15 blue:0.26 alpha:1];
+        self.tintColor = [UIColor colorWithRed:0.659 green:0.612 blue:1 alpha:1];
         self.isAccessibilityElement = YES;
         self.accessibilityLabel = @"Peki Scripter V2";
     }

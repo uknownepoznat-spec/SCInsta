@@ -11,7 +11,7 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Local message archive";
+    self.title = @"Local archive";
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 100;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear"
@@ -25,7 +25,7 @@
     self.messages = [[SCIMessageArchive sharedArchive] deletedMessages];
     if (!self.messages.count) {
         UILabel *empty = [UILabel new];
-        empty.text = @"No retained text messages yet.\n\nEnable local copies before opening a chat. Only text observed on this device can be retained; old unsent messages and attachments cannot be recovered.";
+        empty.text = @"No saved messages.\nTurn on local copies before opening a chat.";
         empty.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
         empty.textColor = UIColor.secondaryLabelColor;
         empty.numberOfLines = 0;
@@ -40,7 +40,7 @@
     return self.messages.count;
 }
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-    return @"Text only · this device · up to 500 snapshots · excluded from backup.\nShared across accounts on this installation. Tap to read/copy; swipe to remove.";
+    return @"Text only. Up to 500 messages, shared across accounts.";
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *entry = self.messages[indexPath.row];
@@ -73,7 +73,7 @@
 }
 - (void)clearArchive:(id)sender {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Clear local copies?"
-        message:@"This deletes both retained text and pending snapshots on this device."
+        message:@"Delete all saved text on this device?"
         preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Clear" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         [[SCIMessageArchive sharedArchive] clear];
