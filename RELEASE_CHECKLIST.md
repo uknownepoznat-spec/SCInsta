@@ -23,7 +23,7 @@
 - [ ] Verify feed/reel downloads still work after the shared URL/downloader changes.
 - [ ] Open settings via the profile menu; check dashboard sizing on iPhone/iPad and larger text sizes.
 - [ ] Check nested settings, switches, menu buttons, Done, the Discord server link and TikTok link.
-- [ ] Confirm the menu title is Peki Scripter V2, its default palette is navy/violet and there is no Instagram logo/handle header or blank header spacing; Privacy/Gestures shortcuts and story-summary clutter are absent.
+- [ ] Confirm the menu title is Peki Scripter V2, its default palette is black/white and there is no Instagram logo/handle header or blank header spacing; Privacy/Gestures shortcuts and story-summary clutter are absent.
 - [ ] Confirm Preferences → Support shows Join Discord rather than reopening the licence form, and both it and the initial screen's Join Discord button open the configured server.
 - [ ] Confirm Saving and Stories and messages still contain their original gesture/privacy controls and remain searchable.
 - [ ] Confirm Preferences starts with Stories and messages, Saving, General; Debug is absent, and Contact lists Instagram, Discord, TikTok in that order.
@@ -65,7 +65,7 @@
 - [x] Deploy the redirect repair and pass live configuration, proof/replay and nonexistent-license smoke checks.
 - [ ] Build with `LICENSE_REQUIRED=1`; an unset URL/secret or an unavailable network must not unlock.
 - [ ] On the target signed LiveContainer, confirm Secure Enclave/Keychain works and a fresh one-activation test key binds to that device on its first successful activation.
-- [ ] Check the minimal Peki Scripter V2 screen: navy/violet styling, camera mark, Enter your licence, Activate and Join Discord; no device ID or diagnostic widgets.
+- [ ] Check the minimal Peki Scripter V2 screen: black background, white lettering, dark controls, camera mark, Enter your licence, Activate and Join Discord; no device ID or diagnostic widgets.
 - [ ] With the keyboard visible and larger accessibility text enabled, verify the licence field, action and short errors remain reachable.
 - [ ] Verify valid login, invalid key, expiry, ban, wrong-device use, foreground return, and periodic online checks against the real provider.
 - [ ] Confirm repeated checks do not consume another activation.

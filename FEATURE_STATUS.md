@@ -17,7 +17,7 @@
 - Worker challenges are short-lived, one-use and signature-checked. KeyAux verifies the current activation before attempting a new activation.
 - Authorization exists only as an active-app, monotonic lease of at most 300 seconds. Offline/expired/revoked/invalid requests do not grant access. Foreground return requires rechecking.
 - Keychain/access-group/container changes can change or lose the device key. This is not a permanent IMEI/serial identifier, remote hardware attestation, or unbreakable anti-repack DRM.
-- The **Peki Scripter V2** access screen has a fixed midnight-navy/violet palette, a vector camera mark, `Enter your licence` and `Activate`. It shows only short errors when needed; device-code, retry, forget and diagnostic widgets are removed from this screen.
+- The **Peki Scripter V2** access screen has a fixed black/white palette, dark fields/buttons, a monochrome camera mark, `Enter your licence` and `Activate`. It shows only short errors when needed; device-code, retry, forget and diagnostic widgets are removed from this screen.
 - Login keeps `@pekifn` and `TikTok: @pekiscripter`. Its separate **Join Discord** button opens `https://discord.gg/qTB3G7gCAp`. The invite is compiled into the client, independent of Worker configuration.
 - `V2` is display branding; the KeyAux protocol/application version remains `1.0`. Device proof, Keychain credentials and online authorization are unchanged.
 - The redirect repair was deployed on 2026-11-22. All 21 local tests pass, including a real workerd/local-D1 integration test with a mocked provider. Live configuration, signed-proof/replay handling and nonexistent-license denial also pass. A valid-license login and native LiveContainer behavior still require a rebuilt guest IPA and on-device acceptance tests.
@@ -42,7 +42,8 @@
 ## Menu
 - **Peki Scripter V2** title, search, plain icons and standard grouped settings. Decorative category cards, repeated descriptions, promotional theme footers and the large theme-preview card are removed. Short usage hints, restart notices and local-archive limits remain.
 - The hidden menu has no Instagram logo/handle header, extra Privacy/Gestures shortcuts or story-summary strip; actual controls remain under Saving and Stories and messages.
-- The default palette is **Peki V2**: midnight-navy background, dark blue surfaces and soft violet accents matching the license screen. Its stored preference ID remains `carbon`, so the old default adopts the updated colors without overwriting explicit theme/accent choices.
+- The default palette is **Peki V2**: black background, charcoal surfaces and white lettering/accents matching the license screen. Contact titles and navigation text follow the readable text color instead of a saved colored accent. The stored preference ID remains `carbon`, so the old default adopts the updated colors without overwriting explicit theme/accent choices.
+- Existing builds can use **Appearance → Theme → OLED black** and **Accent → Monochrome** for a black/white hidden menu without rebuilding. The fixed login styling changes only after rebuilding the IPA.
 - **Appearance → Theme** still offers 16 palettes: Peki V2, Midnight, Graphite, OLED black, Slate, Ocean, Forest, Moss, Espresso, Copper, Burgundy, Indigo, Dusk, Paper, Pearl and Sand.
 - **Custom** supports a native RGB picker and validated `#RRGGBB` entry for background, surface and accent. Body text automatically chooses black/white for each surface. Accent overrides are independent of preset surfaces.
 - Preferences starts with **Stories and messages → Saving → General**, followed by Feed, Reels, Navigation, Confirm actions, Appearance and Support. The Debug page is removed; stored preferences and licence checks are not reset.

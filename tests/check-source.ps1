@@ -121,10 +121,10 @@ $accentLuminance = Get-PaletteLuminance $defaultPalette.Groups[5].Value
 foreach ($component in @(3, 4)) {
     $surfaceLuminance = Get-PaletteLuminance $defaultPalette.Groups[$component].Value
     $contrast = ([Math]::Max($accentLuminance, $surfaceLuminance) + 0.05) / ([Math]::Min($accentLuminance, $surfaceLuminance) + 0.05)
-    Assert-Source ($contrast -ge 4.5) 'V2 violet controls must remain readable on the default menu surfaces'
+    Assert-Source ($contrast -ge 4.5) 'V2 white controls must remain readable on the default menu surfaces'
 }
-$actionLuminance = Get-PaletteLuminance '6154CC'
-Assert-Source ((1.05 / ($actionLuminance + 0.05)) -ge 4.5) 'The violet Activate action must retain readable white text'
+$actionLuminance = Get-PaletteLuminance '1C1C1C'
+Assert-Source ((1.05 / ($actionLuminance + 0.05)) -ge 4.5) 'The dark Activate action must retain readable white text'
 Assert-Source ($licenseConfig.Contains('#define SCI_LICENSE_REQUIRED 1')) 'License checks must default on'
 Assert-Source ((Read-Source 'Makefile').Contains('LICENSE_REQUIRED ?= 1')) 'Production builds must not silently disable licensing'
 Assert-Source ((Read-Source 'src/License/SCILicenseConfig.m').Contains('containsString:@"YOUR-"')) 'An unset Worker URL must be rejected'
@@ -145,7 +145,9 @@ foreach ($removed in @('No access', 'Buy a key', 'Device code', 'Copy device cod
     Assert-Source (-not $licenseView.Contains($removed)) "Removed license-screen clutter returned: $removed"
 }
 Assert-Source ($licenseView.Contains('manager.errorMessage') -and -not $licenseView.Contains('manager.message')) 'The minimal form must show short errors, not diagnostic paragraphs'
-Assert-Source ($licenseView.Contains('SCIBrandMarkView') -and $licenseView.Contains('SCILicenseAccentColor()')) 'The license screen must retain its violet camera mark'
+Assert-Source ($licenseView.Contains('SCIBrandMarkView') -and $licenseView.Contains('SCILicenseAccentColor()')) 'The license screen must retain its monochrome camera mark'
+Assert-Source ($licenseView.Contains('self.view.backgroundColor = UIColor.blackColor') -and $licenseView.Contains('self.keyField.textColor = UIColor.whiteColor')) 'The license screen must use a black background with white lettering'
+Assert-Source (-not $licenseView.Contains('colorWithRed:')) 'The monochrome login must not keep colored accents'
 foreach ($removedIdentity in @('SCIBrandMarkView', '@pekifn', 'buildDashboardHeader', 'tableHeaderView')) {
     Assert-Source (-not $controller.Contains($removedIdentity)) "Removed hidden-menu identity header returned: $removedIdentity"
 }
@@ -163,12 +165,13 @@ foreach ($removedShortcut in @('shortcutWithTitle:', 'openPrivacy:', 'openGestur
     Assert-Source (-not $controller.Contains($removedShortcut)) "Removed dashboard shortcut or summary returned: $removedShortcut"
 }
 Assert-Source ($settings.Contains('navigationCellWithTitle:@"Saving"') -and $settings.Contains('navigationCellWithTitle:@"Stories and messages"')) 'Removing dashboard shortcuts must not remove the gesture/privacy settings pages'
-Assert-Source ($theme.Contains('@[@"carbon", @"Peki V2", @"090D1A", @"131A2D", @"A89CFF"]')) 'The default palette must be midnight navy/violet without changing preference IDs'
+Assert-Source ($theme.Contains('@[@"carbon", @"Peki V2", @"000000", @"0E0E0E", @"FFFFFF"]')) 'The default palette must be black/white without changing preference IDs'
+Assert-Source (-not $controller.Contains('cellContentConfig.textProperties.color = SCITheme.accentColor')) 'Contact titles must follow the readable text color instead of a saved colored accent'
 Assert-Source ($settings.Contains('navigationCellWithTitle:@"Support"') -and $settings.Contains('linkCellWithTitle:@"Join Discord"')) 'Preferences must contain Support with the Join Discord action'
 Assert-Source (-not $settings.Contains('controllerCellWithTitle:@"License"') -and -not $settings.Contains('[SCILicenseViewController new]')) 'The Support entry must not reopen the licensing form'
 Assert-Source ($settings.Contains('url:SCILicenseConfig.supportURL.absoluteString')) 'The menu Discord contact must open the same purchase server as login'
 Assert-Source ($licenseView.Contains('keyboardLayoutGuide') -and $licenseView.Contains('scrollRectToVisible:')) 'The license field must remain reachable with the keyboard open'
-Assert-Source (-not $licenseView.Contains('SCITheme.') -and -not $licenseView.Contains('SCILicenseRed')) 'The license screen must retain its navy/violet styling independently of menu themes'
+Assert-Source (-not $licenseView.Contains('SCITheme.') -and -not $licenseView.Contains('SCILicenseRed')) 'The license screen must retain its black/white styling independently of menu themes'
 Assert-Source ($licenseView.Contains('discordStyle.title = @"Join Discord"') -and $licenseView.Contains('discord.configuration = discordStyle')) 'The initial screen must expose Join Discord as a button'
 Assert-Source ((Read-Source 'src/License/SCILicenseConfig.m').Contains('https://discord.gg/qTB3G7gCAp')) 'The purchase contact must use the requested Discord server'
 Assert-Source ($licenseView.Contains('openURL:SCILicenseConfig.supportURL')) 'The Discord control must open the configured purchase invite'

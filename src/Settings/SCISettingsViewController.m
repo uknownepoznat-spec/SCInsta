@@ -119,7 +119,7 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
     self.navigationController.navigationBar.standardAppearance = navigationAppearance;
     self.navigationController.navigationBar.scrollEdgeAppearance = navigationAppearance;
     self.navigationController.navigationBar.compactAppearance = navigationAppearance;
-    self.navigationController.navigationBar.tintColor = SCITheme.accentColor;
+    self.navigationController.navigationBar.tintColor = SCITheme.textColor;
     self.view.backgroundColor = SCISettingsBackground();
     self.tableView.backgroundColor = SCISettingsBackground();
     self.tableView.tintColor = SCITheme.accentColor;
@@ -247,7 +247,7 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
         }
             
         case SCITableCellLink: {
-            cellContentConfig.textProperties.color = SCITheme.accentColor;
+            cellContentConfig.textProperties.color = SCITheme.cellTextColor;
             cellContentConfig.textProperties.font = [UIFont systemFontOfSize:[UIFont preferredFontForTextStyle:UIFontTextStyleBody].pointSize
                                                                       weight:UIFontWeightMedium];
             
@@ -312,7 +312,7 @@ static UILabel *SCISettingsLabel(NSString *text, CGFloat size, UIFontWeight weig
             
             UIButtonConfiguration *config = menuButton.configuration ?: [UIButtonConfiguration plainButtonConfiguration];
             config.contentInsets = NSDirectionalEdgeInsetsMake(8, 12, 8, 12);
-            config.baseForegroundColor = SCITheme.accentColor;
+            config.baseForegroundColor = SCITheme.cellTextColor;
             menuButton.configuration = config;
 
             [menuButton sizeToFit];

@@ -73,7 +73,7 @@ static BOOL SCILiveContainerOwnsRoot(UIViewController *root) {
     dispatch_once(&once, ^{
         // id, display name, background, surface, accent. Solid colors only.
         NSArray *rows = @[
-            @[@"carbon", @"Peki V2", @"090D1A", @"131A2D", @"A89CFF"],
+            @[@"carbon", @"Peki V2", @"000000", @"0E0E0E", @"FFFFFF"],
             @[@"midnight", @"Midnight", @"0C111B", @"151E2C", @"80ADFF"],
             @[@"graphite", @"Graphite", @"171717", @"242424", @"C9CED6"],
             @[@"oled", @"OLED black", @"000000", @"0B0B0B", @"E4E8EF"],
