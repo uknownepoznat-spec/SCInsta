@@ -25,7 +25,7 @@ concurrency:
 jobs:
     build:
         name: Build SCInsta
-        runs-on: macos-latest
+        runs-on: macos-15-intel
         permissions:
             contents: write
 
@@ -120,7 +120,12 @@ jobs:
                 pip install --force-reinstall https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
                 
                 cd main
-                curl -Lo ipapatch https://github.com/asdfzxcvbn/ipapatch/releases/download/v2.1.3/ipapatch.macos-arm64
+                if [ "$(uname -m)" = "x86_64" ]; then
+                  IPAPATCH_ARCH="macos-amd64"
+                else
+                  IPAPATCH_ARCH="macos-arm64"
+                fi
+                curl -Lo ipapatch "https://github.com/asdfzxcvbn/ipapatch/releases/download/v2.1.3/ipapatch.${IPAPATCH_ARCH}"
                 chmod +x ipapatch
                 export PATH=.:$PATH
                 ls -la
