@@ -26,6 +26,7 @@
 - [ ] Confirm the menu title is Peki Scripter V2, its default palette is navy/violet and there is no Instagram logo/handle header or blank header spacing; Privacy/Gestures shortcuts and story-summary clutter are absent.
 - [ ] Confirm Preferences → Support shows Join Discord rather than reopening the licence form, and both it and the initial screen's Join Discord button open the configured server.
 - [ ] Confirm Saving and Stories and messages still contain their original gesture/privacy controls and remain searchable.
+- [ ] Confirm Preferences starts with Stories and messages, Saving, General; Debug is absent, and Contact lists Instagram, Discord, TikTok in that order.
 - [ ] Check standard grouped rows and plain symbols; no decorative category tiles or theme-preview card. Ensure useful hints, restart confirmations, HEX validation and local-archive scope/limits remain clear.
 - [ ] If a crash persists, record Instagram/iOS versions and export the matching Instagram .ips crash log.
 
@@ -42,7 +43,7 @@
 - [ ] Verify archive contains no media attachments and does not claim to recover messages never observed.
 - [ ] Turn unlimited replay off; normal playback callbacks must still run.
 - [ ] Check read/view receipts from a second account; do not infer privacy from local UI alone.
-- [ ] If message capture fails, copy Debug → Compatibility report and record the reproduction steps.
+- [ ] If message capture fails, record Instagram/iOS versions, reproduction steps and any matching .ips log; the Debug menu is no longer exposed.
 
 ### Appearance / LiveContainer
 - [ ] New guest data: feed/stories/reels/profile saving defaults to two fingers and 0.5 seconds.
@@ -72,4 +73,4 @@
 - [ ] Returning to LC's launcher must hide the guest cover and must not cause an authentication request for the host.
 - [ ] A generic keyboard/text-selection window must not be treated as a host transition or expose the guest.
 - [ ] Check keychain restoration across guest updates, then explicit reset/reapproval on a signing/access-group change.
-- [ ] Confirm both Join Discord actions open `https://discord.gg/qTB3G7gCAp`; login's Instagram link still opens `@pekifn` and TikTok opens `@peki_scripter`.
+- [ ] Confirm Join Discord and the Contact Discord row open `https://discord.gg/qTB3G7gCAp`; Instagram opens `@pekifn` and TikTok opens `@pekiscripter`.
