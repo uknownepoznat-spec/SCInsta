@@ -6,6 +6,7 @@
 #import "../Utils.h"
 
 NSString * const SCILicenseStateDidChangeNotification = @"PekiScripterLicenseStateDidChange";
+static NSString * const SCIActivationKey = @"PekiScripterActivation.v1";
 
 @interface SCILicenseGateRecord : NSObject
 @property (nonatomic, weak) UIWindow *source;
@@ -33,6 +34,8 @@ NSString * const SCILicenseStateDidChangeNotification = @"PekiScripterLicenseSta
 @property (nonatomic) BOOL updatingWindows;
 @property (nonatomic) BOOL fetchedConfig;
 @property (nonatomic) BOOL loadingDevice;
+@property (nonatomic) BOOL rememberedActivation;
+@property (nonatomic) BOOL loadedActivation;
 @end
 
 static BOOL SCILicenseTrue(id value) {
@@ -70,8 +73,8 @@ static BOOL SCILicenseTrue(id value) {
 }
 - (NSString *)deviceID { return self.deviceKey.deviceID; }
 - (BOOL)isAuthorized {
-    return !SCILicenseConfig.required || (self.validUntilUptime > NSProcessInfo.processInfo.systemUptime
-        && UIApplication.sharedApplication.applicationState == UIApplicationStateActive);
+    return !SCILicenseConfig.required || self.rememberedActivation
+        || self.validUntilUptime > NSProcessInfo.processInfo.systemUptime;
 }
 - (void)notify {
     [NSNotificationCenter.defaultCenter postNotificationName:SCILicenseStateDidChangeNotification object:nil];
@@ -103,6 +106,13 @@ static BOOL SCILicenseTrue(id value) {
             self.busy = self.loadingDevice;
             self.triedSavedLicense = NO;
         }
+    }
+    if (guest && !self.loadedActivation) {
+        [SCIUtils registerGuestDefaults];
+        self.loadedActivation = YES;
+        NSDictionary *saved = [NSUserDefaults.standardUserDefaults dictionaryForKey:SCIActivationKey];
+        self.rememberedActivation = [saved[@"app"] isEqual:SCILicenseConfig.appID]
+            && [saved[@"device"] isKindOfClass:NSString.class] && [saved[@"device"] length] == 64;
     }
     [self updateCovers];
     if (guest && [self hasVisibleGuest]) {
@@ -205,7 +215,7 @@ static BOOL SCILicenseTrue(id value) {
     [self invalidateAttempt];
     self.busy = self.loadingDevice;
     self.triedSavedLicense = NO;
-    self.message = @"Access will be checked online when you return.";
+    self.message = self.rememberedActivation ? @"Access is active." : @"Access will be checked online when you return.";
     self.errorMessage = nil;
     [self notify];
 }
@@ -224,6 +234,11 @@ static BOOL SCILicenseTrue(id value) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.loadingDevice = NO;
             self.deviceKey = device;
+            NSDictionary *saved = [NSUserDefaults.standardUserDefaults dictionaryForKey:SCIActivationKey];
+            if (device && self.rememberedActivation
+                && (![saved[@"device"] isEqual:device.deviceID] || ![device storedLicense].length)) {
+                [self clearRememberedActivation];
+            }
             self.busy = NO;
             self.errorMessage = !device ? @"Device access unavailable."
                 : !SCILicenseConfig.baseURL ? @"Service unavailable." : nil;
@@ -240,7 +255,10 @@ static BOOL SCILicenseTrue(id value) {
     if (!self.deviceKey || self.busy || self.triedSavedLicense || ![self hasVisibleGuest]
         || UIApplication.sharedApplication.applicationState != UIApplicationStateActive) return;
     self.triedSavedLicense = YES;
-    NSString *saved = self.currentLicense ?: [self.deviceKey storedLicense];
+    // Keychain survives reinstall on iOS. A guest-container activation record
+    // is required before restoring a key, so a fresh installation asks again.
+    NSString *saved = self.currentLicense ?: (self.rememberedActivation ? [self.deviceKey storedLicense] : nil);
+    if (self.rememberedActivation && saved.length) self.currentLicense = saved;
     if (saved.length && SCILicenseConfig.baseURL) [self submitLicense:saved];
 }
 - (void)retry {
@@ -263,6 +281,7 @@ static BOOL SCILicenseTrue(id value) {
 }
 - (void)forgetLicense {
     [self invalidateAttempt];
+    [self clearRememberedActivation];
     [self.deviceKey removeStoredLicense];
     self.currentLicense = nil;
     self.busy = NO;
@@ -322,6 +341,23 @@ static BOOL SCILicenseTrue(id value) {
     }];
     [self.request resume];
 }
+- (void)clearRememberedActivation {
+    self.rememberedActivation = NO;
+    [NSUserDefaults.standardUserDefaults removeObjectForKey:SCIActivationKey];
+}
+- (void)scheduleRefresh:(NSTimeInterval)seconds {
+    [self.timer invalidate];
+    __weak typeof(self) weakSelf = self;
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:MAX(1, seconds) repeats:NO block:^(NSTimer *timer) {
+        SCILicenseManager *manager = weakSelf;
+        if ([manager hasVisibleGuest] && UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
+            [manager restoreRefresh];
+        }
+    }];
+}
+- (void)restoreRefresh {
+    if (!self.busy && self.currentLicense.length) [self submitLicense:self.currentLicense];
+}
 - (void)failed:(NSDictionary *)body error:(NSError *)error {
     self.busy = NO;
     self.validUntilUptime = 0;
@@ -337,6 +373,14 @@ static BOOL SCILicenseTrue(id value) {
         @"bad_proof": @"Please try again."
     };
     id code = body[@"error"];
+    // A temporary outage must not put an activated installation back at login.
+    // Explicit provider denial/version rejection still revokes cached access.
+    if (!error && ([code isEqual:@"license_denied"] || [code isEqual:@"version_mismatch"])) {
+        [self clearRememberedActivation];
+        self.currentLicense = nil;
+    } else if (self.rememberedActivation) {
+        [self scheduleRefresh:60];
+    }
     NSString *shortMessage = [code isKindOfClass:NSString.class] ? shortErrors[code] : nil;
     self.errorMessage = error ? @"Connection failed. Try again."
         : (shortMessage ?: @"Service unavailable. Try again.");
@@ -385,6 +429,7 @@ static BOOL SCILicenseTrue(id value) {
             self.busy = NO;
             self.message = signError.localizedDescription ?: @"Device signature failed.";
             self.errorMessage = @"Device access unavailable. Try again.";
+            if (self.rememberedActivation) [self scheduleRefresh:60];
             [self notify];
             return;
         }
@@ -405,19 +450,17 @@ static BOOL SCILicenseTrue(id value) {
             self.errorMessage = nil;
             self.currentLicense = key;
             BOOL stored = [device storeLicense:key];
+            self.rememberedActivation = stored;
+            if (stored) {
+                [NSUserDefaults.standardUserDefaults setObject:@{@"app": SCILicenseConfig.appID,
+                    @"device": device.deviceID} forKey:SCIActivationKey];
+            } else {
+                [self clearRememberedActivation];
+            }
             self.validUntilUptime = NSProcessInfo.processInfo.systemUptime + [seconds doubleValue];
             self.message = stored ? @"License verified. Access is active."
                 : @"Access is active for this session. Keychain could not remember the license.";
-            __weak typeof(self) weakSelf = self;
-            self.timer = [NSTimer scheduledTimerWithTimeInterval:MAX(1, [seconds doubleValue] - 1)
-                repeats:NO block:^(NSTimer *timer) {
-                SCILicenseManager *manager = weakSelf;
-                [manager invalidateAttempt];
-                [manager notify];
-                if ([manager hasVisibleGuest] && UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
-                    [manager submitLicense:manager.currentLicense];
-                }
-            }];
+            [self scheduleRefresh:MAX(1, [seconds doubleValue] - 1)];
             [self notify];
         }];
     }];

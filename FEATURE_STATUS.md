@@ -15,7 +15,7 @@
 - The access screen covers recognized Instagram-owned guest windows. Initial settings presentation and media saving also check authorization. It is not an Instagram-account login.
 - Device binding uses a SHA-256 P-256 public-key fingerprint internally. The native client requires a Secure Enclave key; unsupported Keychain/signing setups fail closed with a short error. Device IDs and diagnostic controls are not displayed on the license screen.
 - Worker challenges are short-lived, one-use and signature-checked. KeyAux verifies the current activation before attempting a new activation.
-- Authorization exists only as an active-app, monotonic lease of at most 300 seconds. Offline/expired/revoked/invalid requests do not grant access. Foreground return requires rechecking.
+- First activation requires a successful online response. Subsequent launches use remembered guest-container activation while foreground/periodic checks run without blocking; confirmed denial clears activation. See Remembered activation below for offline behavior.
 - Keychain/access-group/container changes can change or lose the device key. This is not a permanent IMEI/serial identifier, remote hardware attestation, or unbreakable anti-repack DRM.
 - The **Peki Scripter V2** access screen has a fixed black/white palette, dark fields/buttons, a monochrome camera mark, `Enter your licence` and `Activate`. It shows only short errors when needed; device-code, retry, forget and diagnostic widgets are removed from this screen.
 - Login keeps `@pekifn` and `TikTok: @peki_scripter`. Its separate **Join Discord** button opens `https://discord.gg/qTB3G7gCAp`. The invite is compiled into the client, independent of Worker configuration.
@@ -69,3 +69,9 @@ The old auto-reply, message scheduler, extra message encryption, HD profile-pict
 - Added a narrowly scoped hook for `IGTestFlightUpdateNagController`'s initializer, identified in Instagram 418.1.0 / 890980569. It declines creation of the dedicated TestFlight reminder controller.
 - This is not an Instagram update or a fix for server-enforced minimum versions. Other alerts, bundle metadata and licensing remain unchanged.
 - Source checks do not verify caller handling of a nil controller. A Theos build and on-device cold launch/foreground testing are required; newer Instagram versions can use different classes.
+# Remembered activation
+
+- After successful online activation and Keychain storage, a guest-container defaults record remembers activation. Ordinary launch/foreground checks refresh in the background without covering Instagram.
+- Explicit `license_denied` or `version_mismatch` responses clear remembered activation; temporary network/service failures retain access and retry. This intentionally replaces strict fail-closed five-minute authorization with offline cached access; revocation requires a successful server response.
+- The record is bound to the device fingerprint and requires its saved Keychain credential. Keychain credentials alone cannot restore a fresh guest container. Removing the app's guest data requires licence entry again; replacing an IPA while preserving LiveContainer data does not.
+- Local activation records are not tamper-proof receipts. No native compilation or device lifecycle verification was performed on Windows.

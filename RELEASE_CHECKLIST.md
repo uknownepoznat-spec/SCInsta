@@ -79,3 +79,10 @@
 - [ ] Build the updated IPA and confirm cold launch reaches Instagram without the "It's time to update Instagram beta" screen.
 - [ ] Confirm background/foreground and account switching work without a crash or a blank screen; the scoped reminder initializer now returns nil.
 - [ ] Confirm the licence gate still requires activation and unrelated Instagram alerts still work. This change is not tested on-device and does not replace an expired or server-blocked Instagram build.
+# Remembered activation device checks
+
+- [ ] Activate once, relaunch and repeatedly background/foreground: no licence-screen flash.
+- [ ] Disconnect the network after activation: cached access remains; reconnect and confirm background refresh succeeds.
+- [ ] Revoke/expire the licence in the provider dashboard: a confirmed denial must show activation again.
+- [ ] Delete the Instagram guest AND its data in LiveContainer, reinstall, and confirm licence entry is required despite surviving Keychain items.
+- [ ] Confirm replacing only the IPA with preserved guest data keeps activation. Native build/device tests are still required.
